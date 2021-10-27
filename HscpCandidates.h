@@ -563,7 +563,7 @@ void region::fillMassFrom1DTemplates()
 
 void region::fillMassFrom1DTemplatesEtaBinning() 
 {
-    errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,100);
+    errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,2000);
     TH1F* eta = (TH1F*) ih_eta->ProjectionX();
     for(int i=1;i<eta->GetNbinsX();i++)
     {
@@ -593,7 +593,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 float err_weight = weight*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
                 float mass = GetMass(mom,dedx,K,C);
                 int bin_mass = massFrom1DTemplatesEtaBinning->FindBin(mass);
-                float mass_err = GetMassErr(mom,p->GetBinWidth(j),dedx,ih->GetBinWidth(k),mass,K,C); 
+                float mass_err = mass*GetMassErr(mom,p->GetBinWidth(j),dedx,ih->GetBinWidth(k),mass,K,C); 
                 if(prob>=0)
                 {
                     // first version : wrong
