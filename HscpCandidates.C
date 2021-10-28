@@ -102,35 +102,7 @@ void predMass(TH1F* res, TH1F* h_p, TH1F* h_ih, float norm=0)
     //std::cout << "entries: " << res->GetEntries() << " intgral: " << res->Integral() << std::endl;
 }
 
-void predMassEtaBinning(TH1F* res, TH2F* eta_p, TH2F* ih_eta, float norm=0)
-{
-    TH1F* eta = (TH1F*) ih_eta->ProjectionX();
-    for(int i=1;i<eta->GetNbinsX();i++)
-    {
-        TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i);
-        TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i);
-        scale(p);
-        for(int j=1;j<p->GetNbinsX()+1;j++)
-        {
-            for(int k=1;k<ih->GetNbinsX()+1;k++)
-            {
-                if(p->GetBinContent(j)<0) continue;
-                if(ih->GetBinContent(k)<0) continue;
-                float mom = p->GetBinCenter(j);
-                float dedx = ih->GetBinCenter(k);
-                float prob = p->GetBinContent(j) * ih->GetBinContent(k);
-                if(prob>=0)
-                {
-                    res->Fill(GetMass(mom,dedx,K,C),prob*norm);
-                }
-            }
-        }
-        delete p;
-        delete ih;
-    }
-    res->Sumw2();
-    //scale(massFrom1DTemplatesEtaBinning);
-}
+
 
 float chi2testWith1(TH1F* h)
 {
@@ -169,23 +141,7 @@ void ratioIntegral(TH1F* res, TH1F* h1, TH1F* h2)
 
 
 
-void etaReweighingP(TH2F* eta_p_1, TH2F* eta_p_2)
-{
-    TH1F* eta1 = (TH1F*) eta_p_1->ProjectionY(); eta1->Scale(1./eta1->Integral());
-    TH1F* eta2 = (TH1F*) eta_p_2->ProjectionY(); eta2->Scale(1./eta2->Integral());
-    eta2->Divide(eta1);
-    for(int i=0;i<eta_p_1->GetNbinsX()+1;i++)
-    {
-        for(int j=0;j<eta_p_1->GetNbinsY()+1;j++)
-        {
-            float val_ij = eta_p_1->GetBinContent(i,j);
-            float err_ij = eta_p_1->GetBinError(i,j);
-            eta_p_1->SetBinContent(i,j,val_ij*eta2->GetBinContent(j));
-            eta_p_1->SetBinError(i,j,err_ij*eta2->GetBinContent(j));
-        }
-    }
-    eta_p_1->Sumw2();
-}
+
 
 void pseudoHisto(TH1F* h)
 {
