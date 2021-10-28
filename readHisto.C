@@ -64,8 +64,9 @@ void readHisto()
     rebinning(rall.mass,80,vectOfBins);
     rebinning((TH1F*)rall.eta_p->ProjectionX(),500,vectOfBins_P);
 
-    rc.eta_p->RebinX(40);
-    rd.eta_p->RebinX(40);
+    rall.eta_p->RebinX(5);
+    rc.eta_p->RebinX(5);
+    rd.eta_p->RebinX(5);
     
 
     rc.fillStdDev();
@@ -73,8 +74,8 @@ void readHisto()
     rd.fillStdDev();
     rd.fillQuantile();
 
-    rc.rebinQuantiles(40);
-    rd.rebinQuantiles(40);
+    rc.rebinQuantiles(5);
+    rd.rebinQuantiles(5);
 
 
     //rall.rebinEtaP(vectOfBins_P);
@@ -109,6 +110,8 @@ void readHisto()
     TProfile* profD = (TProfile*)rd.ias_p->ProfileY();
 
     TH1F* h_massFrom2D = (TH1F*) massFrom2D(rall,"all");
+               
+    rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
 
     TFile* ofile = new TFile("analysed.root","RECREATE");
 
@@ -117,6 +120,7 @@ void readHisto()
 
     rall.massFrom1DTemplatesEtaBinning->Write();
     rall.errMass->Write();
+    rall.Mass_errMass->Write();
 
     rc.stdDevIas_p->Write();
     profC->Write();
@@ -154,6 +158,9 @@ void readHisto()
 
     rall.ih_p->Write();
 
+    std::cout << 600*GetMassErr(1000,20,3.8,0.1,600,K,C) << std::endl;
+    std::cout << 600*GetMassErr(1000,4,3.8,0.1,600,K,C) << std::endl;
+    std::cout << 600*GetMassErr(1000,100,3.8,0.5,600,K,C) << std::endl;
     ofile->Close(); delete ofile;
 
 }

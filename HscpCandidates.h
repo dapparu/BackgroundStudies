@@ -29,13 +29,15 @@ float K(2.37), C(2.93);
 double GetMassErr (double P, double PErr, double dEdx, double dEdxErr, double M, double dEdxK, double dEdxC)
 {
    if (M < 0) return -1;
-   double KErr     = 0.2;
+   //double KErr     = 0.;
    //double CErr     = 0.4; UNUSED
    //double cErr     = 0.01; UNUSED
    double Criteria = dEdx - dEdxC;
-   double Fac1     = P*P/(2*M*dEdxK);
-   double Fac2     = pow(2*M*M*dEdxK/(P*P), 2);
-   double MassErr  = Fac1*sqrt(Fac2*pow(PErr/P, 2) + Criteria*Criteria*pow(KErr/dEdxK,2) + dEdxErr*dEdxErr + dEdxC*dEdxC);
+   //double Fac1     = P*P/(2*M*dEdxK);
+   //double Fac2     = pow(2*M*M*dEdxK/(P*P), 2);
+   //double MassErr  = Fac1*sqrt(Fac2*pow(PErr/P, 2) + Criteria*Criteria*pow(KErr/dEdxK,2) + dEdxErr*dEdxErr + dEdxC*dEdxC);
+
+   double MassErr = sqrt(pow(P*dEdxErr,2)/(4*dEdxK*Criteria)+(Criteria/dEdxK)*pow(PErr,2));
 
    if (std::isnan(MassErr) || std::isinf(MassErr)) MassErr = -1;
 
@@ -348,6 +350,7 @@ class region{
         TH3F* ih_p_eta;
         std::vector<double> VectOfBins_P_;
         TH1F* errMass;
+        TH2F* Mass_errMass;
 
 };
 
@@ -395,6 +398,8 @@ region::region()
     quantile01Ias_p    = 0;
 
     ih_p_eta            = 0;
+
+    Mass_errMass    = 0;
     initHisto();
 }   
 
@@ -493,9 +498,12 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
     mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
     massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
     massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
-    
 
-    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error",nmass,masslow,massup);
+
+    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
+
+    Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
+
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -545,6 +553,7 @@ region::~region()
     delete mass;
     delete massFrom1DTemplates;
     delete massFrom1DTemplatesEtaBinning;
+    delete Mass_errMass;
     delete c;
 }
 
@@ -639,7 +648,8 @@ void region::initHisto()
     massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
     
 
-    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error",nmass,masslow,massup);
+    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
+    Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -797,6 +807,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 if(ih->GetBinContent(k)<=0) continue;
                 //p=histoInterpolated(p);
                 float mom = p->GetBinCenter(j);
+                //if(mom>600) continue;
                 //float mom = vect[j];
                 //std::cout << "vetc: " << vect[j] << " center: " << p->GetBinCenter(j) << std::endl;
                 float dedx = ih->GetBinCenter(k);
@@ -819,6 +830,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                     massFrom1DTemplatesEtaBinning->SetBinContent(bin_mass,massFrom1DTemplatesEtaBinning->GetBinContent(bin_mass)+weight);
                     massFrom1DTemplatesEtaBinning->SetBinError(bin_mass,sqrt(pow(massFrom1DTemplatesEtaBinning->GetBinError(bin_mass),2)+pow(err_weight,2)));
                     errMass->Fill(mass_err);
+                    Mass_errMass->Fill(mass,mass_err);
                 }
             }
         }
@@ -896,6 +908,9 @@ void region::write()
     mass->Write();
     massFrom1DTemplates->Write();
     massFrom1DTemplatesEtaBinning->Write();
+    errMass->Write();
+    Mass_errMass->Write();
+
 
     c->Write();
 
