@@ -16,7 +16,7 @@ then run,
 ## Run the second part: read histograms & produce mass plots 
 
 Configure configFile_readHist.txt respecting dedicated columns
-````bash
+```bash
 root file       rebin   rebin eta   rebin Ih    rebin p     rebin mass  variable bins mass      variable bins p     threshold mass      threshold p
 ```
 rebin is a boolean in order to know if we want rebin the different distributions. Then we give the values of rebinning.
