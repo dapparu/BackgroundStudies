@@ -10,7 +10,7 @@ root file       Ias cut>    pt cut>     Ih cut>     momentum cut<       eta num.
 ```
 then run,
 ```bash
-`root -q -b HscpCandidates.C
+root -q -b HscpCandidates.C
 ```
 
 ## Run the second part: read histograms & produce mass plots 
@@ -24,7 +24,7 @@ For a variable rebinning, we give a threshold.
 
 then run,
 ```bash
-`root -q -b readHisto.C
+root -q -b readHisto.C
 ```
 
 ## Make plots
