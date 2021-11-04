@@ -43,77 +43,140 @@ TH1F* massFrom2D(const region& r,const std::string& name,int binx=1,int biny=1)
 
 void readHisto()
 {
-    TFile* ifile = new TFile("outfile_FullStat.root");
+
+    ifstream infile;
+    infile.open("./configFile_readHist.txt");
+    std::string line;
+    std::string filename;
+    int rebineta,rebinih,rebinp,rebinmass,thresholdP,thresholdMass;
+    bool rebin,varBinsP,varBinsMass;
+    while(std::getline(infile,line))
+    {
+        if(std::strncmp(line.c_str(),"#",1)==0) continue;
+        std::cout << line << std::endl;
+        std::stringstream ss(line);
+        ss >> filename >> rebin >> rebineta >> rebinih >> rebinp >> rebinmass >> varBinsP >> varBinsMass >> thresholdP >> thresholdMass;
+    }
+
+    std::string outfilename_;
+    if(!varBinsMass && !varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_analysed";
+    if(varBinsMass && varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
+    if(varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
+    if(varBinsMass) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_analysed";
+
+
+    TFile* ifile = new TFile((filename+".root").c_str());
+    //TFile* ifile = new TFile("outfile_FullStat.root");
+    //TFile* ifile = new TFile("outfile_invIso.root");
+    //TFile* ifile = new TFile("outfile_invMET.root");
 
     
     region rall;
     region rb;
     region rc;
     region rd;
-    bool bool_rebin=true;
-    loadHistograms(rall,ifile,"all",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
+    region rbc;
+    
+    bool bool_rebin=rebin;
+    
+    /*loadHistograms(rall,ifile,"all",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
     loadHistograms(rb,ifile,"regionB",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
     loadHistograms(rc,ifile,"regionC",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
     loadHistograms(rd,ifile,"regionD",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
+    */
+    
+    loadHistograms(rall,ifile,"all",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rb,ifile,"regionB",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rc,ifile,"regionC",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rd,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+
 
 
     invScale(rall.mass);
     std::vector<double> vectOfBins;
     std::vector<double> vectOfBins_P;
 
-    rebinning(rall.mass,80,vectOfBins);
-    rebinning((TH1F*)rall.eta_p->ProjectionX(),500,vectOfBins_P);
+    if(varBinsMass) rebinning(rall.mass,thresholdMass,vectOfBins);
+    if(varBinsP) rebinning((TH1F*)rall.eta_p->ProjectionX(),thresholdP,vectOfBins_P);
 
-    rall.eta_p->RebinX(5);
+    /*rall.eta_p->RebinX(5);
+    rb.eta_p->RebinX(5);
     rc.eta_p->RebinX(5);
-    rd.eta_p->RebinX(5);
-    
-
+    rd.eta_p->RebinX(5);*/
+   
+    rall.fillStdDev();
+    rb.fillStdDev();
     rc.fillStdDev();
-    rc.fillQuantile();
     rd.fillStdDev();
+    
+    rall.fillQuantile();
+    rb.fillQuantile();
+    rc.fillQuantile();
     rd.fillQuantile();
 
+    rall.rebinQuantiles(5);
+    rb.rebinQuantiles(5);
     rc.rebinQuantiles(5);
     rd.rebinQuantiles(5);
 
 
     //rall.rebinEtaP(vectOfBins_P);
 
-    //rall.VectOfBins_P_ = vectOfBins_P;
-    //rb.VectOfBins_P_ = vectOfBins_P;
-    //rc.VectOfBins_P_ = vectOfBins_P;
-    //rd.VectOfBins_P_ = vectOfBins_P;
+    if(varBinsP)
+    {
+        rall.VectOfBins_P_ = vectOfBins_P;
+        rb.VectOfBins_P_ = vectOfBins_P;
+        rc.VectOfBins_P_ = vectOfBins_P;
+        rd.VectOfBins_P_ = vectOfBins_P;
+    }
 
-    //for(int i=0;i<41;i++) vectOfBins.push_back(i*100);
-
-    //for(int i=0;i<vectOfBins.size();i++) std::cout << vectOfBins[i] << std::endl;
-
-    rall.mass = (TH1F*) rall.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
-
-    rall.massFrom1DTemplatesEtaBinning = (TH1F*) rall.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
+    if(varBinsMass)
+    {
+        rall.mass = (TH1F*) rall.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
+        rall.massFrom1DTemplatesEtaBinning = (TH1F*) rall.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
+    }
    
     rall.fillMassFrom1DTemplatesEtaBinning();
 
     etaReweighingP(rc.eta_p,rb.eta_p); 
 
     //rd.eta_p = rc.eta_p;
-    rd.ih_eta = rb.ih_eta;
+    //rd.ih_eta = rb.ih_eta;
+    
 
-    rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
+    //rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
 
-    rd.massFrom1DTemplatesEtaBinning = (TH1F*) rd.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
+    //rd.massFrom1DTemplatesEtaBinning = (TH1F*) rd.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
 
     rd.fillMassFrom1DTemplatesEtaBinning();
 
-    TProfile* profC = (TProfile*)rc.ias_p->ProfileY();
-    TProfile* profD = (TProfile*)rd.ias_p->ProfileY();
+
+    rbc = rd;
+    rbc.eta_p = rc.eta_p;
+    rbc.ih_eta = rb.ih_eta;
+
+    rbc.massFrom1DTemplatesEtaBinning->Reset();
+
+    rbc.fillMassFrom1DTemplatesEtaBinning();
+
+    TProfile* profXAll = (TProfile*)rall.ias_p->ProfileX();
+    TProfile* profXB = (TProfile*)rb.ias_p->ProfileX();
+    TProfile* profXC = (TProfile*)rc.ias_p->ProfileX();
+    TProfile* profXD = (TProfile*)rd.ias_p->ProfileX();
+
+    TProfile* profYAll = (TProfile*)rall.ias_p->ProfileY();
+    TProfile* profYB = (TProfile*)rb.ias_p->ProfileY();
+    TProfile* profYC = (TProfile*)rc.ias_p->ProfileY();
+    TProfile* profYD = (TProfile*)rd.ias_p->ProfileY();
 
     TH1F* h_massFrom2D = (TH1F*) massFrom2D(rall,"all");
                
     rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
 
-    TFile* ofile = new TFile("analysed.root","RECREATE");
+    TFile* ofile = new TFile((outfilename_+".root").c_str(),"RECREATE");
+    //TFile* ofile = new TFile("analysed_FullStat.root","RECREATE");
+    //TFile* ofile = new TFile("analysed_invIso.root","RECREATE");
+    //TFile* ofile = new TFile("analysed_invMET.root","RECREATE");
 
     rall.mass->Write();
     rall.eta_p->Write();
@@ -122,12 +185,29 @@ void readHisto()
     rall.errMass->Write();
     rall.Mass_errMass->Write();
 
+
+    rall.stdDevIas_p_y->Write();
+    rall.stdDevIas_p->Write();
+    profXAll->Write();
+    profYAll->Write();
+    rall.ias_p->Write();
+    rall.ias_pt->Write();
+
+
+    profXB->Write();
+    profYB->Write();
+
+    rc.stdDevIas_p_y->Write();
     rc.stdDevIas_p->Write();
-    profC->Write();
+    profXC->Write();
+    profYC->Write();
     rc.ias_p->Write();
     rc.ias_pt->Write();
+    
+    rd.stdDevIas_p_y->Write();
     rd.stdDevIas_p->Write();
-    profD->Write();
+    profXD->Write();
+    profYD->Write();
     rd.ias_p->Write();
     rd.ias_pt->Write();
 
@@ -139,7 +219,7 @@ void readHisto()
     plotting((TH1F*)rc.quantile90Ias_p,(TH1F*)rd.quantile90Ias_p,true,"quantile90_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.quantile99Ias_p,(TH1F*)rd.quantile99Ias_p,true,"quantile99_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.stdDevIas_p,(TH1F*)rd.stdDevIas_p,true,"stddev_ias_p_c_d","region C","region D")->Write();
-    plotting((TH1F*)profC,(TH1F*)profD,true,"profile_ias_p_c_d","region C","region D")->Write();
+    //plotting((TH1F*)profC,(TH1F*)profD,true,"profile_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.eta_p->ProjectionX(),(TH1F*)rd.eta_p->ProjectionX(),true,"p_c_d","region C","region D")->Write();
 
     plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,false,"mass1D_all","Observed","Prediction from 1D templates")->Write();
@@ -148,6 +228,9 @@ void readHisto()
     plotting(rall.mass,h_massFrom2D,true,"mass2D_all_simpleRatio","Observed","Prediction from 2D template")->Write();
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,false,"mass1D_regionD","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,true,"mass1D_regionD_simpleRatio","Observed","Prediction from 1D templates")->Write();
+    plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC","Observed","Prediction from 1D templates in B and C")->Write();
+    plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,true,"mass1D_regionBC_simpleRatio","Observed","Prediction from 1D templates in B and C")->Write();
+
 
     /*plotting(rall.mass,massFrom2D(rall,"all"),false,"mass2D_all","Observed","Prediction from 2D template - p: 10 GeV - dEdx: 0.1 MeV/cm")->Write();
     plotting(rall.mass,massFrom2D(rall,"all",2,2),false,"mass2D_all_IhP_rebin2_2","Observed","Prediction from 2D template - p: 20 GeV - dEdx: 0.2 MeV/cm")->Write();

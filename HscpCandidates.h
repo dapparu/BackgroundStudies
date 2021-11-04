@@ -20,6 +20,8 @@
 #include "vector"
 #include "vector"
 
+#include <iostream>
+#include <fstream>
 
 
 
@@ -292,9 +294,11 @@ class region{
         float massup;
         std::vector<float> vect;
         region();
+        region(std::string suffix,int& etabins,int& ihbins,int& pbins,int& massbins);
         region(std::string suffix,int nbins, float* xbins, std::vector<double> v_pbins, std::vector<float> vect);
         ~region();
         void initHisto();
+        void initHisto(int& etabins,int& ihbins,int& pbins,int& massbins);
         void rebinEtaP(std::vector<double> vect);
         void fill(float& eta, float& nhits, float&p, float& pt, float& ih, float& ias, float& m);
         void fillStdDev();
@@ -322,6 +326,7 @@ class region{
         TH1F* stdDevIh_p;
         TH1F* stdDevIas_pt;
         TH1F* stdDevIas_p;
+        TH1F* stdDevIas_p_y;
         TH1F* quantile99Ih_p;
         TH1F* quantile90Ih_p;
         TH1F* quantile70Ih_p;
@@ -371,6 +376,7 @@ region::region()
     stdDevIh_p  = 0;
     stdDevIas_pt= 0;
     stdDevIas_p = 0;
+    stdDevIas_p_y = 0;
     mass        = 0;
     massFrom1DTemplates = 0;
     massFrom1DTemplatesEtaBinning = 0;
@@ -401,7 +407,60 @@ region::region()
 
     Mass_errMass    = 0;
     initHisto();
-}   
+} 
+
+region::region(std::string suffix,int& etabins,int& ihbins,int& pbins,int& massbins)
+{
+
+    suffix_ = suffix;
+
+    ih_pt       = 0;
+    ias_pt      = 0;
+    ih_ias      = 0;
+    ih_nhits    = 0;
+    ias_nhits   = 0;
+    eta_pt      = 0;
+    eta_p       = 0;
+    nhits_pt    = 0;
+    eta_nhits   = 0;
+    ih_eta      = 0;
+    ih_p        = 0;
+    ias_p       = 0;
+    stdDevIh_p  = 0;
+    stdDevIas_pt= 0;
+    stdDevIas_p = 0;
+    stdDevIas_p_y = 0;
+    mass        = 0;
+    massFrom1DTemplates = 0;
+    massFrom1DTemplatesEtaBinning = 0;
+    eta_p_rebinned = 0;
+    quantile99Ih_p      = 0;
+    quantile90Ih_p      = 0;
+    quantile70Ih_p      = 0;
+    quantile50Ih_p      = 0;
+    quantile30Ih_p      = 0;
+    quantile10Ih_p      = 0;
+    quantile01Ih_p      = 0;
+    quantile99Ias_pt    = 0;
+    quantile90Ias_pt    = 0;
+    quantile70Ias_pt    = 0;
+    quantile50Ias_pt    = 0;
+    quantile30Ias_pt    = 0;
+    quantile10Ias_pt    = 0;
+    quantile01Ias_pt    = 0;
+    quantile99Ias_p    = 0;
+    quantile90Ias_p    = 0;
+    quantile70Ias_p    = 0;
+    quantile50Ias_p    = 0;
+    quantile30Ias_p    = 0;
+    quantile10Ias_p    = 0;
+    quantile01Ias_p    = 0;
+
+    ih_p_eta            = 0;
+
+    Mass_errMass    = 0;
+    initHisto(etabins,ihbins,pbins,massbins);
+} 
 
 region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v_pbins,std::vector<float> vect_)
 {
@@ -409,27 +468,27 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
     xbins = xbins_;
 
 
-    np = 2000;
+    //np = 2000;
     plow = 0;
     pup = 4000;
 
-    npt = 2000;
+    //npt = 2000;
     ptlow = 0;
     ptup = 4000;
 
-    nih = 500;
+    //nih = 500;
     ihlow = 0;
     ihup = 10;
 
-    nias = 500;
+    //nias = 500;
     iaslow = 0;
     iasup = 1;
 
-    neta = 120;
+    //neta = 120;
     etalow = -3;
     etaup = 3;
 
-    nmass = 2000;
+    //nmass = 2000;
     masslow = 0;
     massup = 4000;
 
@@ -462,6 +521,7 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
     //stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",v_pbins.size()-1,v_pbins.data());
     stdDevIas_pt = new TH1F(("stdDevIas_pt"+suffix).c_str(),";pt [GeV];StdDev I_{as}",npt,ptlow,ptup);
     stdDevIas_p  = new TH1F(("stdDevIas_p"+suffix).c_str(),";p [GeV];StdDev I_{as}",np,plow,pup);
+    stdDevIas_p_y  = new TH1F(("stdDevIas_p_y"+suffix).c_str(),";I_{as};StdDev p [GeV]",nias,iaslow,iasup);
     
     /*quantile99Ih_p = new TH1F(("quantile99Ih_p"+suffix).c_str(),";p [GeV];0.99-quantile Ih [MeV/cm]",np,xp);
     quantile90Ih_p = new TH1F(("quantile90Ih_p"+suffix).c_str(),";p [GeV];0.90-quantile Ih [MeV/cm]",np,xp);
@@ -528,6 +588,7 @@ region::~region()
     delete stdDevIh_p;
     delete stdDevIas_pt;
     delete stdDevIas_p;
+    delete stdDevIas_p_y;
     delete quantile01Ih_p;
     delete quantile10Ih_p;
     delete quantile30Ih_p;
@@ -567,9 +628,9 @@ void region::initHisto()
     ptlow = 0;
     ptup = 4000;
 
-    nih = 500;
+    nih = 1000;
     ihlow = 0;
-    ihup = 10;
+    ihup = 20;
 
     nias = 500;
     iaslow = 0;
@@ -610,6 +671,7 @@ void region::initHisto()
     //stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",v_pbins.size()-1,v_pbins.data());
     stdDevIas_pt = new TH1F(("stdDevIas_pt"+suffix).c_str(),";pt [GeV];StdDev I_{as}",npt,ptlow,ptup);
     stdDevIas_p  = new TH1F(("stdDevIas_p"+suffix).c_str(),";p [GeV];StdDev I_{as}",np,plow,pup);
+    stdDevIas_p_y  = new TH1F(("stdDevIas_p_y"+suffix).c_str(),";I_{as};StdDev p [GeV]",nias,iaslow,iasup);
     
     /*quantile99Ih_p = new TH1F(("quantile99Ih_p"+suffix).c_str(),";p [GeV];0.99-quantile Ih [MeV/cm]",np,xp);
     quantile90Ih_p = new TH1F(("quantile90Ih_p"+suffix).c_str(),";p [GeV];0.90-quantile Ih [MeV/cm]",np,xp);
@@ -655,6 +717,107 @@ void region::initHisto()
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
 
 }
+
+void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
+{
+    np = pbins;
+    plow = 0;
+    pup = 4000;
+
+    npt = pbins;
+    ptlow = 0;
+    ptup = 4000;
+
+    nih = ihbins;
+    ihlow = 0;
+    ihup = 20;
+
+    nias = ihbins;
+    iaslow = 0;
+    iasup = 1;
+
+    neta = etabins;
+    etalow = -3;
+    etaup = 3;
+
+    nmass = massbins;
+    masslow = 0;
+    massup = 4000;
+
+
+    std::string suffix = suffix_;
+
+    c = new TCanvas(suffix.c_str(),"");
+
+    ih_p_eta = new TH3F(("ih_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{h} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nih,ihlow,ihup);
+
+    ih_pt = new TH2F(("ih_pt"+suffix).c_str(),";pt [GeV];I_{h} [MeV/cm]",npt,ptlow,ptup,nih,ihlow,ihup);
+    ias_pt = new TH2F(("ias_pt"+suffix).c_str(),";pt [GeV];I_{as}",npt,ptlow,ptup,nias,iaslow,iasup);
+    ih_ias = new TH2F(("ias_ih"+suffix).c_str(),";I_{as};I_{h} [MeV/cm]",nias,iaslow,iasup,nih,ihlow,ihup);
+    ih_nhits = new TH2F(("ih_nhits"+suffix).c_str(),";nhits;I_{h} [MeV/cm]",20,0,20,nih,ihlow,ihup);
+    ias_nhits = new TH2F(("ias_nhits"+suffix).c_str(),";nhits;I_{as}",20,0,20,nias,iaslow,iasup);
+    eta_pt = new TH2F(("eta_pt"+suffix).c_str(),";pt [GeV];#eta",npt,ptlow,ptup,neta,etalow,etaup);
+    eta_p = new TH2F(("eta_p"+suffix).c_str(),";p [GeV];#eta",np,plow,pup,neta,etalow,etaup);
+    eta_p_rebinned = 0;
+    //eta_p = new TH2F(("eta_p"+suffix).c_str(),";p [GeV];#eta",v_pbins.size()-1,v_pbins.data(),60,-3,3);
+    nhits_pt = new TH2F(("nhits_pt"+suffix).c_str(),";pt [GeV];nhits",npt,ptlow,ptup,20,0,20);
+    eta_nhits = new TH2F(("eta_nhits"+suffix).c_str(),";nhits;#eta",20,0,20,neta,etalow,etaup);
+    ih_eta = new TH2F(("ih_eta"+suffix).c_str(),";#eta;I_{h} [MeV/cm]",neta,etalow,etaup,nih,ihlow,ihup);
+    ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+    //ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",v_pbins.size()-1,v_pbins.data(),100,0,10);
+    ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",np,plow,pup,nias,iaslow,iasup);
+    //ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",v_pbins.size()-1,v_pbins.data(),100,0,1);
+    stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",np,plow,pup);
+    //stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",v_pbins.size()-1,v_pbins.data());
+    stdDevIas_pt = new TH1F(("stdDevIas_pt"+suffix).c_str(),";pt [GeV];StdDev I_{as}",npt,ptlow,ptup);
+    stdDevIas_p  = new TH1F(("stdDevIas_p"+suffix).c_str(),";p [GeV];StdDev I_{as}",np,plow,pup);
+    stdDevIas_p_y  = new TH1F(("stdDevIas_p_y"+suffix).c_str(),";I_{as};StdDev p [GeV]",nias,iaslow,iasup);
+    
+    /*quantile99Ih_p = new TH1F(("quantile99Ih_p"+suffix).c_str(),";p [GeV];0.99-quantile Ih [MeV/cm]",np,xp);
+    quantile90Ih_p = new TH1F(("quantile90Ih_p"+suffix).c_str(),";p [GeV];0.90-quantile Ih [MeV/cm]",np,xp);
+    quantile70Ih_p = new TH1F(("quantile70Ih_p"+suffix).c_str(),";p [GeV];0.70-quantile Ih [MeV/cm]",np,xp);
+    quantile50Ih_p = new TH1F(("quantile50Ih_p"+suffix).c_str(),";p [GeV];0.50-quantile Ih [MeV/cm]",np,xp);
+    quantile30Ih_p = new TH1F(("quantile30Ih_p"+suffix).c_str(),";p [GeV];0.30-quantile Ih [MeV/cm]",np,xp);
+    quantile01Ih_p = new TH1F(("quantile01Ih_p"+suffix).c_str(),";p [GeV];0.01-quantile Ih [MeV/cm]",np,xp);*/
+
+    quantile99Ih_p = new TH1F(("quantile99Ih_p"+suffix).c_str(),";p [GeV];0.99-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile90Ih_p = new TH1F(("quantile90Ih_p"+suffix).c_str(),";p [GeV];0.90-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile70Ih_p = new TH1F(("quantile70Ih_p"+suffix).c_str(),";p [GeV];0.70-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile50Ih_p = new TH1F(("quantile50Ih_p"+suffix).c_str(),";p [GeV];0.50-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile30Ih_p = new TH1F(("quantile30Ih_p"+suffix).c_str(),";p [GeV];0.30-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile10Ih_p = new TH1F(("quantile10Ih_p"+suffix).c_str(),";p [GeV];0.10-quantile Ih [MeV/cm]",np,plow,pup);
+    quantile01Ih_p = new TH1F(("quantile01Ih_p"+suffix).c_str(),";p [GeV];0.01-quantile Ih [MeV/cm]",np,plow,pup);
+
+    quantile99Ias_pt = new TH1F(("quantile99Ias_pt"+suffix).c_str(),";pt [GeV];0.99-quantile I_{as}",npt,ptlow,ptup);
+    quantile90Ias_pt = new TH1F(("quantile90Ias_pt"+suffix).c_str(),";pt [GeV];0.90-quantile I_{as}",npt,ptlow,ptup);
+    quantile70Ias_pt = new TH1F(("quantile70Ias_pt"+suffix).c_str(),";pt [GeV];0.70-quantile I_{as}",npt,ptlow,ptup);
+    quantile50Ias_pt = new TH1F(("quantile50Ias_pt"+suffix).c_str(),";pt [GeV];0.50-quantile I_{as}",npt,ptlow,ptup);
+    quantile30Ias_pt = new TH1F(("quantile30Ias_pt"+suffix).c_str(),";pt [GeV];0.30-quantile I_{as}",npt,ptlow,ptup);
+    quantile10Ias_pt = new TH1F(("quantile10Ias_pt"+suffix).c_str(),";pt [GeV];0.10-quantile I_{as}",npt,ptlow,ptup);
+    quantile01Ias_pt = new TH1F(("quantile01Ias_pt"+suffix).c_str(),";pt [GeV];0.01-quantile I_{as}",npt,ptlow,ptup);
+
+    quantile99Ias_p = new TH1F(("quantile99Ias_p"+suffix).c_str(),";p [GeV];0.99-quantile I_{as}",np,plow,pup);
+    quantile90Ias_p = new TH1F(("quantile90Ias_p"+suffix).c_str(),";p [GeV];0.90-quantile I_{as}",np,plow,pup);
+    quantile70Ias_p = new TH1F(("quantile70Ias_p"+suffix).c_str(),";p [GeV];0.70-quantile I_{as}",np,plow,pup);
+    quantile50Ias_p = new TH1F(("quantile50Ias_p"+suffix).c_str(),";p [GeV];0.50-quantile I_{as}",np,plow,pup);
+    quantile30Ias_p = new TH1F(("quantile30Ias_p"+suffix).c_str(),";p [GeV];0.30-quantile I_{as}",np,plow,pup);
+    quantile10Ias_p = new TH1F(("quantile10Ias_p"+suffix).c_str(),";p [GeV];0.10-quantile I_{as}",np,plow,pup);
+    quantile01Ias_p = new TH1F(("quantile01Ias_p"+suffix).c_str(),";p [GeV];0.01-quantile I_{as}",np,plow,pup);
+
+    
+    mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
+    massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
+    massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
+    
+
+    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
+    Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
+    //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
+    //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
+    //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
+
+}
+
 
 void region::setBins(int nb, float* b)
 {
@@ -706,7 +869,7 @@ void region::fillStdDev()
         stdDevIas_pt->SetBinError(i,stddeverr);
     }
     stdDevIas_pt->Rebin(20);
-    for(int i=0;i<ias_pt->GetNbinsX();i++)
+    for(int i=0;i<ias_p->GetNbinsX();i++)
     {
         float stddev=ias_p->ProjectionY("",i,i+1)->GetStdDev();
         float stddeverr=ias_p->ProjectionY("",i,i+1)->GetStdDevError();
@@ -714,7 +877,14 @@ void region::fillStdDev()
         stdDevIas_p->SetBinError(i,stddeverr);
     }
     stdDevIas_p->Rebin(20);
-
+    for(int j=0;j<ias_p->GetNbinsY();j++)
+    {
+        float stddev=ias_p->ProjectionX("",j,j+1)->GetStdDev();
+        float stddeverr=ias_p->ProjectionX("",j,j+1)->GetStdDevError();
+        stdDevIas_p_y->SetBinContent(j,stddev);
+        stdDevIas_p_y->SetBinError(j,stddeverr);
+    }
+    stdDevIas_p_y->Rebin(5);
 }
 
 void region::fillQuantile()
@@ -822,7 +992,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 float err_weight = weight*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
                 float mass = GetMass(mom,dedx,K,C);
                 int bin_mass = massFrom1DTemplatesEtaBinning->FindBin(mass);
-                float mass_err = mass*GetMassErr(mom,p->GetBinWidth(j),dedx,ih->GetBinWidth(k),mass,K,C); 
+                float mass_err = mass*GetMassErr(mom,p->GetBinWidth(j)/sqrt(12),dedx,ih->GetBinWidth(k)/sqrt(12),mass,K,C); 
                 if(prob>=0)
                 {
                     // first version : wrong
@@ -883,6 +1053,7 @@ void region::write()
     stdDevIh_p->Write();
     stdDevIas_pt->Write();
     stdDevIas_p->Write();
+    stdDevIas_p_y->Write();
     quantile01Ih_p->Write();
     quantile10Ih_p->Write();
     quantile30Ih_p->Write();
@@ -946,6 +1117,18 @@ public :
     TH2F* regD_p; 
     TH2F* regD_mass;
 
+    float iascut_;
+    float ptcut_;
+    float ihcut_;
+    float pcut_;
+    int etabins_;
+    int ihbins_;
+    int pbins_;
+    int massbins_;
+    bool invIso_;
+    bool invMET_;
+
+    std::string outfilename_;
    
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
@@ -1128,30 +1311,70 @@ public :
 #endif
 
 #ifdef HscpCandidates_cxx
+
+
+
 HscpCandidates::HscpCandidates(TTree *tree) : fChain(0) 
 {
+    ifstream ifile;
+    ifile.open("./configFile.txt");
+    std::string line;
+    std::string filename;
+    float iascut,ptcut,ihcut,pcut;
+    int etabins,ihbins,pbins,massbins;
+    bool invIso, invMET;
+
+    while(std::getline(ifile,line))
+    {
+        if(std::strncmp(line.c_str(),"#",1)==0) continue;
+        std::cout << line << std::endl;
+        std::stringstream ss(line);
+        ss >> filename >> iascut >> ptcut >> ihcut >> pcut >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET;
+    }
+    iascut_ = iascut;
+    ptcut_ = ptcut;
+    ihcut_ = ihcut;
+    pcut_ = pcut;
+    etabins_ = etabins;
+    ihbins_ = ihbins;
+    pbins_ = pbins;
+    massbins_ = massbins;
+    invIso_ = invIso;
+    invMET_ = invMET;
+
+    outfilename_ = "outfile_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
+
+    std::cout << outfilename_ << std::endl;
+
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
    if (tree == 0) {
       //TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("histoMET_TkOnly_UL2017C_v2-4_pt50.root");
       //TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("histoSingleMu_TkOnly_UL2017C_v2-4_tree.root");
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root");
+      //TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root");
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
       if (!f || !f->IsOpen()) {
          //f = new TFile("histoMET_TkOnly_UL2017C_v2-4_pt50.root");
          //f = new TFile("histoSingleMu_TkOnly_UL2017C_v2-4_tree.root");
-         f = new TFile("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root");
+         //f = new TFile("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root");
+         f = new TFile(filename.c_str());
       }
       //TDirectory * dir = (TDirectory*)f->Get("histoMET_TkOnly_UL2017C_v2-4_pt50.root:/analyzer/Data_2017_UL");
       //TDirectory * dir = (TDirectory*)f->Get("histoSingleMu_TkOnly_UL2017C_v2-4_tree.root:/analyzer/Data_2017_UL");
-      TDirectory * dir = (TDirectory*)f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL");
+      //TDirectory * dir = (TDirectory*)f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL");
+      TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
       dir->GetObject("HscpCandidates",tree);
 
 
-      regD_ih = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/RegionD_I");
+      regD_ih = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_I").c_str());
+      regD_p = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_P").c_str());
+      regD_mass = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/Mass").c_str());
+      
+      //regD_ih = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/RegionD_I");
       //regD_ih = (TH2F*) f->Get("histoMET_TkOnly_UL2017C_v2-4_pt50.root:/analyzer/Data_2017_UL/RegionD_I");
-      regD_p = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/RegionD_P");
+      //regD_p = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/RegionD_P");
       //regD_p = (TH2F*) f->Get("histoMET_TkOnly_UL2017C_v2-4_pt50.root:/analyzer/Data_2017_UL/RegionD_P");
-      regD_mass = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/Mass");
+      //regD_mass = (TH2F*) f->Get("histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root:/analyzer/Data_2017_UL/Mass");
       //regD_mass = (TH2F*) f->Get("histoMET_TkOnly_UL2017C_v2-4_pt50.root:/analyzer/Data_2017_UL/Mass");
 
       //dir->GetObject("RegionD_I",regD_ih);

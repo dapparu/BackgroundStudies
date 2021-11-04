@@ -384,7 +384,7 @@ void HscpCandidates::Loop()
    int nbins = v_bins.size()-1;
    float* xbins = v_bins.data();
 
-   region rAll("_all",nbins,xbins,p_bins,vector_bin_gr);
+   /*region rAll("_all",nbins,xbins,p_bins,vector_bin_gr);
    region rA("_regionA",nbins,xbins,p_bins,vector_bin_gr);
    region rB("_regionB",nbins,xbins,p_bins,vector_bin_gr);
    region rC("_regionC",nbins,xbins,p_bins,vector_bin_gr);
@@ -393,14 +393,25 @@ void HscpCandidates::Loop()
    region rEta1("_eta1",nbins,xbins,p_bins,vector_bin_gr);
    region rEta2("_eta2",nbins,xbins,p_bins,vector_bin_gr);
    region rEta10("_eta10",nbins,xbins,p_bins,vector_bin_gr);
-   region rDcutIh("_regD_CutIh4p5",nbins,xbins,p_bins,vector_bin_gr);
+   region rDcutIh("_regD_CutIh4p5",nbins,xbins,p_bins,vector_bin_gr);*/
+
+   region rAll("_all",etabins_,ihbins_,pbins_,massbins_);
+   region rA("_regionA",etabins_,ihbins_,pbins_,massbins_);
+   region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
+   region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
+   region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
 
 
    
    //cutindex=19 pt=60 ias=0.025
 
-   double pt_cut=60.;
-   double ias_cut=0.025;
+   //double pt_cut=60.;
+   //double ias_cut=0.025;
+   
+   
+   double pt_cut=ptcut_;
+   double ias_cut=iascut_;
+   
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
       Long64_t ientry = LoadTree(jentry);
@@ -412,12 +423,14 @@ void HscpCandidates::Loop()
       if(Hscp<1) continue;
       if(Pt->size()<1) continue;
 
+      if(invMET_ && RecoPFMET>100) continue;
 
       int i=0;
       for(int i=0; i<Mass->size(); i++)
       {
-          if(!passPreselection->at(i)) continue;
-           
+          if(invIso_ && !passPreselection_noIsolation_noIh->at(i)) continue;
+          if(!invIso_ && !passPreselection->at(i)) continue;
+
           float pt = Pt->at(i);
           if(pt<50) continue;
           float ih = Ih->at(i);
@@ -429,13 +442,17 @@ void HscpCandidates::Loop()
           float p = pt*cosh(Eta);
           float massT = Mass->at(i);
 
-          //if(p>1000) continue;
+          float isotk = iso_TK->at(i);
+          float isocalo = iso_ECAL->at(i)+iso_HCAL->at(i);
+
+
+          if(invIso_ && (isotk<50 || isocalo<0.3)) continue;
 
           //if(abs(Eta)>0.4) continue;
           
-          if(ih<C) continue;
+          if(ih<ihcut_) continue;
 
-          if(p>4000) continue;
+          if(p>pcut_ && pcut_>0) continue;
 
           distribPt->Fill(pt);
           distribIas->Fill(ias);
@@ -582,8 +599,13 @@ void HscpCandidates::Loop()
    crossHistos(ih_p_fromBCrew,(TH1F*)rC.eta_p->ProjectionX(),(TH1F*)rB.ih_eta->ProjectionY());
    crossHistosEtaBinning(ih_p_fromBCrewbinning,rC.eta_p,rB.ih_eta);*/
    
-   TFile* outfile = new TFile("outfile.root","RECREATE");
-/*
+   //TFile* outfile = new TFile("outfile_nocut.root","RECREATE");
+   ofstream ofile((outfilename_+"_normalisations.txt").c_str());
+
+   TFile* outfile = new TFile((outfilename_+".root").c_str(),"RECREATE");
+
+   
+   /*
 //      plotting(regD_mass_proj,rD.mass,true,"obs")->Write();
       plotting(rD.mass,pred_mass,false,"predMasstree")->Write();
       plotting(regD_mass_proj,pred_mass,false,"predMassD")->Write();
@@ -710,7 +732,7 @@ void HscpCandidates::Loop()
       rB.write();
       rC.write();
       rD.write();
-      rDcutIh.write();
+      //rDcutIh.write();
       //rCutIh.write();
       //rEta1.write();
       //rEta2.write();
@@ -726,5 +748,15 @@ void HscpCandidates::Loop()
       std::cout << "nB: " << nB << " " << 100*(float)nB/(float)ntot << " %" << std::endl;
       std::cout << "nC: " << nC << " " << 100*(float)nC/(float)ntot << " %" << std::endl;
       std::cout << "nD: " << nD << " " << 100*(float)nD/(float)ntot << " %" << std::endl;
+
+
+      ofile << "ntot: " << ntot << std::endl;
+      ofile << "nA: " << nA << " " << 100*(float)nA/(float)ntot << " %" << std::endl;
+      ofile << "nB: " << nB << " " << 100*(float)nB/(float)ntot << " %" << std::endl;
+      ofile << "nC: " << nC << " " << 100*(float)nC/(float)ntot << " %" << std::endl;
+      ofile << "nD: " << nD << " " << 100*(float)nD/(float)ntot << " %" << std::endl;
+
+
+      ofile.close();
 
 }
