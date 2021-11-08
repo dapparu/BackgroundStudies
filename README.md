@@ -9,7 +9,8 @@ Configure configFile.txt respecting dedicated columns
 root file   Ias cut>    pt cut>     Ih cut>     momentum cut<       eta num. of bins    Ih num. of bins       p num. of bins      mass num. of bins     invIso  invMET 
 ```
 where you choose the cut values on Ias, pt and Ih. You can also cut on momentum (avoid overflow problem). 
-invIso and invMET correspond to a boolean which set inverse cuts on isolation or MET (in order to be sure to not have any signal). 
+invIso and invMET correspond to a boolean which set inverse cuts on isolation or MET (in order to be sure to not have any signal).
+Lines starting with # are skipped. 
 then run,
 ```bash
 root -l -q -b HscpCandidates.C
@@ -31,4 +32,4 @@ root -l -q -b readHisto.C
 
 ## Make plots
 
-Use the script makePlots.py in order to produce automatically some plots.
+Use the script makePlots.py in order to produce automatically some plots (use the rootprint command).
