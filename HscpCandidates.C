@@ -34,54 +34,9 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
 
 
 
-void crossHistos(TH2F* res, TH1F* h1, TH1F* h2)
-{
-    scale(h1); scale(h2);
-    for(int i=0;i<h1->GetNbinsX();i++)
-    {
-        for(int j=0;j<h2->GetNbinsX();j++)
-        {   
-            double prob = h1->GetBinContent(i)*h2->GetBinContent(j);
-            res->SetBinContent(i,j,prob);
-        }
-    }
-}
 
-void crossHistosEtaBinning(TH2F* res, TH2F* eta_p, TH2F* ih_eta)
-{
-    TH1F* eta = (TH1F*) ih_eta->ProjectionX();
-    for(int i=1;i<eta->GetNbinsX();i++)
-    {
-        TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i);
-        TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i);
-        scale(p);
-        for(int j=1;j<p->GetNbinsX()+1;j++)
-        {
-            for(int k=1;k<ih->GetNbinsX()+1;k++)
-            {
-                float prob = p->GetBinContent(j) * ih->GetBinContent(k);
-                if(prob<=0 || isnan((float)prob)) continue;
-                //std::cout << p->GetBinContent(j) << std::endl;
-                res->SetBinContent(i,j,prob);
-            }
-        }
-        delete p;
-        delete ih;
-    }
-    res->Sumw2();
-}
 
-void mapOfDifferences(TH2F* res, TH2F* h1, TH2F* h2)
-{
-    for(int i=0;i<h1->GetNbinsX();i++)
-    {
-        for(int j=0;j<h1->GetNbinsY();j++)
-        {
-            double diff = h1->GetBinContent(i,j)>0 ? (h2->GetBinContent(i,j))/h1->GetBinContent(i,j) : 0;
-            res->SetBinContent(i,j,diff);
-        }
-    }
-}
+
 
 void predMass(TH1F* res, TH1F* h_p, TH1F* h_ih, float norm=0)
 {

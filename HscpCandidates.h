@@ -268,6 +268,83 @@ void predMassEtaBinning(TH1F* res, TH2F* eta_p, TH2F* ih_eta, float norm=0)
     //scale(massFrom1DTemplatesEtaBinning);
 }
 
+void crossHistos(TH2F* res, TH1F* h1, TH1F* h2)
+{
+    scale(h1); 
+    for(int i=0;i<h1->GetNbinsX()+1;i++)
+    {
+        for(int j=0;j<h2->GetNbinsX()+1;j++)
+        {   
+
+            float mom = h1->GetBinCenter(i);
+            float dedx = h2->GetBinCenter(j);
+            double prob = h1->GetBinContent(i)*h2->GetBinContent(j);
+            if(prob>=0)
+            {
+                res->Fill(mom,dedx,prob);
+                /*for(int l=0;l<prob;l++)
+                {
+                    res->Fill(mom,dedx);
+                }*/
+            }
+        }
+    }
+    res->Sumw2();
+}
+
+void crossHistosEtaBinning(TH2F* res, TH2F* eta_p, TH2F* ih_eta)
+{
+    TH1F* eta = (TH1F*) ih_eta->ProjectionX();
+    for(int i=0;i<eta->GetNbinsX()+1;i++)
+    {
+        TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i+1);
+        TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i+1);
+        scale(p);
+        for(int j=0;j<p->GetNbinsX()+1;j++)
+        {
+            for(int k=0;k<ih->GetNbinsX()+1;k++)
+            {
+                float mom = p->GetBinCenter(j);
+                float dedx = ih->GetBinCenter(k);
+                float prob = p->GetBinContent(j) * ih->GetBinContent(k);
+                float err_prob = prob*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
+                if(prob>=0)
+                {
+                    //res->Fill(mom,dedx,prob);
+                    /*for(int l=0;l<prob;l++)
+                    {   
+                        res->Fill(mom,dedx);
+                    }*/
+                    res->SetBinContent(j,k,res->GetBinContent(j,k)+prob);
+                    res->SetBinError(j,k,sqrt(pow(res->GetBinError(j,k),2)+pow(err_prob,2)));
+
+                }
+                //std::cout << p->GetBinContent(j) << std::endl;
+                //res->SetBinContent(i,j,prob);
+            }
+        }
+        delete p;
+        delete ih;
+    }
+    res->Sumw2();
+}
+
+void mapOfDifferences(TH2F* res, TH2F* h1, TH2F* h2)
+{
+    for(int i=0;i<h1->GetNbinsX();i++)
+    {
+        for(int j=0;j<h1->GetNbinsY();j++)
+        {
+            //double diff = h1->GetBinContent(i,j)>0 ? (h2->GetBinContent(i,j))/h1->GetBinContent(i,j) : 0;
+            //
+            double err=h1->GetBinError(i,j);
+            //double diff = h2->GetBinContent(i,j)-h1->GetBinContent(i,j);
+            double diff=h1->GetBinContent(i,j)>0?abs((h2->GetBinContent(i,j)-h1->GetBinContent(i,j))/h1->GetBinContent(i,j)):0;
+            if(diff>=0) res->SetBinContent(i,j,diff);
+        }
+    }
+}
+
 class region{
 
     public:
@@ -306,6 +383,7 @@ class region{
         void fillMassFrom1DTemplates();
         void fillMassFrom1DTemplatesEtaBinning();
         void plotMass();
+        void cross1D();
         void write();
         void setBins(int nb,float* b);
         void rebinQuantiles(int rebin);
@@ -356,6 +434,7 @@ class region{
         std::vector<double> VectOfBins_P_;
         TH1F* errMass;
         TH2F* Mass_errMass;
+        TH2F* cross1Dtemplates;
 
 };
 
@@ -406,6 +485,7 @@ region::region()
     ih_p_eta            = 0;
 
     Mass_errMass    = 0;
+    cross1Dtemplates= 0;
     initHisto();
 } 
 
@@ -459,6 +539,7 @@ region::region(std::string suffix,int& etabins,int& ihbins,int& pbins,int& massb
     ih_p_eta            = 0;
 
     Mass_errMass    = 0;
+    cross1Dtemplates= 0;
     initHisto(etabins,ihbins,pbins,massbins);
 } 
 
@@ -563,6 +644,8 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
 
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
+    
+    cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
 
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -572,7 +655,7 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
 
 region::~region()
 {
-    delete ih_p_eta;
+    /*delete ih_p_eta;
     delete ih_pt;
     delete ias_pt;
     delete ih_ias;
@@ -615,7 +698,8 @@ region::~region()
     delete massFrom1DTemplates;
     delete massFrom1DTemplatesEtaBinning;
     delete Mass_errMass;
-    delete c;
+    delete cross1Dtemplates;
+    delete c;*/
 }
 
 void region::initHisto()
@@ -712,6 +796,7 @@ void region::initHisto()
 
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
+    cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -812,6 +897,7 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
+    cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -860,7 +946,7 @@ void region::fillStdDev()
         stdDevIh_p->SetBinContent(i,stddev);
         stdDevIh_p->SetBinError(i,stddeverr);
     }
-    stdDevIh_p->Rebin(20);
+    //stdDevIh_p->Rebin(20);
     for(int i=0;i<ias_pt->GetNbinsX();i++)
     {
         float stddev=ias_pt->ProjectionY("",i,i+1)->GetStdDev();
@@ -868,7 +954,7 @@ void region::fillStdDev()
         stdDevIas_pt->SetBinContent(i,stddev);
         stdDevIas_pt->SetBinError(i,stddeverr);
     }
-    stdDevIas_pt->Rebin(20);
+    //stdDevIas_pt->Rebin(20);
     for(int i=0;i<ias_p->GetNbinsX();i++)
     {
         float stddev=ias_p->ProjectionY("",i,i+1)->GetStdDev();
@@ -876,7 +962,7 @@ void region::fillStdDev()
         stdDevIas_p->SetBinContent(i,stddev);
         stdDevIas_p->SetBinError(i,stddeverr);
     }
-    stdDevIas_p->Rebin(20);
+    //stdDevIas_p->Rebin(20);
     for(int j=0;j<ias_p->GetNbinsY();j++)
     {
         float stddev=ias_p->ProjectionX("",j,j+1)->GetStdDev();
@@ -884,7 +970,7 @@ void region::fillStdDev()
         stdDevIas_p_y->SetBinContent(j,stddev);
         stdDevIas_p_y->SetBinError(j,stddeverr);
     }
-    stdDevIas_p_y->Rebin(5);
+    //stdDevIas_p_y->Rebin(5);
 }
 
 void region::fillQuantile()
@@ -967,6 +1053,8 @@ void region::fillMassFrom1DTemplatesEtaBinning()
     {
         TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i);
         if(VectOfBins_P_.size()>1) p = (TH1F*)p->Rebin(VectOfBins_P_.size()-1,"",VectOfBins_P_.data());
+        //ih_p_eta->GetYaxis()->SetRange(0,ih_p_eta->GetYaxis()->FindBin(500));
+        //TH1F* ih = (TH1F*)((TH2F*)ih_p_eta->Project3D("zx"))->ProjectionY("proj_ih_p500",i,i);
         TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i);
         scale(p); //
         for(int j=1;j<p->GetNbinsX();j++)
@@ -1011,6 +1099,11 @@ void region::fillMassFrom1DTemplatesEtaBinning()
     //scale(massFrom1DTemplatesEtaBinning);
 }
 
+void region::cross1D()
+{
+    crossHistosEtaBinning(cross1Dtemplates,eta_p,ih_eta);
+}
+
 void region::plotMass()
 {
     c->Divide(1,2);
@@ -1037,6 +1130,7 @@ void region::plotMass()
 void region::write()
 {
     plotMass();
+    cross1D();
     ih_p_eta->Write();
     ih_pt->Write();
     ias_pt->Write();
@@ -1049,6 +1143,7 @@ void region::write()
     eta_nhits->Write();
     ih_eta->Write();
     ih_p->Write();
+    cross1Dtemplates->Write();
     ias_p->Write();
     stdDevIh_p->Write();
     stdDevIas_pt->Write();

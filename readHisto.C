@@ -13,6 +13,7 @@
 
 void loadHistograms(region& r, TFile* f, const std::string& regionName, bool bool_rebin=true, int rebineta=1, int rebinp=1, int rebinih=1, int rebinmass=1)
 {
+    r.ih_p_eta  = (TH3F*)f->Get(("ih_p_eta_"+regionName).c_str())->Clone(); if(bool_rebin) r.ih_p_eta->Rebin3D(rebineta,rebinp,rebinih);
     r.eta_p     = (TH2F*)f->Get(("eta_p_"+regionName).c_str())->Clone(); if(bool_rebin) r.eta_p->Rebin2D(rebinp,rebineta);
     r.ih_eta    = (TH2F*)f->Get(("ih_eta_"+regionName).c_str())->Clone(); if(bool_rebin) r.ih_eta->Rebin2D(rebineta,rebinih);
     r.ih_p      = (TH2F*)f->Get(("ih_p_"+regionName).c_str())->Clone(); if(bool_rebin) r.ih_p->Rebin2D(rebinp,rebinih);
@@ -55,20 +56,20 @@ void readHisto()
         if(std::strncmp(line.c_str(),"#",1)==0) continue;
         std::cout << line << std::endl;
         std::stringstream ss(line);
-        ss >> filename >> rebin >> rebineta >> rebinih >> rebinp >> rebinmass >> varBinsP >> varBinsMass >> thresholdP >> thresholdMass;
+        ss >> filename >> rebin >> rebineta >> rebinih >> rebinp >> rebinmass >> varBinsMass >> varBinsP >> thresholdMass >> thresholdP;
     }
 
     std::string outfilename_;
     if(!varBinsMass && !varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_analysed";
-    if(varBinsMass && varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
-    if(varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
-    if(varBinsMass) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_analysed";
+    else if(varBinsMass && varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
+    else if(varBinsP) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_pThresholdVarBins"+to_string(thresholdP)+"_analysed";
+    else if(varBinsMass) outfilename_ = filename+"_rebinEta"+to_string(rebineta)+"_rebinIh"+to_string(rebinih)+"_rebinP"+to_string(rebinp)+"_rebinMass"+to_string(rebinmass)+"_massThresholdVarBins"+to_string(thresholdMass)+"_analysed";
 
+
+    std::cout << outfilename_ << std::endl;
 
     TFile* ifile = new TFile((filename+".root").c_str());
-    //TFile* ifile = new TFile("outfile_FullStat.root");
-    //TFile* ifile = new TFile("outfile_invIso.root");
-    //TFile* ifile = new TFile("outfile_invMET.root");
+
 
     
     region rall;
@@ -79,11 +80,6 @@ void readHisto()
     
     bool bool_rebin=rebin;
     
-    /*loadHistograms(rall,ifile,"all",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
-    loadHistograms(rb,ifile,"regionB",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
-    loadHistograms(rc,ifile,"regionC",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
-    loadHistograms(rd,ifile,"regionD",bool_rebin,2,2,5,10); //rebin eta,p,ih,mass
-    */
     
     loadHistograms(rall,ifile,"all",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rb,ifile,"regionB",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
@@ -91,6 +87,8 @@ void readHisto()
     loadHistograms(rd,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
 
 
+    TH2F* h_cross1D_all = (TH2F*) rall.ih_p->Clone("cross1D"); h_cross1D_all->Reset();
+    TH2F* mapDiff = (TH2F*) rall.ih_p->Clone("differencesMap"); mapDiff->Reset();
 
     invScale(rall.mass);
     std::vector<double> vectOfBins;
@@ -99,11 +97,8 @@ void readHisto()
     if(varBinsMass) rebinning(rall.mass,thresholdMass,vectOfBins);
     if(varBinsP) rebinning((TH1F*)rall.eta_p->ProjectionX(),thresholdP,vectOfBins_P);
 
-    /*rall.eta_p->RebinX(5);
-    rb.eta_p->RebinX(5);
-    rc.eta_p->RebinX(5);
-    rd.eta_p->RebinX(5);*/
-   
+
+
     rall.fillStdDev();
     rb.fillStdDev();
     rc.fillStdDev();
@@ -114,11 +109,21 @@ void readHisto()
     rc.fillQuantile();
     rd.fillQuantile();
 
-    rall.rebinQuantiles(5);
+    /*rall.rebinQuantiles(5);
     rb.rebinQuantiles(5);
     rc.rebinQuantiles(5);
-    rd.rebinQuantiles(5);
-
+    rd.rebinQuantiles(5);*/
+   
+    //crossHistos(h_cross1D_all,(TH1F*)rall.ih_p->ProjectionX(),(TH1F*)rall.ih_p->ProjectionY("",0,rall.ih_p->GetXaxis()->FindBin(150)));
+    //crossHistos(h_cross1D_all,(TH1F*)rall.ih_p->ProjectionX(),(TH1F*)rall.ih_p->ProjectionY("",0,10));
+    crossHistos(h_cross1D_all,(TH1F*)rall.eta_p->ProjectionX(),(TH1F*)rall.ih_eta->ProjectionY());
+    //crossHistosEtaBinning(h_cross1D_all,rall.eta_p,rall.ih_eta);
+    mapOfDifferences(mapDiff,rall.ih_p,h_cross1D_all);
+    
+    rall.cross1D();
+    rb.cross1D();
+    rc.cross1D();
+    rd.cross1D();
 
     //rall.rebinEtaP(vectOfBins_P);
 
@@ -133,31 +138,33 @@ void readHisto()
     if(varBinsMass)
     {
         rall.mass = (TH1F*) rall.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
+        rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
         rall.massFrom1DTemplatesEtaBinning = (TH1F*) rall.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
+        rd.massFrom1DTemplatesEtaBinning = (TH1F*) rd.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
     }
+    
+    etaReweighingP(rc.eta_p,rb.eta_p); 
    
+    rbc = rd;
+    rbc.eta_p = rc.eta_p;
+    rbc.ih_eta = rb.ih_eta;
+    
     rall.fillMassFrom1DTemplatesEtaBinning();
 
-    etaReweighingP(rc.eta_p,rb.eta_p); 
-
-    //rd.eta_p = rc.eta_p;
-    //rd.ih_eta = rb.ih_eta;
-    
 
     //rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
 
     //rd.massFrom1DTemplatesEtaBinning = (TH1F*) rd.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
 
     rd.fillMassFrom1DTemplatesEtaBinning();
-
-
-    rbc = rd;
-    rbc.eta_p = rc.eta_p;
-    rbc.ih_eta = rb.ih_eta;
-
-    rbc.massFrom1DTemplatesEtaBinning->Reset();
-
     rbc.fillMassFrom1DTemplatesEtaBinning();
+
+
+    TProfile* ihprofXAll = (TProfile*)rall.ih_p->ProfileX();
+    TProfile* ihprofXB = (TProfile*)rb.ih_p->ProfileX();
+    TProfile* ihprofXC = (TProfile*)rc.ih_p->ProfileX();
+    TProfile* ihprofXD = (TProfile*)rd.ih_p->ProfileX();
+
 
     TProfile* profXAll = (TProfile*)rall.ias_p->ProfileX();
     TProfile* profXB = (TProfile*)rb.ias_p->ProfileX();
@@ -174,9 +181,7 @@ void readHisto()
     rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
 
     TFile* ofile = new TFile((outfilename_+".root").c_str(),"RECREATE");
-    //TFile* ofile = new TFile("analysed_FullStat.root","RECREATE");
-    //TFile* ofile = new TFile("analysed_invIso.root","RECREATE");
-    //TFile* ofile = new TFile("analysed_invMET.root","RECREATE");
+
 
     rall.mass->Write();
     rall.eta_p->Write();
@@ -211,6 +216,28 @@ void readHisto()
     rd.ias_p->Write();
     rd.ias_pt->Write();
 
+    rall.stdDevIh_p->Write();
+    rall.quantile01Ih_p->Write();
+    rall.quantile10Ih_p->Write();
+    rall.quantile30Ih_p->Write();
+    rall.quantile50Ih_p->Write();
+    rall.quantile70Ih_p->Write();
+    rall.quantile90Ih_p->Write();
+    rall.quantile99Ih_p->Write();
+
+    ihprofXAll->Write();
+    ihprofXB->Write();
+    ihprofXC->Write();
+    ihprofXD->Write();
+    
+    plotting((TH1F*)rb.quantile01Ih_p,(TH1F*)rd.quantile01Ih_p,true,"quantile01_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile10Ih_p,(TH1F*)rd.quantile10Ih_p,true,"quantile10_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile30Ih_p,(TH1F*)rd.quantile30Ih_p,true,"quantile30_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile50Ih_p,(TH1F*)rd.quantile50Ih_p,true,"quantile50_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile70Ih_p,(TH1F*)rd.quantile70Ih_p,true,"quantile70_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile90Ih_p,(TH1F*)rd.quantile90Ih_p,true,"quantile90_ih_p_b_d","region B","region D")->Write();
+    plotting((TH1F*)rb.quantile99Ih_p,(TH1F*)rd.quantile99Ih_p,true,"quantile99_ih_p_b_d","region B","region D")->Write();
+
     plotting((TH1F*)rc.quantile01Ias_p,(TH1F*)rd.quantile01Ias_p,true,"quantile01_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.quantile10Ias_p,(TH1F*)rd.quantile10Ias_p,true,"quantile10_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.quantile30Ias_p,(TH1F*)rd.quantile30Ias_p,true,"quantile30_ias_p_c_d","region C","region D")->Write();
@@ -240,10 +267,33 @@ void readHisto()
     plotting(rall.mass,massFrom2D(rall,"all",10,1),false,"mass2D_all_IhP_rebin1_10","Observed","Prediction from 2D template - p: 100 GeV - dEdx: 0.1 MeV/cm")->Write();*/
 
     rall.ih_p->Write();
+    h_cross1D_all->Write();
+    mapDiff->Write();
+    rall.cross1Dtemplates->Write();
+    rb.cross1Dtemplates->Write();
+    rc.cross1Dtemplates->Write();
+    rd.cross1Dtemplates->Write();
 
-    std::cout << 600*GetMassErr(1000,20,3.8,0.1,600,K,C) << std::endl;
-    std::cout << 600*GetMassErr(1000,4,3.8,0.1,600,K,C) << std::endl;
-    std::cout << 600*GetMassErr(1000,100,3.8,0.5,600,K,C) << std::endl;
-    ofile->Close(); delete ofile;
+
+    TCanvas* c4 = new TCanvas();
+    c4->cd();
+    for(int i=0;i<rall.eta_p->GetNbinsX();i++)
+    {
+        //TH1F* hih1=(TH1F*)((TH2F*)rall.ih_p_eta->Project3D("zx"))->ProjectionY("",i,i);
+        TH1F* hih1=(TH1F*)rall.ih_p->ProjectionY("",i,i+1);
+        TH1F* hih2=(TH1F*)h_cross1D_all->ProjectionY("",i,i+1);
+        if(hih1->Integral()<=0) continue;
+        scale(hih1);
+        scale(hih2);
+        hih1->Draw();
+        hih1->GetXaxis()->SetRangeUser(0,10);
+        hih1->GetYaxis()->SetRangeUser(1e-8,1);
+
+        hih2->SetLineColor(2);
+        hih2->Draw("same");
+        c4->SetLogy();
+        c4->SaveAs(("ih_cross/ih_p"+to_string(i)+".pdf").c_str());
+        
+    }
 
 }
