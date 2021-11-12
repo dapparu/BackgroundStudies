@@ -1,8 +1,8 @@
-import ROOT
-
 import subprocess
 import os,subprocess,sys
 
+sys.argv.append('-b-')
+import ROOT
 
 listFiles = ["outfile_ias25_pt60_ih0_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed"
         ,"outfile_ias25_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed"
@@ -29,12 +29,13 @@ for f in listFiles:
 
 c1.SaveAs("c1.pdf")
 '''
-inputfile = ROOT.TFile("outfile_ias25_pt60_ih34_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
-h3 = inputfile.Get("ih_p_eta_all")
+#inputfile = ROOT.TFile("outfile_ias25_pt60_ih34_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
+inputfile = ROOT.TFile("outfile_ias25_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
+h3 = inputfile.Get("ih_p_eta_regionB")
 #h3.RebinX(2)
 c2=ROOT.TCanvas()
 c2.cd()
-'''
+
 for x in range(0,h3.GetNbinsX()+1):
     h3.GetXaxis().SetRange(x,x+1)
     h2 = h3.Project3D("zy")
@@ -44,9 +45,18 @@ for x in range(0,h3.GetNbinsX()+1):
     prof2=h2.ProfileX()
     prof2.SetLineColor(2)
     prof2.Draw("same")
-#    c2.SaveAs("ih_p_eta/eta"+str(x)+".pdf")
+    c2.SaveAs("ih_p_eta_regionB/regB_eta"+str(x)+".pdf")
+
+'''
+c_1D_all = inputfile.Get("plotting_mass1D_all")
+c_1D_all->cd(1)
+h_obs_all = c_1D_all.GetPrimitive("massFromTree_all")
+h_pred_all = c_1D_all.GetPrimitive("massFrom1DTemplatesEtaBinning_all")
+c_1D_all->cd(2)
+h_ratio = c_1D_all.GetPrimitive("massFrom1DTemplatesEtaBinning_all")
 '''
 
+'''
 ih_p_c=inputfile.Get("ih_p_eta_regionC")
 ih_p_d=inputfile.Get("ih_p_eta_regionD")
 c3=ROOT.TCanvas()
@@ -84,3 +94,4 @@ for x in range(0,ih_p_c.GetNbinsX()+1):
     ih_d.Draw("same")
     c4.SetLogy()
     c4.SaveAs("ih_p_eta/ih_c_d_"+str(x)+".pdf")
+    '''

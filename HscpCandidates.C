@@ -397,11 +397,15 @@ void HscpCandidates::Loop()
           float p = pt*cosh(Eta);
           float massT = Mass->at(i);
 
+          if(abs(Eta)>etacut_) continue;
+
           float isotk = iso_TK->at(i);
           float isocalo = iso_ECAL->at(i)+iso_HCAL->at(i);
 
+          if(isocalo/p>0.3)continue;
 
-          if(invIso_ && (isotk<50 || isocalo<0.3)) continue;
+
+          if((invIso_ && (isotk<50 || isotk>100))) continue;
 
           //if(abs(Eta)>0.4) continue;
           
@@ -535,7 +539,6 @@ void HscpCandidates::Loop()
 
     double normalisation = nB*nC/nA;
 
-    std::cout << "normalisation: " << normalisation << " nD: " << nD << std::endl;
 
    /*predMass(pred_mass,(TH1F*)rD.ih_p->ProjectionX(),(TH1F*)rD.ih_p->ProjectionY());
    predMass(pred_massBC,(TH1F*)rC.ih_p->ProjectionX(),(TH1F*)rB.ih_p->ProjectionY(),normalisation);
@@ -683,10 +686,15 @@ void HscpCandidates::Loop()
 */
 
       rAll.write();
+    std::cout << "all saved" << std::endl;
       rA.write();
+    std::cout << "region A saved" << std::endl;
       rB.write();
+    std::cout << "region B saved" << std::endl;
       rC.write();
+    std::cout << "region C saved" << std::endl;
       rD.write();
+    std::cout << "region D saved" << std::endl;
       //rDcutIh.write();
       //rCutIh.write();
       //rEta1.write();

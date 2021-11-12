@@ -1,7 +1,13 @@
-#root file                                  Ias cut>    pt cut>     Ih cut>     momentum cut<       eta num. of bins    Ih num. of bins       p num. of bins      mass num. of bins     invIso  invMET 
-#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          0           -1                 120                 1000                    2000                2000                0       0
+#root file                                  Ias cut>    pt cut>     Ih cut>     momentum cut<       eta num. of bins    Ih num. of bins       p num. of bins      mass num. of bins     invIso  invMET eta cut< 
+#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          0           -1                 120                 1000                    2000                2000                0       0   
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          2.9         -1                 120                 1000                    2000                2000                0       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          3.4         -1                 120                 1000                    2000                2000                0       0
+#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          0           4000               120                 1000                    2000                2000                0       0
+#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          2.9         4000               120                 1000                    2000                2000                0       0    0.9
+histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.1       60          2.9         4000               120                 1000                    2000                2000                0       0    5.0
+#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.1       60          2.9         4000               120                 1000                    2000                2000                1       0    5.0
+
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          3.4         4000               120                 1000                    2000                2000                0       0
+#histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          2.9         4000               120                 1000                    2000                2000                1       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          3.4         4000               120                 1000                    2000                2000                1       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          3.4         4000               120                 1000                    2000                2000                0       1

@@ -435,6 +435,8 @@ class region{
         TH1F* errMass;
         TH2F* Mass_errMass;
         TH2F* cross1Dtemplates;
+        TH1F* ih_used;
+        TH2F* mapM800;
 
 };
 
@@ -486,6 +488,8 @@ region::region()
 
     Mass_errMass    = 0;
     cross1Dtemplates= 0;
+    ih_used         = 0;
+    mapM800         = 0;
     initHisto();
 } 
 
@@ -540,6 +544,9 @@ region::region(std::string suffix,int& etabins,int& ihbins,int& pbins,int& massb
 
     Mass_errMass    = 0;
     cross1Dtemplates= 0;
+    ih_used         = 0;
+    mapM800         = 0;
+
     initHisto(etabins,ihbins,pbins,massbins);
 } 
 
@@ -646,6 +653,9 @@ region::region(std::string suffix,int nbins_,float* xbins_,std::vector<double> v
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
     
     cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+
+    ih_used         = new TH1F(("ih_used"+suffix).c_str(),";I_{h} [MeV/cm];",nih,ihlow,ihup);
+    mapM800         = new TH2F(("mapM800_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
 
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -797,6 +807,10 @@ void region::initHisto()
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
     cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+    
+    ih_used         = new TH1F(("ih_used"+suffix).c_str(),";I_{h} [MeV/cm];",nih,ihlow,ihup);
+    mapM800         = new TH2F(("mapM800_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -898,6 +912,10 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
     cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+
+    ih_used         = new TH1F(("ih_used"+suffix).c_str(),";I_{h} [MeV/cm];",nih,ihlow,ihup);
+    mapM800         = new TH2F(("mapM800_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+
     //mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
     //massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nbins,xbins);
@@ -1049,14 +1067,20 @@ void region::fillMassFrom1DTemplatesEtaBinning()
 {
     errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,2000);
     TH1F* eta = (TH1F*) ih_eta->ProjectionX();
+    //ih_p_eta->GetYaxis()->SetRange(ih_p_eta->GetYaxis()->FindBin(0.),ih_p_eta->GetYaxis()->FindBin(200.));
     for(int i=1;i<eta->GetNbinsX();i++)
     {
-        TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i);
+        TH1F* p = (TH1F*) eta_p->ProjectionX("proj_p",i,i+1);
         if(VectOfBins_P_.size()>1) p = (TH1F*)p->Rebin(VectOfBins_P_.size()-1,"",VectOfBins_P_.data());
-        //ih_p_eta->GetYaxis()->SetRange(0,ih_p_eta->GetYaxis()->FindBin(500));
-        //TH1F* ih = (TH1F*)((TH2F*)ih_p_eta->Project3D("zx"))->ProjectionY("proj_ih_p500",i,i);
-        TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i);
+        /*TH1F* ih = (TH1F*)((TH2F*)ih_p_eta->Project3D("zx"))->ProjectionY("proj_ih_pcut",i,i);
+        for(int x=0;x<ih->GetNbinsX()+1;x++)
+        {
+            ih_used->Fill(ih->GetBinCenter(x),ih->GetBinContent(x));
+        }*/
+        TH1F* ih = (TH1F*) ih_eta->ProjectionY("proj_ih",i,i+1);
         scale(p); //
+        
+        //scale(ih);
         for(int j=1;j<p->GetNbinsX();j++)
         {
             for(int k=1;k<ih->GetNbinsX();k++)
@@ -1069,6 +1093,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 //float mom = vect[j];
                 //std::cout << "vetc: " << vect[j] << " center: " << p->GetBinCenter(j) << std::endl;
                 float dedx = ih->GetBinCenter(k);
+
                 //float prob = p->GetBinContent(j) * ih->GetBinContent(k);
                 //std::cout << "interpolate: " << p->Interpolate(mom) << " invExpo: " << invExpoInterpolate(p,mom,vect) << std::endl;
                 //float probP = mom<=1000?p->Interpolate(mom):invExpoInterpolate(p,mom,vect);
@@ -1089,6 +1114,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                     massFrom1DTemplatesEtaBinning->SetBinError(bin_mass,sqrt(pow(massFrom1DTemplatesEtaBinning->GetBinError(bin_mass),2)+pow(err_weight,2)));
                     errMass->Fill(mass_err);
                     Mass_errMass->Fill(mass,mass_err);
+                    if(mass>800) mapM800->Fill(mom,dedx,prob);
                 }
             }
         }
@@ -1129,8 +1155,8 @@ void region::plotMass()
 
 void region::write()
 {
-    plotMass();
-    cross1D();
+    //plotMass();
+    //cross1D();
     ih_p_eta->Write();
     ih_pt->Write();
     ias_pt->Write();
@@ -1177,6 +1203,8 @@ void region::write()
     errMass->Write();
     Mass_errMass->Write();
 
+    ih_used->Write();
+    mapM800->Write();
 
     c->Write();
 
@@ -1222,6 +1250,7 @@ public :
     int massbins_;
     bool invIso_;
     bool invMET_;
+    float etacut_;
 
     std::string outfilename_;
    
@@ -1415,7 +1444,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     ifile.open("./configFile.txt");
     std::string line;
     std::string filename;
-    float iascut,ptcut,ihcut,pcut;
+    float iascut,ptcut,ihcut,pcut,etacut;
     int etabins,ihbins,pbins,massbins;
     bool invIso, invMET;
 
@@ -1424,7 +1453,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
         if(std::strncmp(line.c_str(),"#",1)==0) continue;
         std::cout << line << std::endl;
         std::stringstream ss(line);
-        ss >> filename >> iascut >> ptcut >> ihcut >> pcut >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET;
+        ss >> filename >> iascut >> ptcut >> ihcut >> pcut >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET >> etacut;
     }
     iascut_ = iascut;
     ptcut_ = ptcut;
@@ -1436,8 +1465,10 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     massbins_ = massbins;
     invIso_ = invIso;
     invMET_ = invMET;
+    etacut_ = etacut;
 
-    outfilename_ = "outfile_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
+
+    outfilename_ = "outfile_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_eta"+to_string((int)(10*etacut_));
 
     std::cout << outfilename_ << std::endl;
 

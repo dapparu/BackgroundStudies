@@ -85,7 +85,9 @@ void readHisto()
     loadHistograms(rb,ifile,"regionB",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rc,ifile,"regionC",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rbc,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
 
+    std::cout << "Regions loaded" << std::endl;
 
     TH2F* h_cross1D_all = (TH2F*) rall.ih_p->Clone("cross1D"); h_cross1D_all->Reset();
     TH2F* mapDiff = (TH2F*) rall.ih_p->Clone("differencesMap"); mapDiff->Reset();
@@ -99,7 +101,7 @@ void readHisto()
 
 
 
-    rall.fillStdDev();
+    /*rall.fillStdDev();
     rb.fillStdDev();
     rc.fillStdDev();
     rd.fillStdDev();
@@ -107,7 +109,7 @@ void readHisto()
     rall.fillQuantile();
     rb.fillQuantile();
     rc.fillQuantile();
-    rd.fillQuantile();
+    rd.fillQuantile();*/
 
     /*rall.rebinQuantiles(5);
     rb.rebinQuantiles(5);
@@ -116,14 +118,14 @@ void readHisto()
    
     //crossHistos(h_cross1D_all,(TH1F*)rall.ih_p->ProjectionX(),(TH1F*)rall.ih_p->ProjectionY("",0,rall.ih_p->GetXaxis()->FindBin(150)));
     //crossHistos(h_cross1D_all,(TH1F*)rall.ih_p->ProjectionX(),(TH1F*)rall.ih_p->ProjectionY("",0,10));
-    crossHistos(h_cross1D_all,(TH1F*)rall.eta_p->ProjectionX(),(TH1F*)rall.ih_eta->ProjectionY());
+    //crossHistos(h_cross1D_all,(TH1F*)rall.eta_p->ProjectionX(),(TH1F*)rall.ih_eta->ProjectionY());
     //crossHistosEtaBinning(h_cross1D_all,rall.eta_p,rall.ih_eta);
-    mapOfDifferences(mapDiff,rall.ih_p,h_cross1D_all);
+    //mapOfDifferences(mapDiff,rall.ih_p,h_cross1D_all);
     
-    rall.cross1D();
+    /*rall.cross1D();
     rb.cross1D();
     rc.cross1D();
-    rd.cross1D();
+    rd.cross1D();*/
 
     //rall.rebinEtaP(vectOfBins_P);
 
@@ -145,7 +147,7 @@ void readHisto()
     
     etaReweighingP(rc.eta_p,rb.eta_p); 
    
-    rbc = rd;
+    //rbc = rd;
     rbc.eta_p = rc.eta_p;
     rbc.ih_eta = rb.ih_eta;
     
@@ -177,11 +179,13 @@ void readHisto()
     TProfile* profYD = (TProfile*)rd.ias_p->ProfileY();
 
     TH1F* h_massFrom2D = (TH1F*) massFrom2D(rall,"all");
+    TH1F* h_massFrom2D_D = (TH1F*) massFrom2D(rd,"regD");
                
     rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
 
     TFile* ofile = new TFile((outfilename_+".root").c_str(),"RECREATE");
 
+    std::cout << "saving... " << std::endl;
 
     rall.mass->Write();
     rall.eta_p->Write();
@@ -230,6 +234,47 @@ void readHisto()
     ihprofXC->Write();
     ihprofXD->Write();
     
+    rall.ih_p->Write();
+    h_cross1D_all->Write();
+    mapDiff->Write();
+    rall.cross1Dtemplates->Write();
+    rb.cross1Dtemplates->Write();
+    rc.cross1Dtemplates->Write();
+    rd.cross1Dtemplates->Write();
+
+    rall.ih_used->Write();
+    rd.ih_used->Write();
+    rall.mapM800->Write();
+    rd.mapM800->Write();
+ 
+    scale(rd.mass);
+    scale(rd.massFrom1DTemplatesEtaBinning);
+    scale(rbc.massFrom1DTemplatesEtaBinning);
+    scale(h_massFrom2D_D);
+
+    rd.mass->SetName("mass_obs");
+    rd.mass->Write();
+    h_massFrom2D_D->SetName("mass_pred2D");
+    h_massFrom2D_D->Write();
+
+    TH1F* h2DR = (TH1F*) ratioIntegral(h_massFrom2D_D,rd.mass)->Clone();
+    h2DR->SetName("mass_pred2DR");
+    h2DR->Write();
+
+    rd.massFrom1DTemplatesEtaBinning->SetName("mass_pred1D");
+    rd.massFrom1DTemplatesEtaBinning->Write();
+
+    TH1F* h1DR = (TH1F*) ratioIntegral(rd.massFrom1DTemplatesEtaBinning,rd.mass)->Clone();
+    h1DR->SetName("mass_pred1DR");
+    h1DR->Write();
+
+    rbc.massFrom1DTemplatesEtaBinning->SetName("mass_predBC");
+    rbc.massFrom1DTemplatesEtaBinning->Write();
+
+    TH1F* h1DBCR = (TH1F*) ratioIntegral(rbc.massFrom1DTemplatesEtaBinning,rd.mass)->Clone();
+    h1DBCR->SetName("mass_predBDR");
+    h1DBCR->Write();
+
     plotting((TH1F*)rb.quantile01Ih_p,(TH1F*)rd.quantile01Ih_p,true,"quantile01_ih_p_b_d","region B","region D")->Write();
     plotting((TH1F*)rb.quantile10Ih_p,(TH1F*)rd.quantile10Ih_p,true,"quantile10_ih_p_b_d","region B","region D")->Write();
     plotting((TH1F*)rb.quantile30Ih_p,(TH1F*)rd.quantile30Ih_p,true,"quantile30_ih_p_b_d","region B","region D")->Write();
@@ -253,6 +298,8 @@ void readHisto()
     plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,true,"mass1D_all_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rall.mass,h_massFrom2D,false,"mass2D_all","Observed","Prediction from 2D template")->Write();
     plotting(rall.mass,h_massFrom2D,true,"mass2D_all_simpleRatio","Observed","Prediction from 2D template")->Write();
+    plotting(rall.mass,h_massFrom2D_D,false,"mass2D_regionD","Observed","Prediction from 2D template")->Write();
+    plotting(rall.mass,h_massFrom2D_D,true,"mass2D_regionD_simpleRatio","Observed","Prediction from 2D template")->Write();
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,false,"mass1D_regionD","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,true,"mass1D_regionD_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC","Observed","Prediction from 1D templates in B and C")->Write();
@@ -266,13 +313,7 @@ void readHisto()
     plotting(rall.mass,massFrom2D(rall,"all",5,1),false,"mass2D_all_IhP_rebin1_5","Observed","Prediction from 2D template - p: 50 GeV - dEdx: 0.1 MeV/cm")->Write();
     plotting(rall.mass,massFrom2D(rall,"all",10,1),false,"mass2D_all_IhP_rebin1_10","Observed","Prediction from 2D template - p: 100 GeV - dEdx: 0.1 MeV/cm")->Write();*/
 
-    rall.ih_p->Write();
-    h_cross1D_all->Write();
-    mapDiff->Write();
-    rall.cross1Dtemplates->Write();
-    rb.cross1Dtemplates->Write();
-    rc.cross1Dtemplates->Write();
-    rd.cross1Dtemplates->Write();
+
 
 
     TCanvas* c4 = new TCanvas();
@@ -292,7 +333,7 @@ void readHisto()
         hih2->SetLineColor(2);
         hih2->Draw("same");
         c4->SetLogy();
-        c4->SaveAs(("ih_cross/ih_p"+to_string(i)+".pdf").c_str());
+        //c4->SaveAs(("ih_cross/ih_p"+to_string(i)+".pdf").c_str());
         
     }
 
