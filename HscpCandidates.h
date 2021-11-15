@@ -24,21 +24,16 @@
 #include <fstream>
 
 
-
+// Values determined by Dylan 
 float K(2.37), C(2.93);
 
-
+// Function returning the MassErr as function momentum, dEdx, and errors on momentum and dEdx
+// Not take into account any erros coming from K&C factors because this function is used to see the impact of binning in p and dedx on mass error
 double GetMassErr (double P, double PErr, double dEdx, double dEdxErr, double M, double dEdxK, double dEdxC)
 {
    if (M < 0) return -1;
-   //double KErr     = 0.;
-   //double CErr     = 0.4; UNUSED
-   //double cErr     = 0.01; UNUSED
-   double Criteria = dEdx - dEdxC;
-   //double Fac1     = P*P/(2*M*dEdxK);
-   //double Fac2     = pow(2*M*M*dEdxK/(P*P), 2);
-   //double MassErr  = Fac1*sqrt(Fac2*pow(PErr/P, 2) + Criteria*Criteria*pow(KErr/dEdxK,2) + dEdxErr*dEdxErr + dEdxC*dEdxC);
 
+   double Criteria = dEdx - dEdxC;
    double MassErr = sqrt(pow(P*dEdxErr,2)/(4*dEdxK*Criteria)+(Criteria/dEdxK)*pow(PErr,2));
 
    if (std::isnan(MassErr) || std::isinf(MassErr)) MassErr = -1;
@@ -46,8 +41,7 @@ double GetMassErr (double P, double PErr, double dEdx, double dEdxErr, double M,
    return MassErr/M;
 }
 
-
-  
+// Function returning an 1D-histogram which contains the ratio between two histograms   
 TH1F* ratioHist(TH1F* h1, TH1F* h2)
 {
     TH1F* res = (TH1F*) h1->Clone();
@@ -61,23 +55,29 @@ TH1F* ratioHist(TH1F* h1, TH1F* h2)
     return res;
 }
 
+// Return the mass as a function of momentum, dEdx, K and C. 
+// It corresponds to the Bethe-Bloch parametrisation used in the Hscp analysis
 float GetMass(float& p, float& ih, float& k, float& c)
 {
     return (ih-C)<0?-1:sqrt((ih-c)/k)*p;
 }
 
+// Scale the 1D-histogram given to the unit 
 void scale(TH1F* h)
 {
     h->Scale(1./h->Integral(0,h->GetNbinsX()+1));
 }
 
+// Inverse the scaling ; scale the 1D-histogram to its number of entries
 void invScale(TH1F* h)
 {
-    //h->Scale(h->Integral(0,h->GetNbinsX()+1));
     h->Sumw2();
     h->Scale(h->GetEntries());
 }
 
+// Function returning the ratio of right integer (from x to infty) for two 1D-histograms
+// This function is used in the Hscp data-driven background estimate to test the mass shape prediction
+// The argument to use this type of ratio is that we're in case of cut & count experiment 
 TH1F* ratioIntegral(TH1F* h1, TH1F* h2)
 {
     TH1F* res = (TH1F*) h1->Clone(); res->Reset();
@@ -92,6 +92,8 @@ TH1F* ratioIntegral(TH1F* h1, TH1F* h2)
     return res;
 }
 
+// Function returning chi2/ndof compatibility test for two 1D-histograms
+// As a reference, we've access to the number of degrees of freedom 
 float chi2test(TH1F* h1, TH1F* h2,int& dof)
 {
     float res=0;
@@ -105,6 +107,8 @@ float chi2test(TH1F* h1, TH1F* h2,int& dof)
     return res/ndof;
 }
 
+// Function returning a float number corresponding to a linear interpolation for a certain value x
+// FIXME WIP 
 float invExpoInterpolate(TH1F* h1, float x, std::vector<float> vect)
 {
     Int_t xbin = h1->FindBin(x);
@@ -135,6 +139,8 @@ float invExpoInterpolate(TH1F* h1, float x, std::vector<float> vect)
     }
 }
 
+// Function returning a 1D-histogram corresponding to interpolation of 1D-histo
+// FIXME WIP 
 TH1F* histoInterpolated(TH1F* h1)
 {
     TH1F* h2 = (TH1F*) h1->Clone(); h2->Reset();
@@ -144,6 +150,13 @@ TH1F* histoInterpolated(TH1F* h1)
     }
     return h2;
 }
+
+// Function returning a canvas divide in two windows
+// The first one contains the two 1D-histograms, given as arguments, superposed.
+// There also is a legend associated to this window where the names are defined as arguments.
+// The second window contains the ratio of these 1D-histograms or the ratio of right integers of them. 
+// We define which kind of ratio we want with tha 'ratioSimple' boolean.
+// The 'name' given corresponds to the name of the canvas 
 TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name="", std::string leg1="", std::string leg2="")
 {
     h1->Sumw2(); h2->Sumw2();
@@ -151,7 +164,6 @@ TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name=""
     c1->Divide(1,2);
     gStyle->SetOptStat(0);
     c1->cd(1);
-    //h1->Rebin(2); h2->Rebin(2);
     TLegend* leg = new TLegend(0.7,0.7,0.9,0.9);
     leg->AddEntry(h1,leg1.c_str(),"lep");
     leg->AddEntry(h2,leg2.c_str(),"lep");
@@ -166,7 +178,6 @@ TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name=""
     {
         h1->Scale(1./h1->Integral());
         h2->Scale(1./h2->Integral());
-        //ratioHist(tmp,h1,h2);
         tmp = (TH1F*)h1->Clone();
         tmp->Divide(h2);
         tmp->GetYaxis()->SetTitle("#frac{N_{obs}}{N_{pred}}");
@@ -183,15 +194,15 @@ TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name=""
 
     int dof;
     float chi2=chi2test(h1,h2,dof);
-    /*std::cout << name << std::endl; 
-    std::cout << "chi2/ndof: " << chi2/dof << " ndof: " << dof << " chi2: " << chi2 <<std::endl;
-    std::cout << "prob chi2: " << TMath::Prob(chi2,dof) << std::endl;
-    std::cout << "Kolmogorov: " << h2->KolmogorovTest(h1) << std::endl;*/
     tmp->GetYaxis()->SetRangeUser(0,2);
     tmp->Draw();
     return c1;
 }
 
+// Function returning a 1D-histogram with variable binning.
+// To determine it, we set a minimum value 'min' corresponding to the number of entries wanted in each bins of the distribution.
+// If a given bin has a number of entries below than 'min' then this bin is merged with the next one and then there is another test, etc. 
+// Finally, as a reference argument, the function gives a vector composed by the binning previously determined 
 TH1F* rebinning(TH1F* h1, float min, std::vector<double>& vect)
 {
     std::vector<double> v_val;
@@ -220,6 +231,9 @@ TH1F* rebinning(TH1F* h1, float min, std::vector<double>& vect)
     return h2;
 }
 
+// Function doing the eta reweighing between two 2D-histograms as done in the Hscp background estimate method,
+// because of the correlation between variables (momentum & transverse momentum). 
+// The first given 2D-histogram is weighted in respect to the second one. 
 void etaReweighingP(TH2F* eta_p_1, TH2F* eta_p_2)
 {
     TH1F* eta1 = (TH1F*) eta_p_1->ProjectionY(); eta1->Scale(1./eta1->Integral());
@@ -238,6 +252,7 @@ void etaReweighingP(TH2F* eta_p_1, TH2F* eta_p_2)
     eta_p_1->Sumw2();
 }
 
+//FIXME Still necessary ? 
 void predMassEtaBinning(TH1F* res, TH2F* eta_p, TH2F* ih_eta, float norm=0)
 {
     TH1F* eta = (TH1F*) ih_eta->ProjectionX();
@@ -1422,6 +1437,7 @@ public :
    TBranch        *b_GenPhi;   //!
 
    HscpCandidates(TTree *tree=0);
+   HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET);
    virtual ~HscpCandidates();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -1510,6 +1526,48 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
    }
    Init(tree);
    Loop();
+}
+
+HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,intihbins,int pbins,int massbins,bool invIso,bool invMET);
+
+HscpCandidates::HscpCandidates(TTree *tree,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET) : fChain(0) 
+{
+    iascut_ = iascut;
+    ptcut_ = ptcut;
+    ihcut_ = ihcut;
+    pcut_ = pcut;
+    etabins_ = etabins;
+    ihbins_ = ihbins;
+    pbins_ = pbins;
+    massbins_ = massbins;
+    invIso_ = invIso;
+    invMET_ = invMET;
+    etacut_ = etacut;
+
+    outfilename_ = "outfile_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_eta"+to_string((int)(10*etacut_))+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
+
+    std::cout << outfilename_ << std::endl;
+
+// if parameter tree is not specified (or zero), connect the file
+// used to generate this class and read the Tree.
+   if (tree == 0) {
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
+      if (!f || !f->IsOpen()) {
+         f = new TFile(filename.c_str());
+      }
+      TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
+      dir->GetObject("HscpCandidates",tree);
+
+
+      regD_ih = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_I").c_str());
+      regD_p = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_P").c_str());
+      regD_mass = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/Mass").c_str());
+      
+   }
+   Init(tree);
+   Loop();
+
+
 }
 
 HscpCandidates::~HscpCandidates()
