@@ -5,6 +5,7 @@
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          0           4000   5.0            120                 1000                    2000                2000                0       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          2.9         4000   0.9            120                 1000                    2000                2000                0       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.1       60          2.9         4000     5.0         120                 1000                    2000                2000                0       0   
+histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.05       60          2.9         4000     5.0         120                 1000                    2000                2000                0       0   
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.1       60          2.9         4000     5.0         120                 1000                    2000                2000                1       0 
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          3.4         4000               120                 1000                    2000                2000                0       0
 #histoSingleMu_TkOnly_UL2017C_v2-5_wTree.root    0.025       60          2.9         4000               120                 1000                    2000                2000                1       0

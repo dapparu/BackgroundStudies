@@ -355,6 +355,8 @@ void HscpCandidates::Loop()
    region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
    region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
    region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
+   region rB_boundedIas("_regionB_boundedIas",etabins_,ihbins_,pbins_,massbins_);
+   region rD_boundedIas("_regionD_boundedIas",etabins_,ihbins_,pbins_,massbins_);
 
 
    
@@ -459,6 +461,10 @@ void HscpCandidates::Loop()
                   rB.fill(Eta,nhits,p,pt,ih,ias,massT); 
                   nB++;
 
+                  if(ias<0.1)
+                  {
+                      rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT);
+                  }
               }
           }
           else
@@ -484,8 +490,12 @@ void HscpCandidates::Loop()
                   
                   rD.fill(Eta,nhits,p,pt,ih,ias,massT); 
                       //rDcutIh.fill(Eta,nhits,p,pt,ih,ias,massT);
-                  
                   nD++;
+                  
+                  if(ias<0.1)
+                  {
+                      rD_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT);
+                  } 
               }
           }
 

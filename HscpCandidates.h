@@ -1437,7 +1437,7 @@ public :
    TBranch        *b_GenPhi;   //!
 
    HscpCandidates(TTree *tree=0);
-   HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET);
+   //HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET);
    virtual ~HscpCandidates();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
@@ -1528,9 +1528,9 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
    Loop();
 }
 
-HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,intihbins,int pbins,int massbins,bool invIso,bool invMET);
+//HscpCandidates(TTree *tree=0,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,intihbins,int pbins,int massbins,bool invIso,bool invMET);
 
-HscpCandidates::HscpCandidates(TTree *tree,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET) : fChain(0) 
+/*HscpCandidates::HscpCandidates(TTree *tree,float iascut,float ptcut,float ihcut,float pcut,float etacut,int etabins,int ihbins,int pbins,int massbins,bool invIso,bool invMET) : fChain(0) 
 {
     iascut_ = iascut;
     ptcut_ = ptcut;
@@ -1568,7 +1568,7 @@ HscpCandidates::HscpCandidates(TTree *tree,float iascut,float ptcut,float ihcut,
    Loop();
 
 
-}
+}*/
 
 HscpCandidates::~HscpCandidates()
 {
