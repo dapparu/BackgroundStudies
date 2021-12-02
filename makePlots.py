@@ -32,7 +32,7 @@ c1.SaveAs("c1.pdf")
 #inputfile = ROOT.TFile("outfile_ias25_pt60_ih34_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
 #inputfile = ROOT.TFile("outfile_ias25_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
 #inputfile = ROOT.TFile("outfile_ias25_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root")
-inputfile = ROOT.TFile("outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso1_invMET0_TOF.root")
+inputfile = ROOT.TFile("outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_TOF.root")
 h3 = inputfile.Get("ih_p_eta_regionB")
 regB = inputfile.Get("ih_p_eta_regionB")
 regC = inputfile.Get("ih_p_eta_regionC")
@@ -50,6 +50,28 @@ c2.SetLogy()
 c3=ROOT.TCanvas()
 c2.Divide(2,2)
 ROOT.gStyle.SetOptStat(0)
+
+momentum_regC = regC.Project3D("y")
+momentum_regD = regD.Project3D("y")
+
+momentum_regC.Scale(1./momentum_regC.Integral())
+momentum_regD.Scale(1./momentum_regD.Integral())
+
+legMom = ROOT.TLegend(0.7,0.7,0.9,0.9)
+c2.cd()
+momentum_regC.Draw()
+momentum_regD.Draw("same")
+momentum_regC.SetLineColor(38)
+momentum_regD.SetLineColor(46)
+momentum_regC.SetLineWidth(2)
+momentum_regD.SetLineWidth(2)
+legMom.AddEntry(momentum_regC,"region C","lep")
+legMom.AddEntry(momentum_regD,"region D","lep")
+legMom.Draw("same")
+c2.SetLogy()
+
+c2.SaveAs("momentumDistributions.pdf")
+
 
 def chi2(h,b):
     chi2=0
@@ -192,9 +214,9 @@ hb=ROOT.TH1F("",";#eta;Kolmogorov test B & D",60,-3,3)
 hc=ROOT.TH1F("",";#eta;Chi2 compatibility C & D at 95%",60,-3,3)
 hd=ROOT.TH1F("",";#eta;Chi2 compatibility B & D at 95%",60,-3,3)
 
-for x in range(0,regB.GetNbinsX()+1):
+#for x in range(0,regB.GetNbinsX()+1):
 
-    functIasP(x)
+    ##functIasP(x)
 
 
 '''    a,b,c,d=funct(x)

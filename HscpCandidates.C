@@ -121,23 +121,35 @@ void HscpCandidates::Loop()
           if(!invIso_ && !passPreselection->at(i)) continue;
 
           float pt = Pt->at(i);
-          if(pt<50) continue;
+          //if(pt<50) continue;
+
           float ih = Ih->at(i);
-          float ias = Ias->at(i);
+          //float ias = Ias->at(i);
+          float ias = Ias_noPix_noTIB_noTID_no3TEC->at(i);
+          //float ias1 = Ias1->at(i);
+          //float ias2 = Ias2->at(i);
+          //float ias3 = Ias3->at(i);
           float Eta = eta->at(i); 
           float iso = iso_TK->at(i);
           float iso_r = iso/pt;
           float nhits = NOM->at(i);
           float p = pt*cosh(Eta);
-          float massT = Mass->at(i);
+//          float massT = Mass->at(i);
+          float massT = GetMass(p,ih,K,C);
           float isotk = iso_TK->at(i);
           float isocalo = iso_ECAL->at(i)+iso_HCAL->at(i);
           float tof = TOF->at(i);
+          float dz = dZ->at(i);
+          float dxy = dXY->at(i);
           if(!(etacutinf_<Eta && Eta<etacutsup_)) continue;
           if(isocalo/p>0.3)continue;
           if((invIso_ && (isotk<50 || isotk>100))) continue;
           if(ih<ihcut_) continue;
           if(p>pcut_ && pcut_>0) continue;
+
+
+          if(abs(dz)>0.5) continue;
+          if(abs(dxy)>0.02) continue;
 
 
           rAll.fill(Eta,nhits,p,pt,ih,ias,massT,tof);

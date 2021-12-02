@@ -74,6 +74,7 @@ void readHisto()
 
     
     region rall;
+    region ra;
     region rb;
     region rc;
     region rd;
@@ -93,6 +94,7 @@ void readHisto()
     
     
     loadHistograms(rall,ifile,"all",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(ra,ifile,"regionA",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rb,ifile,"regionB",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rc,ifile,"regionC",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
@@ -186,6 +188,8 @@ void readHisto()
 
     rall.fillMassFrom1DTemplatesEtaBinning();
 
+    float normalisationABC = rb.ih_eta->GetEntries()*rc.ih_eta->GetEntries()/ra.ih_eta->GetEntries();
+    std::cout << "normalisationABC: " << normalisationABC << std::endl;
 
     //rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
 
@@ -193,6 +197,7 @@ void readHisto()
 
     rd.fillMassFrom1DTemplatesEtaBinning();
     rbc.fillMassFrom1DTemplatesEtaBinning();
+    //rbc.fillMassFrom1DTemplatesEtaBinning(normalisationABC);
 
     rd_boundedIas.fillMassFrom1DTemplatesEtaBinning();
     rbc_boundedIas.fillMassFrom1DTemplatesEtaBinning();
@@ -296,8 +301,11 @@ void readHisto()
     rd.momentumDistribM1000->Write();
     rd.dedxDistribM1000->Write();
 
+
+
     scale(rd.mass);
     scale(rd.massFrom1DTemplatesEtaBinning);
+    //rbc.massFrom1DTemplatesEtaBinning->Scale(normalisationABC);
     scale(rbc.massFrom1DTemplatesEtaBinning);
     scale(h_massFrom2D_D);
 
@@ -310,8 +318,12 @@ void readHisto()
     scale(rdb.massFrom1DTemplatesEtaBinning);
     scale(rdc.massFrom1DTemplatesEtaBinning);
 
+    std::cout << "D integral: " << rd.mass->Integral() << " entries: " << rd.mass->GetEntries() << std::endl;
+    std::cout << "BC integral: " << rbc.massFrom1DTemplatesEtaBinning->Integral() << " entries: " << rbc.massFrom1DTemplatesEtaBinning->GetEntries() << std::endl;
+    
     rd.mass->SetName("mass_obs");
     rd.mass->Write();
+    
     h_massFrom2D_D->SetName("mass_pred2D");
     h_massFrom2D_D->Write();
 

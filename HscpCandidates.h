@@ -374,7 +374,7 @@ class region{
         void fill(float& eta, float& nhits, float&p, float& pt, float& ih, float& ias, float& m, float& tof);
         void fillStdDev();
         void fillQuantile();
-        void fillMassFrom1DTemplatesEtaBinning();
+        void fillMassFrom1DTemplatesEtaBinning(float weight_);
         void plotMass();
         void cross1D();
         void write();
@@ -970,7 +970,7 @@ void region::fillQuantile()
 // errors: the sqrt of the squared uncertainties are added
 // 
 
-void region::fillMassFrom1DTemplatesEtaBinning() 
+void region::fillMassFrom1DTemplatesEtaBinning(float weight_=-1) 
 {
     errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,2000);
     TH1F* eta = (TH1F*) ih_eta->ProjectionX();
@@ -996,6 +996,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 float dedx = ih->GetBinCenter(k);
                 float prob = p->GetBinContent(j) * ih->GetBinContent(k);
                 float weight = prob*p->Integral();
+                if(weight_>0) weight = weight_;
                 float err_weight = weight*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
                 float mass = GetMass(mom,dedx,K,C);
                 int bin_mass = massFrom1DTemplatesEtaBinning->FindBin(mass);
@@ -1004,6 +1005,7 @@ void region::fillMassFrom1DTemplatesEtaBinning()
                 {
                     // first version : wrong --> bad computation of errors
                     //massFrom1DTemplatesEtaBinning->Fill(GetMass(mom,dedx,K,C),prob*p->Integral());
+                    //massFrom1DTemplatesEtaBinning->Fill(mass,weight);
                     massFrom1DTemplatesEtaBinning->SetBinContent(bin_mass,massFrom1DTemplatesEtaBinning->GetBinContent(bin_mass)+weight);
                     massFrom1DTemplatesEtaBinning->SetBinError(bin_mass,sqrt(pow(massFrom1DTemplatesEtaBinning->GetBinError(bin_mass),2)+pow(err_weight,2)));
                     errMass->Fill(mass_err);
@@ -1160,6 +1162,10 @@ public :
    vector<float>   *Pt;
    vector<float>   *PtErr;
    vector<float>   *Ias;
+   vector<float>   *Ias_noPix_noTIB_noTID_no3TEC;
+   vector<float>   *Ias1;
+   vector<float>   *Ias2;
+   vector<float>   *Ias3;
    vector<float>   *Ih;
    vector<float>   *Ick;
    vector<float>   *Fmip;
@@ -1241,6 +1247,10 @@ public :
    TBranch        *b_Pt;   //!
    TBranch        *b_PtErr;   //!
    TBranch        *b_Ias;   //!
+   TBranch        *b_Ias_noPix_noTIB_noTID_no3TEC;   //!
+   TBranch        *b_Ias1;   //!
+   TBranch        *b_Ias2;   //!
+   TBranch        *b_Ias3;   //!
    TBranch        *b_Ih;   //!
    TBranch        *b_Ick;   //!
    TBranch        *b_Fmip;   //!
@@ -1344,7 +1354,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     invMET_ = invMET;
 
 
-    outfilename_ = "outfile"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_TOF";
+    outfilename_ = "outfile"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_IasNoInnerLayers_highPurity_dz05_dxy002";
 
     std::cout << outfilename_ << std::endl;
 
@@ -1355,14 +1365,20 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       if (!f || !f->IsOpen()) {
          f = new TFile(filename.c_str());
       }
-      TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
+      TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/BaseName").c_str());
+      //TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
       dir->GetObject("HscpCandidates",tree);
 
 
-      regD_ih = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_I").c_str());
+      regD_ih = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_I").c_str());
+      regD_p = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_P").c_str());
+      regD_mass = (TH2F*) f->Get((filename+":/analyzer/BaseName/Mass").c_str());
+
+
+/*      regD_ih = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_I").c_str());
       regD_p = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_P").c_str());
       regD_mass = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/Mass").c_str());
-
+*/
    }
    Init(tree);
    Loop();
@@ -1454,6 +1470,10 @@ void HscpCandidates::Init(TTree *tree)
    Pt = 0;
    PtErr = 0;
    Ias = 0;
+   Ias_noPix_noTIB_noTID_no3TEC = 0;
+   Ias1 = 0;
+   Ias2 = 0;
+   Ias3 = 0;
    Ih = 0;
    Ick = 0;
    Fmip = 0;
@@ -1539,6 +1559,10 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("Pt", &Pt, &b_Pt);
    fChain->SetBranchAddress("PtErr", &PtErr, &b_PtErr);
    fChain->SetBranchAddress("Ias", &Ias, &b_Ias);
+   fChain->SetBranchAddress("Ias_noPix_noTIB_noTID_no3TEC", &Ias_noPix_noTIB_noTID_no3TEC, &b_Ias_noPix_noTIB_noTID_no3TEC);
+//   fChain->SetBranchAddress("Ias1", &Ias1, &b_Ias1);
+//   fChain->SetBranchAddress("Ias2", &Ias2, &b_Ias2);
+//   fChain->SetBranchAddress("Ias3", &Ias3, &b_Ias3);
    fChain->SetBranchAddress("Ih", &Ih, &b_Ih);
    fChain->SetBranchAddress("Ick", &Ick, &b_Ick);
    fChain->SetBranchAddress("Fmip", &Fmip, &b_Fmip);
