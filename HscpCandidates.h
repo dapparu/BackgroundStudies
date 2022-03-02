@@ -24,8 +24,8 @@
 #include <fstream>
 
 
-// Values determined by Dylan 
-float K(2.37), C(2.93);
+// Values determined by Caroline
+float K(2.30), C(3.17);
 
 // Function
 TH2F* BetheBlochForMass(float mass)
@@ -1143,7 +1143,10 @@ public :
    UInt_t          PileUp;
    UInt_t          nofVtx;
    UInt_t          Hscp;
+   UInt_t          nmuons;
+   UInt_t          njets;
    Float_t         Weight;
+   Float_t         GeneratorWeight;
    Bool_t          HLT_Mu50;
    Bool_t          HLT_PFMET120_PFMHT120_IDTight;
    Bool_t          HLT_PFHT500_PFMET100_PFMHT100_IDTight;
@@ -1154,6 +1157,16 @@ public :
    Float_t         RecoPFMHT;
    Float_t         HLTPFMET;
    Float_t         HLTPFMHT;
+   Float_t         RecoPFMET_eta;
+   Float_t         RecoPFMET_phi;
+   Float_t         RecoPFMET_significance;
+   Float_t         Muon1_Pt;
+   Float_t         Muon1_eta;
+   Float_t         Muon1_phi;
+   Float_t         Muon2_Pt;
+   Float_t         Muon2_eta;
+   Float_t         Muon2_phi;
+   vector<float>   *mT;
    vector<bool>    *passCutPt55;
    vector<bool>    *passPreselection_noIsolation_noIh;
    vector<bool>    *passPreselection;
@@ -1162,14 +1175,29 @@ public :
    vector<float>   *Pt;
    vector<float>   *PtErr;
    vector<float>   *Ias;
-   vector<float>   *Ias_noPix_noTIB_noTID_no3TEC;
+   vector<float>   *Ias_noTIBnoTIDno3TEC;
+   vector<float>   *Ias_PixelOnly;
    vector<float>   *Ias1;
    vector<float>   *Ias2;
    vector<float>   *Ias3;
    vector<float>   *Ih;
    vector<float>   *Ick;
    vector<float>   *Fmip;
+   vector<float>   *ProbXY;
+   vector<float>   *ProbXY_noL1;
    vector<float>   *ProbQ;
+   vector<float>   *ProbQ_noL1;
+   vector<float>   *ProbQ_dEdx;
+   vector<float>   *Ndof;
+   vector<float>   *Chi2;
+   vector<bool>    *isHighPurity;
+   vector<bool>    *isMuon;
+   vector<int>     *MuonSelector;
+   vector<bool>    *isElectron;
+   vector<bool>    *isChHadron;
+   vector<bool>    *isNeutHadron;
+   vector<float>   *ECAL_energy;
+   vector<float>   *HCAL_energy;
    vector<float>   *TOF;
    vector<float>   *TOFErr;
    vector<unsigned int> *TOF_ndof;
@@ -1195,6 +1223,22 @@ public :
    vector<float>   *iso_TK;
    vector<float>   *iso_ECAL;
    vector<float>   *iso_HCAL;
+   vector<float>   *TrackPFIsolationR005_sumChargedHadronPt;
+   vector<float>   *TrackPFIsolationR005_sumNeutralHadronPt;
+   vector<float>   *TrackPFIsolationR005_sumPhotonPt;
+   vector<float>   *TrackPFIsolationR005_sumPUPt;
+   vector<float>   *TrackPFIsolationR01_sumChargedHadronPt;
+   vector<float>   *TrackPFIsolationR01_sumNeutralHadronPt;
+   vector<float>   *TrackPFIsolationR01_sumPhotonPt;
+   vector<float>   *TrackPFIsolationR01_sumPUPt;
+   vector<float>   *TrackPFIsolationR03_sumChargedHadronPt;
+   vector<float>   *TrackPFIsolationR03_sumNeutralHadronPt;
+   vector<float>   *TrackPFIsolationR03_sumPhotonPt;
+   vector<float>   *TrackPFIsolationR03_sumPUPt;
+   vector<float>   *TrackPFIsolationR05_sumChargedHadronPt;
+   vector<float>   *TrackPFIsolationR05_sumNeutralHadronPt;
+   vector<float>   *TrackPFIsolationR05_sumPhotonPt;
+   vector<float>   *TrackPFIsolationR05_sumPUPt;
    vector<float>   *MuonPFIsolationR03_sumChargedHadronPt;
    vector<float>   *MuonPFIsolationR03_sumNeutralHadronPt;
    vector<float>   *MuonPFIsolationR03_sumPhotonPt;
@@ -1228,7 +1272,10 @@ public :
    TBranch        *b_PileUp;   //!
    TBranch        *b_nofVtx;   //!
    TBranch        *b_Hscp;   //!
+   TBranch        *b_nmuons;   //!
+   TBranch        *b_njets;   //!
    TBranch        *b_Weight;   //!
+   TBranch        *b_GeneratorWeight;   //!
    TBranch        *b_HLT_Mu50;   //!
    TBranch        *b_HLT_PFMET120_PFMHT120_IDTight;   //!
    TBranch        *b_HLT_PFHT500_PFMET100_PFMHT100_IDTight;   //!
@@ -1239,6 +1286,16 @@ public :
    TBranch        *b_RecoPFMHT;   //!
    TBranch        *b_HLTPFMET;   //!
    TBranch        *b_HLTPFMHT;   //!
+   TBranch        *b_RecoPFMET_eta;   //!
+   TBranch        *b_RecoPFMET_phi;   //!
+   TBranch        *b_RecoPFMET_significance;   //!
+   TBranch        *b_Muon1_Pt;   //!
+   TBranch        *b_Muon1_eta;   //!
+   TBranch        *b_Muon1_phi;   //!
+   TBranch        *b_Muon2_Pt;   //!
+   TBranch        *b_Muon2_eta;   //!
+   TBranch        *b_Muon2_phi;   //!
+   TBranch        *b_mT;   //!
    TBranch        *b_passCutPt55;   //!
    TBranch        *b_passPreselection_noIsolation_noIh;   //!
    TBranch        *b_passPreselection;   //!
@@ -1247,14 +1304,29 @@ public :
    TBranch        *b_Pt;   //!
    TBranch        *b_PtErr;   //!
    TBranch        *b_Ias;   //!
-   TBranch        *b_Ias_noPix_noTIB_noTID_no3TEC;   //!
+   TBranch        *b_Ias_noTIBnoTIDno3TEC;   //!
+   TBranch        *b_Ias_PixelOnly;   //!
    TBranch        *b_Ias1;   //!
    TBranch        *b_Ias2;   //!
    TBranch        *b_Ias3;   //!
    TBranch        *b_Ih;   //!
    TBranch        *b_Ick;   //!
-   TBranch        *b_Fmip;   //!
+   TBranch        *b_Fmip;   //!   
+   TBranch        *b_ProbXY;   //!
+   TBranch        *b_ProbXY_noL1;   //!
    TBranch        *b_ProbQ;   //!
+   TBranch        *b_ProbQ_noL1;   //!
+   TBranch        *b_ProbQ_dEdx;   //!
+   TBranch        *b_Ndof;   //!
+   TBranch        *b_Chi2;   //!
+   TBranch        *b_isHighPurity;   //!
+   TBranch        *b_isMuon;   //!
+   TBranch        *b_MuonSelector;   //!
+   TBranch        *b_isElectron;   //!
+   TBranch        *b_isChHadron;   //!
+   TBranch        *b_isNeutHadron;   //!
+   TBranch        *b_ECAL_energy;   //!
+   TBranch        *b_HCAL_energy;   //!
    TBranch        *b_TOF;   //!
    TBranch        *b_TOFErr;   //!
    TBranch        *b_TOF_ndof;   //!
@@ -1280,6 +1352,22 @@ public :
    TBranch        *b_iso_TK;   //!
    TBranch        *b_iso_ECAL;   //!
    TBranch        *b_iso_HCAL;   //!
+   TBranch        *b_TrackPFIsolationR005_sumChargedHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR005_sumNeutralHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR005_sumPhotonPt;   //!
+   TBranch        *b_TrackPFIsolationR005_sumPUPt;   //!
+   TBranch        *b_TrackPFIsolationR01_sumChargedHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR01_sumNeutralHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR01_sumPhotonPt;   //!
+   TBranch        *b_TrackPFIsolationR01_sumPUPt;   //!
+   TBranch        *b_TrackPFIsolationR03_sumChargedHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR03_sumNeutralHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR03_sumPhotonPt;   //!
+   TBranch        *b_TrackPFIsolationR03_sumPUPt;   //!
+   TBranch        *b_TrackPFIsolationR05_sumChargedHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR05_sumNeutralHadronPt;   //!
+   TBranch        *b_TrackPFIsolationR05_sumPhotonPt;   //!
+   TBranch        *b_TrackPFIsolationR05_sumPUPt;   //!
    TBranch        *b_MuonPFIsolationR03_sumChargedHadronPt;   //!
    TBranch        *b_MuonPFIsolationR03_sumNeutralHadronPt;   //!
    TBranch        *b_MuonPFIsolationR03_sumPhotonPt;   //!
@@ -1354,7 +1442,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     invMET_ = invMET;
 
 
-    outfilename_ = "outfile"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_IasNoInnerLayers_highPurity_dz05_dxy002";
+    outfilename_ = "outfile"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
 
     std::cout << outfilename_ << std::endl;
 
@@ -1462,6 +1550,7 @@ void HscpCandidates::Init(TTree *tree)
    // (once per file to be processed).
 
    // Set object pointer
+   mT = 0;
    passCutPt55 = 0;
    passPreselection_noIsolation_noIh = 0;
    passPreselection = 0;
@@ -1470,14 +1559,29 @@ void HscpCandidates::Init(TTree *tree)
    Pt = 0;
    PtErr = 0;
    Ias = 0;
-   Ias_noPix_noTIB_noTID_no3TEC = 0;
+   Ias_noTIBnoTIDno3TEC = 0;
+   Ias_PixelOnly = 0;
    Ias1 = 0;
    Ias2 = 0;
    Ias3 = 0;
    Ih = 0;
    Ick = 0;
    Fmip = 0;
+   ProbXY = 0;
+   ProbXY_noL1 = 0;
    ProbQ = 0;
+   ProbQ_noL1 = 0;
+   ProbQ_dEdx = 0;
+   Ndof = 0;
+   Chi2 = 0;
+   isHighPurity = 0;
+   isMuon = 0;
+   MuonSelector = 0;
+   isElectron = 0;
+   isChHadron = 0;
+   isNeutHadron = 0;
+   ECAL_energy = 0;
+   HCAL_energy = 0;
    TOF = 0;
    TOFErr = 0;
    TOF_ndof = 0;
@@ -1503,6 +1607,22 @@ void HscpCandidates::Init(TTree *tree)
    iso_TK = 0;
    iso_ECAL = 0;
    iso_HCAL = 0;
+   TrackPFIsolationR005_sumChargedHadronPt = 0;
+   TrackPFIsolationR005_sumNeutralHadronPt = 0;
+   TrackPFIsolationR005_sumPhotonPt = 0;
+   TrackPFIsolationR005_sumPUPt = 0;
+   TrackPFIsolationR01_sumChargedHadronPt = 0;
+   TrackPFIsolationR01_sumNeutralHadronPt = 0;
+   TrackPFIsolationR01_sumPhotonPt = 0;
+   TrackPFIsolationR01_sumPUPt = 0;
+   TrackPFIsolationR03_sumChargedHadronPt = 0;
+   TrackPFIsolationR03_sumNeutralHadronPt = 0;
+   TrackPFIsolationR03_sumPhotonPt = 0;
+   TrackPFIsolationR03_sumPUPt = 0;
+   TrackPFIsolationR05_sumChargedHadronPt = 0;
+   TrackPFIsolationR05_sumNeutralHadronPt = 0;
+   TrackPFIsolationR05_sumPhotonPt = 0;
+   TrackPFIsolationR05_sumPUPt = 0;
    MuonPFIsolationR03_sumChargedHadronPt = 0;
    MuonPFIsolationR03_sumNeutralHadronPt = 0;
    MuonPFIsolationR03_sumPhotonPt = 0;
@@ -1540,8 +1660,11 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("PileUp", &PileUp, &b_PileUp);
    fChain->SetBranchAddress("nofVtx", &nofVtx, &b_nofVtx);
    fChain->SetBranchAddress("Hscp", &Hscp, &b_Hscp);
-/*   fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
-   fChain->SetBranchAddress("HLT_Mu50", &HLT_Mu50, &b_HLT_Mu50);
+   fChain->SetBranchAddress("nmuons", &nmuons, &b_nmuons);
+   fChain->SetBranchAddress("njets", &njets, &b_njets);
+   fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
+   fChain->SetBranchAddress("GeneratorWeight", &GeneratorWeight, &b_GeneratorWeight);
+/*  fChain->SetBranchAddress("HLT_Mu50", &HLT_Mu50, &b_HLT_Mu50);
    fChain->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight, &b_HLT_PFMET120_PFMHT120_IDTight);
    fChain->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight, &b_HLT_PFHT500_PFMET100_PFMHT100_IDTight);
    fChain->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60, &b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
@@ -1551,6 +1674,17 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("RecoPFMHT", &RecoPFMHT, &b_RecoPFMHT);
    fChain->SetBranchAddress("HLTPFMET", &HLTPFMET, &b_HLTPFMET);
    fChain->SetBranchAddress("HLTPFMHT", &HLTPFMHT, &b_HLTPFMHT);*/
+   fChain->SetBranchAddress("RecoPFMET_eta", &RecoPFMET_eta, &b_RecoPFMET_eta);
+   fChain->SetBranchAddress("RecoPFMET_phi", &RecoPFMET_phi, &b_RecoPFMET_phi);
+   fChain->SetBranchAddress("RecoPFMET_significance", &RecoPFMET_significance, &b_RecoPFMET_significance);
+   fChain->SetBranchAddress("Muon1_Pt", &Muon1_Pt, &b_Muon1_Pt);
+   fChain->SetBranchAddress("Muon1_eta", &Muon1_eta, &b_Muon1_eta);
+   fChain->SetBranchAddress("Muon1_phi", &Muon1_phi, &b_Muon1_phi);
+   fChain->SetBranchAddress("Muon2_Pt", &Muon2_Pt, &b_Muon2_Pt);
+   fChain->SetBranchAddress("Muon2_eta", &Muon2_eta, &b_Muon2_eta);
+   fChain->SetBranchAddress("Muon2_phi", &Muon2_phi, &b_Muon2_phi);
+   fChain->SetBranchAddress("mT", &mT, &b_mT);
+
    fChain->SetBranchAddress("passCutPt55", &passCutPt55, &b_passCutPt55);
    fChain->SetBranchAddress("passPreselection_noIsolation_noIh", &passPreselection_noIsolation_noIh, &b_passPreselection_noIsolation_noIh);
    fChain->SetBranchAddress("passPreselection", &passPreselection, &b_passPreselection);
@@ -1559,14 +1693,29 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("Pt", &Pt, &b_Pt);
    fChain->SetBranchAddress("PtErr", &PtErr, &b_PtErr);
    fChain->SetBranchAddress("Ias", &Ias, &b_Ias);
-   fChain->SetBranchAddress("Ias_noPix_noTIB_noTID_no3TEC", &Ias_noPix_noTIB_noTID_no3TEC, &b_Ias_noPix_noTIB_noTID_no3TEC);
+   fChain->SetBranchAddress("Ias_noTIBnoTIDno3TEC", &Ias_noTIBnoTIDno3TEC, &b_Ias_noTIBnoTIDno3TEC);
+   fChain->SetBranchAddress("Ias_PixelOnly", &Ias_PixelOnly, &b_Ias_PixelOnly);
 //   fChain->SetBranchAddress("Ias1", &Ias1, &b_Ias1);
 //   fChain->SetBranchAddress("Ias2", &Ias2, &b_Ias2);
 //   fChain->SetBranchAddress("Ias3", &Ias3, &b_Ias3);
    fChain->SetBranchAddress("Ih", &Ih, &b_Ih);
    fChain->SetBranchAddress("Ick", &Ick, &b_Ick);
    fChain->SetBranchAddress("Fmip", &Fmip, &b_Fmip);
+   fChain->SetBranchAddress("ProbXY", &ProbXY, &b_ProbXY);
+   fChain->SetBranchAddress("ProbXY_noL1", &ProbXY_noL1, &b_ProbXY_noL1);
    fChain->SetBranchAddress("ProbQ", &ProbQ, &b_ProbQ);
+   fChain->SetBranchAddress("ProbQ_noL1", &ProbQ_noL1, &b_ProbQ_noL1);
+   fChain->SetBranchAddress("ProbQ_dEdx", &ProbQ_dEdx, &b_ProbQ_dEdx);
+   fChain->SetBranchAddress("Ndof", &Ndof, &b_Ndof);
+   fChain->SetBranchAddress("Chi2", &Chi2, &b_Chi2);
+   fChain->SetBranchAddress("isHighPurity", &isHighPurity, &b_isHighPurity);
+   fChain->SetBranchAddress("isMuon", &isMuon, &b_isMuon);
+   fChain->SetBranchAddress("MuonSelector", &MuonSelector, &b_MuonSelector);
+   fChain->SetBranchAddress("isElectron", &isElectron, &b_isElectron);
+   fChain->SetBranchAddress("isChHadron", &isChHadron, &b_isChHadron);
+   fChain->SetBranchAddress("isNeutHadron", &isNeutHadron, &b_isNeutHadron);
+   fChain->SetBranchAddress("ECAL_energy", &ECAL_energy, &b_ECAL_energy);
+   fChain->SetBranchAddress("HCAL_energy", &HCAL_energy, &b_HCAL_energy);
    fChain->SetBranchAddress("TOF", &TOF, &b_TOF);
 /*   fChain->SetBranchAddress("TOFErr", &TOFErr, &b_TOFErr);
    fChain->SetBranchAddress("TOF_ndof", &TOF_ndof, &b_TOF_ndof);
@@ -1592,6 +1741,22 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("iso_TK", &iso_TK, &b_iso_TK);
    fChain->SetBranchAddress("iso_ECAL", &iso_ECAL, &b_iso_ECAL);
    fChain->SetBranchAddress("iso_HCAL", &iso_HCAL, &b_iso_HCAL);
+   fChain->SetBranchAddress("TrackPFIsolationR005_sumChargedHadronPt", &TrackPFIsolationR005_sumChargedHadronPt, &b_TrackPFIsolationR005_sumChargedHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR005_sumNeutralHadronPt", &TrackPFIsolationR005_sumNeutralHadronPt, &b_TrackPFIsolationR005_sumNeutralHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR005_sumPhotonPt", &TrackPFIsolationR005_sumPhotonPt, &b_TrackPFIsolationR005_sumPhotonPt);
+   fChain->SetBranchAddress("TrackPFIsolationR005_sumPUPt", &TrackPFIsolationR005_sumPUPt, &b_TrackPFIsolationR005_sumPUPt);
+   fChain->SetBranchAddress("TrackPFIsolationR01_sumChargedHadronPt", &TrackPFIsolationR01_sumChargedHadronPt, &b_TrackPFIsolationR01_sumChargedHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR01_sumNeutralHadronPt", &TrackPFIsolationR01_sumNeutralHadronPt, &b_TrackPFIsolationR01_sumNeutralHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR01_sumPhotonPt", &TrackPFIsolationR01_sumPhotonPt, &b_TrackPFIsolationR01_sumPhotonPt);
+   fChain->SetBranchAddress("TrackPFIsolationR01_sumPUPt", &TrackPFIsolationR01_sumPUPt, &b_TrackPFIsolationR01_sumPUPt);
+   fChain->SetBranchAddress("TrackPFIsolationR03_sumChargedHadronPt", &TrackPFIsolationR03_sumChargedHadronPt, &b_TrackPFIsolationR03_sumChargedHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR03_sumNeutralHadronPt", &TrackPFIsolationR03_sumNeutralHadronPt, &b_TrackPFIsolationR03_sumNeutralHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR03_sumPhotonPt", &TrackPFIsolationR03_sumPhotonPt, &b_TrackPFIsolationR03_sumPhotonPt);
+   fChain->SetBranchAddress("TrackPFIsolationR03_sumPUPt", &TrackPFIsolationR03_sumPUPt, &b_TrackPFIsolationR03_sumPUPt);
+   fChain->SetBranchAddress("TrackPFIsolationR05_sumChargedHadronPt", &TrackPFIsolationR05_sumChargedHadronPt, &b_TrackPFIsolationR05_sumChargedHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR05_sumNeutralHadronPt", &TrackPFIsolationR05_sumNeutralHadronPt, &b_TrackPFIsolationR05_sumNeutralHadronPt);
+   fChain->SetBranchAddress("TrackPFIsolationR05_sumPhotonPt", &TrackPFIsolationR05_sumPhotonPt, &b_TrackPFIsolationR05_sumPhotonPt);
+   fChain->SetBranchAddress("TrackPFIsolationR05_sumPUPt", &TrackPFIsolationR05_sumPUPt, &b_TrackPFIsolationR05_sumPUPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumChargedHadronPt", &MuonPFIsolationR03_sumChargedHadronPt, &b_MuonPFIsolationR03_sumChargedHadronPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumNeutralHadronPt", &MuonPFIsolationR03_sumNeutralHadronPt, &b_MuonPFIsolationR03_sumNeutralHadronPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumPhotonPt", &MuonPFIsolationR03_sumPhotonPt, &b_MuonPFIsolationR03_sumPhotonPt);

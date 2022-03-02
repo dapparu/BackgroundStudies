@@ -87,10 +87,10 @@ void HscpCandidates::Loop()
    region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
    region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
    region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
-   region rB_boundedIas("_regionB_boundedIas",etabins_,ihbins_,pbins_,massbins_);
+/*   region rB_boundedIas("_regionB_boundedIas",etabins_,ihbins_,pbins_,massbins_);
    region rD_boundedIas("_regionD_boundedIas",etabins_,ihbins_,pbins_,massbins_);
    region rC_boundedPt("_regionC_boundedPt",etabins_,ihbins_,pbins_,massbins_);
-   region rD_boundedPt("_regionD_boundedPt",etabins_,ihbins_,pbins_,massbins_);
+   region rD_boundedPt("_regionD_boundedPt",etabins_,ihbins_,pbins_,massbins_);*/
 
    
    //cutindex=19 pt=60 ias=0.025
@@ -106,6 +106,7 @@ void HscpCandidates::Loop()
       
       //if(jentry%2==0) continue;
       //if(jentry%2==1) continue;
+
 
       if(jentry%1000000==0) std::cout << "entry: " << jentry << std::endl;
 
@@ -125,10 +126,8 @@ void HscpCandidates::Loop()
 
           float ih = Ih->at(i);
           //float ias = Ias->at(i);
-          float ias = Ias_noPix_noTIB_noTID_no3TEC->at(i);
-          //float ias1 = Ias1->at(i);
-          //float ias2 = Ias2->at(i);
-          //float ias3 = Ias3->at(i);
+          //float ias = Ias_noTIBnoTIDno3TEC->at(i);
+          float ias = Ias_PixelOnly->at(i);
           float Eta = eta->at(i); 
           float iso = iso_TK->at(i);
           float iso_r = iso/pt;
@@ -170,7 +169,7 @@ void HscpCandidates::Loop()
 
                   if(ias<0.1)
                   {
-                      rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+                      //rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
                       nB_boundedIas++;
                   }
               }
@@ -184,7 +183,7 @@ void HscpCandidates::Loop()
 
                   if(pt<70)
                   {
-                      rC_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+                      //rC_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
                       nC_boundedPt++;
                   }
 
@@ -196,13 +195,13 @@ void HscpCandidates::Loop()
                   
                   if(ias<0.1)
                   {
-                      rD_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+                      //rD_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
                       nD_boundedIas++;
                   } 
                   
                   if(pt<70)
                   {
-                      rD_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+                      //rD_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
                       nD_boundedPt++;
                   }
               }
@@ -253,7 +252,7 @@ void HscpCandidates::Loop()
     std::cout << " region C saved " << std::endl;
       rD.write();
     std::cout << " region D saved " << std::endl;
-      rB_boundedIas.write();
+/*      rB_boundedIas.write();
     std::cout << " region B_boundedIas saved " << std::endl;
       rD_boundedIas.write();
     std::cout << " region D_boundedIas saved " << std::endl;
@@ -261,7 +260,7 @@ void HscpCandidates::Loop()
     std::cout << " region C_boundedPt saved " << std::endl;
       rD_boundedPt.write();
     std::cout << " region D_boundedPt saved " << std::endl;
-
+*/
 
 
       outfile->Write();
