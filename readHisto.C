@@ -79,16 +79,16 @@ void readHisto()
     region rc;
     region rd;
     region rbc;
-    region rb_boundedIas;
+    region rdb;
+    region rdc;
+/*    region rb_boundedIas;
     region rc_boundedIas;
     region rd_boundedIas;
     region rbc_boundedIas;
-    region rdb;
-    region rdc;
     region rb_boundedPt;
     region rc_boundedPt;
     region rd_boundedPt;
-    region rbc_boundedPt;
+    region rbc_boundedPt;*/
     
     bool bool_rebin=rebin;
     
@@ -99,16 +99,16 @@ void readHisto()
     loadHistograms(rc,ifile,"regionC",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rbc,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
-    loadHistograms(rb_boundedIas,ifile,"regionB_boundedIas",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rdb,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rdc,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+/*    loadHistograms(rb_boundedIas,ifile,"regionB_boundedIas",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rc_boundedIas,ifile,"regionC",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd_boundedIas,ifile,"regionD_boundedIas",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rbc_boundedIas,ifile,"regionD_boundedIas",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
-    loadHistograms(rdb,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
-    loadHistograms(rdc,ifile,"regionD",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rb_boundedPt,ifile,"regionB",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rc_boundedPt,ifile,"regionC_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
-    loadHistograms(rbc_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
+    loadHistograms(rbc_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass*/
 
     std::cout << "Regions loaded" << std::endl;
 
@@ -170,19 +170,19 @@ void readHisto()
     }
     
     etaReweighingP(rc.eta_p,rb.eta_p); 
-    etaReweighingP(rc_boundedIas.eta_p,rb_boundedIas.eta_p); 
-    etaReweighingP(rc_boundedPt.eta_p,rb_boundedPt.eta_p); 
+    //etaReweighingP(rc_boundedIas.eta_p,rb_boundedIas.eta_p); 
+    //etaReweighingP(rc_boundedPt.eta_p,rb_boundedPt.eta_p); 
    
     //rbc = rd;
     rbc.eta_p = rc.eta_p;
     rbc.ih_eta = rb.ih_eta;
 
-    rbc_boundedIas.eta_p = rc_boundedIas.eta_p;
+    /*rbc_boundedIas.eta_p = rc_boundedIas.eta_p;
     rbc_boundedIas.ih_eta = rb_boundedIas.ih_eta;
 
     rbc_boundedPt.eta_p = rc_boundedPt.eta_p;
     rbc_boundedPt.ih_eta = rb_boundedPt.ih_eta;
-    
+    */
     rdc.eta_p = rc.eta_p;
     rdb.ih_eta = rb.ih_eta;
 
@@ -199,11 +199,11 @@ void readHisto()
     rbc.fillMassFrom1DTemplatesEtaBinning();
     //rbc.fillMassFrom1DTemplatesEtaBinning(normalisationABC);
 
-    rd_boundedIas.fillMassFrom1DTemplatesEtaBinning();
+    /*rd_boundedIas.fillMassFrom1DTemplatesEtaBinning();
     rbc_boundedIas.fillMassFrom1DTemplatesEtaBinning();
     rd_boundedPt.fillMassFrom1DTemplatesEtaBinning();
     rbc_boundedPt.fillMassFrom1DTemplatesEtaBinning();
-
+*/
     rdc.fillMassFrom1DTemplatesEtaBinning();
     rdb.fillMassFrom1DTemplatesEtaBinning();
 
@@ -226,24 +226,24 @@ void readHisto()
     TH1F* h_massFrom2D = (TH1F*) massFrom2D(rall,"all");
     TH1F* h_massFrom2D_D = (TH1F*) massFrom2D(rd,"regD");
                
-    rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
+    //rall.Mass_errMass = (TH2F*)rall.Mass_errMass->Rebin2D(10,10);
 
     TFile* ofile = new TFile((outfilename_+".root").c_str(),"RECREATE");
 
     std::cout << "saving... " << std::endl;
 
-    rc.eta_p->Write();
+/*    rc.eta_p->Write();
     rd.eta_p->Write();
-    rc_boundedIas.eta_p->SetName("eta_p_regionC_boundedIas");
-    rc_boundedIas.eta_p->Write();
-    rd_boundedIas.eta_p->Write();
+    //rc_boundedIas.eta_p->SetName("eta_p_regionC_boundedIas");
+    //rc_boundedIas.eta_p->Write();
+    //rd_boundedIas.eta_p->Write();
 
     rall.mass->Write();
     rall.eta_p->Write();
 
     rall.massFrom1DTemplatesEtaBinning->Write();
-    rall.errMass->Write();
-    rall.Mass_errMass->Write();
+    //rall.errMass->Write();
+    //rall.Mass_errMass->Write();
 
 
     rall.stdDevIas_p_y->Write();
@@ -300,7 +300,7 @@ void readHisto()
 
     rd.momentumDistribM1000->Write();
     rd.dedxDistribM1000->Write();
-
+*/
 
 
     scale(rd.mass);
@@ -309,12 +309,12 @@ void readHisto()
     scale(rbc.massFrom1DTemplatesEtaBinning);
     scale(h_massFrom2D_D);
 
-    scale(rd_boundedIas.mass);
+    /*scale(rd_boundedIas.mass);
     scale(rd_boundedIas.massFrom1DTemplatesEtaBinning);
     scale(rbc_boundedIas.massFrom1DTemplatesEtaBinning);
     scale(rd_boundedPt.mass);
     scale(rd_boundedPt.massFrom1DTemplatesEtaBinning);
-    scale(rbc_boundedPt.massFrom1DTemplatesEtaBinning);
+    scale(rbc_boundedPt.massFrom1DTemplatesEtaBinning);*/
     scale(rdb.massFrom1DTemplatesEtaBinning);
     scale(rdc.massFrom1DTemplatesEtaBinning);
 
@@ -344,7 +344,7 @@ void readHisto()
     TH1F* h1DBCR = (TH1F*) ratioIntegral(rbc.massFrom1DTemplatesEtaBinning,rd.mass)->Clone();
     h1DBCR->SetName("mass_predBCR");
     h1DBCR->Write();
-
+/*
     rd_boundedIas.mass->SetName("mass_obs_boundedIas");
     rd_boundedIas.mass->Write();
 
@@ -378,7 +378,7 @@ void readHisto()
 
     TH1F* h1DBCR_boundedPt = (TH1F*) ratioIntegral(rbc_boundedPt.massFrom1DTemplatesEtaBinning,rd_boundedPt.mass)->Clone();
     h1DBCR_boundedPt->SetName("mass_predBCR_boundedPt");
-    h1DBCR_boundedPt->Write();
+    h1DBCR_boundedPt->Write();*/
 
 
 
@@ -397,7 +397,7 @@ void readHisto()
     h1DBR->Write();
 
 
-
+/*
     plotting((TH1F*)rb.quantile01Ih_p,(TH1F*)rd.quantile01Ih_p,true,"quantile01_ih_p_b_d","region B","region D")->Write();
     plotting((TH1F*)rb.quantile10Ih_p,(TH1F*)rd.quantile10Ih_p,true,"quantile10_ih_p_b_d","region B","region D")->Write();
     plotting((TH1F*)rb.quantile30Ih_p,(TH1F*)rd.quantile30Ih_p,true,"quantile30_ih_p_b_d","region B","region D")->Write();
@@ -416,7 +416,7 @@ void readHisto()
     plotting((TH1F*)rc.stdDevIas_p,(TH1F*)rd.stdDevIas_p,true,"stddev_ias_p_c_d","region C","region D")->Write();
     //plotting((TH1F*)profC,(TH1F*)profD,true,"profile_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.eta_p->ProjectionX(),(TH1F*)rd.eta_p->ProjectionX(),true,"p_c_d","region C","region D")->Write();
-
+*/
     plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,false,"mass1D_all","Observed","Prediction from 1D templates")->Write();
     plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,true,"mass1D_all_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rall.mass,h_massFrom2D,false,"mass2D_all","Observed","Prediction from 2D template")->Write();

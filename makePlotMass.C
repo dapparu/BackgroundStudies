@@ -30,7 +30,7 @@ void makePlotMass()
     //std::string inputfilename = "outfile-50eta50_ias50_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed";
     //std::string inputfilename = "outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed";
     //std::string inputfilename = "outfile-50eta50_ias100_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_IasNoInnerLayers_highPurity_dxy001_dz005_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed";
-    std::string inputfilename = "outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_IasNoInnerLayers_highPurity_dz05_dxy002_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed";
+    std::string inputfilename = "outfile_SingleMu_TkOnly_2017C_IhPix3p17_-50eta50_ias100_pt60_ih31_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_IasNoInnerLayers_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed";
 
     //TFile* ifile1 = new TFile("outfile_ias25_pt60_ih0_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
@@ -42,7 +42,7 @@ void makePlotMass()
 //    TFile* ifile1 = new TFile("outfile-21eta-9_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
     TFile* ifile1 = new TFile((inputfilename+".root").c_str());
     //TFile* ifile2 = new TFile("outfile-50eta50_ias50_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_IasNoInnerLayers_highPurity_dxy001_dz005_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
-    TFile* ifile2 = new TFile("outfile-50eta50_ias100_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_IasNoInnerLayers_highPurity_dxy001_dz005_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
+    //TFile* ifile2 = new TFile("ooutfile_SingleMu_TkOnly_2017C_Ih2p9_-50eta50_ias100_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p13000_etabins120_ihbins1000_pbins2000_massbins6500_invIso0_invMET0_eta50_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
 /* 
@@ -65,10 +65,10 @@ void makePlotMass()
     TH1F* h4R = (TH1F*)ifile1->Get("mass_predDBR");
     TH1F* h5R = (TH1F*)ifile1->Get("mass_predDCR");
 
-    TH1F* h1_2 = (TH1F*)ifile2->Get("mass_obs");
+ /*   TH1F* h1_2 = (TH1F*)ifile2->Get("mass_obs");
     TH1F* h3_2 = (TH1F*)ifile2->Get("mass_predBC");
     TH1F* h3R_2 = (TH1F*)ifile2->Get("mass_predBCR");
-
+*/
     //h1->Scale(h1->GetEntries());
     //h1_2->Scale(h1_2->GetEntries());
 
@@ -197,8 +197,8 @@ void makePlotMass()
    frameR->GetXaxis()->SetTitle("");
    frameR->GetXaxis()->SetTitle("Mass (GeV)");
    frameR->GetYaxis()->SetTitle("Ratio - R");
-   frameR->SetMaximum(2.5);
-   frameR->SetMinimum(0.);
+   frameR->SetMaximum(1.5);
+   frameR->SetMinimum(0.5);
    frameR->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
    frameR->GetYaxis()->SetLabelSize(20); //font size
    frameR->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
@@ -252,7 +252,7 @@ void makePlotMass()
     //h5R->Draw("same E1");
 
     TH1F* h1Cl = (TH1F*) h1->Clone();
-    h1Cl->Divide(h1_2);
+    //h1Cl->Divide(h1_2);
     //h1Cl->Draw("same E1");
 
     TLine* LineAtOne = new TLine(0,1,max_mass,1); LineAtOne->SetLineStyle(3); LineAtOne->Draw("same");
@@ -264,6 +264,6 @@ void makePlotMass()
 
     c1->cd();
 
-    c1->SaveAs(("plotsMassPdf/MassPlot_pvcutsGoodZoom_"+inputfilename+".pdf").c_str());
+    c1->SaveAs(("plotsMassPdf/MassPlot_"+inputfilename+".pdf").c_str());
    
 }

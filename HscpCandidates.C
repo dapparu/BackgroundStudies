@@ -49,6 +49,11 @@ void predMass(TH1F* res, TH1F* h_p, TH1F* h_ih, float norm=0)
     }
 }
 
+float HscpCandidates::PFIsolationMuon(int i){
+    float iso = MuonPFIsolationR03_sumChargedHadronPt->at(i) + std::max(0.0,MuonPFIsolationR03_sumPhotonPt->at(i)+MuonPFIsolationR03_sumNeutralHadronPt->at(i)-0.5*MuonPFIsolationR03_sumPUPt->at(i));
+    return iso/Pt->at(i);
+}
+
 void HscpCandidates::Loop()
 {
 //   In a ROOT session, you can do:
@@ -92,6 +97,11 @@ void HscpCandidates::Loop()
    region rC_boundedPt("_regionC_boundedPt",etabins_,ihbins_,pbins_,massbins_);
    region rD_boundedPt("_regionD_boundedPt",etabins_,ihbins_,pbins_,massbins_);*/
 
+   TH1F* h_mT = new TH1F("mT",";m_T [GeV];track/bin",200,0,200);
+   TH1F* h_probQ = new TH1F("probQ",";probQ;track/bin",100,0,1);
+   TH1F* h_isoPFMuon = new TH1F("isoPFMuon",";Iso/p_T;",100,0,2);
+   TH1F* h_njets = new TH1F("njets",";njets;",20,0,20);
+
    
    //cutindex=19 pt=60 ias=0.025
    
@@ -115,6 +125,8 @@ void HscpCandidates::Loop()
 
       if(invMET_ && RecoPFMET>100) continue;
 
+      h_njets->Fill(njets);
+
       int i=0;
       for(int i=0; i<Mass->size(); i++)
       {
@@ -124,10 +136,11 @@ void HscpCandidates::Loop()
           float pt = Pt->at(i);
           //if(pt<50) continue;
 
-          float ih = Ih->at(i);
+          //float ih = Ih_StripOnly->at(i);
+          float ih = Ih_noL1->at(i);
           //float ias = Ias->at(i);
-          //float ias = Ias_noTIBnoTIDno3TEC->at(i);
-          float ias = Ias_PixelOnly->at(i);
+          float ias = Ias_noTIBnoTIDno3TEC->at(i);
+          //float ias = Ias_PixelOnly->at(i);
           float Eta = eta->at(i); 
           float iso = iso_TK->at(i);
           float iso_r = iso/pt;
@@ -140,16 +153,35 @@ void HscpCandidates::Loop()
           float tof = TOF->at(i);
           float dz = dZ->at(i);
           float dxy = dXY->at(i);
+          float probChi2 = TMath::Prob(Chi2->at(i),Ndof->at(i));
+
+          float IsoRel = PFIsolationMuon(i);
+         
+          //std::cout << "isHighPurity: " << isHighPurity->at(i) << std::endl;
+          //std::cout << "isMuon: " << isMuon->at(i) << std::endl;
+
+          //if(!isHighPurity->at(i)) continue;
+          //if(!isMuon->at(i)) continue;
+          //if(probChi2<0.1) continue;
+          if(abs(dz)>0.5) continue;
+          if(abs(dxy)>0.02) continue;
+          
           if(!(etacutinf_<Eta && Eta<etacutsup_)) continue;
           if(isocalo/p>0.3)continue;
           if((invIso_ && (isotk<50 || isotk>100))) continue;
           if(ih<ihcut_) continue;
           if(p>pcut_ && pcut_>0) continue;
 
+          //if(ProbQ_noL1->at(i)>0.1) continue;
 
-          if(abs(dz)>0.5) continue;
-          if(abs(dxy)>0.02) continue;
+          //if(mT->at(i)<90) continue;
 
+          h_mT->Fill(mT->at(i));
+          h_probQ->Fill(ProbQ_noL1->at(i));
+          h_isoPFMuon->Fill(PFIsolationMuon(i));
+          
+          //std::cout << "ProbChi2: " << TMath::Prob(Chi2->at(i),Ndof->at(i)) << std::endl;
+          //std::cout << "mT: " << mT->at(i) << std::endl;
 
           rAll.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
           ntot++;
@@ -262,6 +294,11 @@ void HscpCandidates::Loop()
     std::cout << " region D_boundedPt saved " << std::endl;
 */
 
+
+    h_mT->Write();
+    h_probQ->Write();
+    h_isoPFMuon->Write();
+    h_njets->Write();
 
       outfile->Write();
       outfile->Close();
