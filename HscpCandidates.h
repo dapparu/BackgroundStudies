@@ -160,8 +160,8 @@ TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name=""
     TH1F* tmp = (TH1F*) h1->Clone(); tmp->Reset();
     if(ratioSimple)
     {
-        h1->Scale(1./h1->Integral());
-        h2->Scale(1./h2->Integral());
+        //h1->Scale(1./h1->Integral());
+        //h2->Scale(1./h2->Integral());
         tmp = (TH1F*)h1->Clone();
         tmp->Divide(h2);
         tmp->GetYaxis()->SetTitle("#frac{N_{obs}}{N_{pred}}");
@@ -169,8 +169,8 @@ TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name=""
     }
     else
     {
-        h1->Scale(1./h1->Integral());
-        h2->Scale(1./h2->Integral());
+        //h1->Scale(1./h1->Integral());
+        //h2->Scale(1./h2->Integral());
         tmp=ratioIntegral(h2,h1);
         tmp->GetYaxis()->SetTitle("#int_{M}^{#infty} dm_{obs} / #int_{M}^{#infty} dm_{pred}");
         tmp->GetYaxis()->SetTitleSize(0.06);
@@ -687,7 +687,8 @@ void region::fillMassFrom1DTemplatesEtaBinning(float weight_=-1)
                 float mom = p->GetBinCenter(j);
                 float dedx = ih->GetBinCenter(k);
                 float prob = p->GetBinContent(j) * ih->GetBinContent(k);
-                float weight = prob*p->Integral();
+                //float weight = prob*p->Integral();
+                float weight = prob;
                 if(weight_>0) weight = weight_;
                 float err_weight = weight*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
                 float mass = GetMass(mom,dedx,K,C);

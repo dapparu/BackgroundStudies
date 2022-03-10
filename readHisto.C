@@ -189,7 +189,7 @@ void readHisto()
     rall.fillMassFrom1DTemplatesEtaBinning();
 
     float normalisationABC = rb.ih_eta->GetEntries()*rc.ih_eta->GetEntries()/ra.ih_eta->GetEntries();
-    std::cout << "normalisationABC: " << normalisationABC << std::endl;
+//    std::cout << "normalisationABC: " << normalisationABC << std::endl;
 
     //rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
 
@@ -303,11 +303,15 @@ void readHisto()
 */
 
 
-    scale(rd.mass);
+    //scale(rd.mass);
     scale(rd.massFrom1DTemplatesEtaBinning);
     //rbc.massFrom1DTemplatesEtaBinning->Scale(normalisationABC);
     scale(rbc.massFrom1DTemplatesEtaBinning);
     scale(h_massFrom2D_D);
+
+    for(int k=0;k<rbc.massFrom1DTemplatesEtaBinning->GetNbinsX()+1;k++){
+        rbc.massFrom1DTemplatesEtaBinning->SetBinContent(k,rbc.massFrom1DTemplatesEtaBinning->GetBinContent(k)*normalisationABC);
+    }
 
     /*scale(rd_boundedIas.mass);
     scale(rd_boundedIas.massFrom1DTemplatesEtaBinning);
@@ -318,8 +322,8 @@ void readHisto()
     scale(rdb.massFrom1DTemplatesEtaBinning);
     scale(rdc.massFrom1DTemplatesEtaBinning);
 
-    std::cout << "D integral: " << rd.mass->Integral() << " entries: " << rd.mass->GetEntries() << std::endl;
-    std::cout << "BC integral: " << rbc.massFrom1DTemplatesEtaBinning->Integral() << " entries: " << rbc.massFrom1DTemplatesEtaBinning->GetEntries() << std::endl;
+//    std::cout << "D integral: " << rd.mass->Integral() << " entries: " << rd.mass->GetEntries() << std::endl;
+//    std::cout << "BC integral: " << rbc.massFrom1DTemplatesEtaBinning->Integral() << " entries: " << rbc.massFrom1DTemplatesEtaBinning->GetEntries() << std::endl;
     
     rd.mass->SetName("mass_obs");
     rd.mass->Write();
@@ -417,12 +421,12 @@ void readHisto()
     //plotting((TH1F*)profC,(TH1F*)profD,true,"profile_ias_p_c_d","region C","region D")->Write();
     plotting((TH1F*)rc.eta_p->ProjectionX(),(TH1F*)rd.eta_p->ProjectionX(),true,"p_c_d","region C","region D")->Write();
 */
-    plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,false,"mass1D_all","Observed","Prediction from 1D templates")->Write();
+    /*plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,false,"mass1D_all","Observed","Prediction from 1D templates")->Write();
     plotting(rall.mass,rall.massFrom1DTemplatesEtaBinning,true,"mass1D_all_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rall.mass,h_massFrom2D,false,"mass2D_all","Observed","Prediction from 2D template")->Write();
     plotting(rall.mass,h_massFrom2D,true,"mass2D_all_simpleRatio","Observed","Prediction from 2D template")->Write();
     plotting(rall.mass,h_massFrom2D_D,false,"mass2D_regionD","Observed","Prediction from 2D template")->Write();
-    plotting(rall.mass,h_massFrom2D_D,true,"mass2D_regionD_simpleRatio","Observed","Prediction from 2D template")->Write();
+    plotting(rall.mass,h_massFrom2D_D,true,"mass2D_regionD_simpleRatio","Observed","Prediction from 2D template")->Write();*/
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,false,"mass1D_regionD","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,true,"mass1D_regionD_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC","Observed","Prediction from 1D templates in B and C")->Write();

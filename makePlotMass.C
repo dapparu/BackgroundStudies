@@ -65,6 +65,16 @@ void makePlotMass()
     TH1F* h4R = (TH1F*)ifile1->Get("mass_predDBR");
     TH1F* h5R = (TH1F*)ifile1->Get("mass_predDCR");
 
+    double SystErr = 0.2;
+    float Min_bin = 0.005;
+    TH1F* h1Err = (TH1F*)h1->Clone();
+    TH1F* h3Err = (TH1F*)h3->Clone();
+    for(int j=0;j<h3->GetNbinsX()+1;j++){
+        double err= sqrt(pow(h3->GetBinError(j),2) + pow(h3->GetBinContent(j)*SystErr,2));
+        h3Err->SetBinError(j,err);
+        if(h3Err->GetBinContent(j)<Min_bin && j>5){for(int i=j+1;i<h3Err->GetNbinsX();i++){h3Err->SetBinError(i,0);}}
+    }
+
  /*   TH1F* h1_2 = (TH1F*)ifile2->Get("mass_obs");
     TH1F* h3_2 = (TH1F*)ifile2->Get("mass_predBC");
     TH1F* h3R_2 = (TH1F*)ifile2->Get("mass_predBCR");
@@ -79,6 +89,7 @@ void makePlotMass()
     TH1F* h1b = (TH1F*)ifile1->Get("mass_obs");
 
     gStyle->SetOptStat(0);
+    gStyle->SetErrorX(0);
 
     TLegend* leg;
     TCanvas* c1 = new TCanvas("c1","c1",600,600);
@@ -99,21 +110,21 @@ void makePlotMass()
     t1->cd();
     c1->SetLogy(true);
 
+    h1->SetBinContent(h1->GetNbinsX(),h1->GetBinContent(h1->GetNbinsX())+h1->GetBinContent(h1->GetNbinsX()+1));
     //h1->GetYaxis()->SetRangeUser(1e-8,1);
-    h1->GetYaxis()->SetTitle("Fraction of tracks / bin");
-    h1->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
-    h1->GetYaxis()->SetLabelSize(20); //font size
-    h1->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
-    h1->GetYaxis()->SetTitleSize(20); //font size
-    h1->GetYaxis()->SetNdivisions(503);
+    h3Err->GetYaxis()->SetTitle("Tracks / bin");
+    h3Err->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
+    h3Err->GetYaxis()->SetLabelSize(20); //font size
+    h3Err->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
+    h3Err->GetYaxis()->SetTitleSize(20); //font size
+    h3Err->GetYaxis()->SetNdivisions(503);
 
 
     h1->SetMarkerStyle(20);
     h1->SetMarkerColor(1);
-    h1->SetMarkerSize(0.8);
+    h1->SetMarkerSize(1.0);
     h1->SetLineColor(1);
     h1->SetFillColor(0);
-    h1->Draw("same HIST P");
     h1->GetXaxis()->SetRangeUser(0,max_mass);
     //h1->GetYaxis()->SetRangeUser(1,1e7);
 
@@ -140,13 +151,26 @@ void makePlotMass()
     h2->SetFillColor(0);
     //h2->Draw("same P");
 
-    h3->SetMarkerStyle(21);
-    h3->SetMarkerColor(46);
-    h3->SetMarkerSize(0.8);
-    h3->SetLineColor(46);
-    h3->SetFillColor(0);
-    h3->Draw("same P");
 
+    h3Err->SetMarkerStyle(22);
+    h3Err->SetMarkerColor(5);
+    h3Err->SetMarkerSize(1.0);
+    h3Err->SetLineColor(5);
+    h3Err->SetFillColor(5);
+    h3Err->SetFillStyle(1001);
+    h3Err->GetXaxis()->SetRangeUser(0,max_mass);
+    h3Err->GetYaxis()->SetRangeUser(1e-1,1e6);
+    h3Err->Draw("same E5");
+
+
+    h3->SetMarkerStyle(22);
+    h3->SetMarkerColor(2);
+    h3->SetMarkerSize(1.5);
+    h3->SetLineColor(2);
+    h3->SetFillColor(0);
+    h3->Draw("same HIST P");
+
+    h1->Draw("same E1");
 
  /*   h3_2->SetMarkerStyle(34);
     h3_2->SetMarkerColor(42);
@@ -174,13 +198,24 @@ void makePlotMass()
 
 
     //leg = new TLegend(0.82,0.85,0.47,0.69);
-    leg = new TLegend(0.82,0.85,0.3,0.5);
+    leg = new TLegend(0.82,0.85,0.4,0.6);
+    //leg = new TLegend(0.82,0.85,0.3,0.5);
+
+    leg->SetFillStyle(0);
+    leg->SetBorderSize(0);
+    leg->SetTextFont(43);
+    leg->SetTextSize(20);
+
+    TH1F* h3leg = (TH1F*)h3->Clone();
+    h3leg->SetFillColor(h3Err->GetFillColor());
+    h3leg->SetFillStyle(h3Err->GetFillStyle());
 
     leg->AddEntry(h1,"Observed","PE1");
     //leg->AddEntry(h1_2,"Observed, new Ias calculation","PE1");
     //leg->AddEntry(h1b,"Observed, 0.05<Ias","PE1");
     //leg->AddEntry(h2,"Prediction templates from D","PE1");
-    leg->AddEntry(h3,"Prediction templates from B & C","PE1");
+    //leg->AddEntry(h3,"Prediction templates from B & C","PE1");
+    leg->AddEntry(h3leg,"Data-based SM prediction","PF");
     //leg->AddEntry(h3_2,"Prediction templates from B & C, new Ias calculation","PE1");
     //leg->AddEntry(h4,"Prediction templates from B & D","PE1");
     //leg->AddEntry(h5,"Prediction templates from C & D","PE1");
@@ -220,10 +255,10 @@ void makePlotMass()
     h2R->SetFillColor(0);
     //h2R->Draw("same E1");
 
-    h3R->SetMarkerStyle(21);
-    h3R->SetMarkerColor(46);
-    h3R->SetMarkerSize(0.8);
-    h3R->SetLineColor(46);
+    h3R->SetMarkerStyle(22);
+    h3R->SetMarkerColor(2);
+    h3R->SetMarkerSize(1.0);
+    h3R->SetLineColor(2);
     h3R->SetFillColor(0);
     h3R->Draw("same E1");
 
