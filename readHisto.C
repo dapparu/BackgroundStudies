@@ -44,6 +44,25 @@ TH1F* massFrom2D(const region& r,const std::string& name,int binx=1,int biny=1)
     return h1;
 }
 
+void massNormalisation(TH1F* h, const float& normalisation){
+
+    for(int k=0;k<h->GetNbinsX()+1;k++){
+        h->SetBinContent(k,h->GetBinContent(k)*normalisation);
+    }
+
+}
+
+void saveHistoRatio(TH1F* h1,TH1F* h2,std::string st1,std::string st2,std::string st3){
+        h1->SetName(st1.c_str());
+        h1->Write();
+        h2->SetName(st2.c_str());
+        h2->Write();
+        TH1F* R = (TH1F*) ratioIntegral(h2,h1)->Clone();
+        R->SetName(st3.c_str());
+        R->Write();
+
+}
+
 void readHisto()
 {
 
@@ -89,6 +108,27 @@ void readHisto()
     region rc_boundedPt;
     region rd_boundedPt;
     region rbc_boundedPt;*/
+
+    region rb_50;
+    region rb_60;
+    region rb_70;
+    region rb_80;
+    region rb_90;
+
+    region rbc_50;
+    region rbc_60;
+    region rbc_70;
+    region rbc_80;
+    region rbc_90;
+
+    region rd_50;
+    region rd_60;
+    region rd_70;
+    region rd_80;
+    region rd_90;
+
+    region ra_med;
+    region rc_med;
     
     bool bool_rebin=rebin;
     
@@ -109,6 +149,28 @@ void readHisto()
     loadHistograms(rc_boundedPt,ifile,"regionC_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rd_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rbc_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass*/
+
+    loadHistograms(rb_50,ifile,"regionB_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rb_60,ifile,"regionB_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rb_70,ifile,"regionB_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rb_80,ifile,"regionB_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rb_90,ifile,"regionB_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+
+    loadHistograms(rbc_50,ifile,"regionD_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rbc_60,ifile,"regionD_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rbc_70,ifile,"regionD_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rbc_80,ifile,"regionD_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rbc_90,ifile,"regionD_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+
+    loadHistograms(rd_50,ifile,"regionD_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rd_60,ifile,"regionD_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rd_70,ifile,"regionD_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rd_80,ifile,"regionD_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rd_90,ifile,"regionD_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    
+    loadHistograms(ra_med,ifile,"regionA_med",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rc_med,ifile,"regionC_med",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+
 
     std::cout << "Regions loaded" << std::endl;
 
@@ -172,7 +234,13 @@ void readHisto()
     etaReweighingP(rc.eta_p,rb.eta_p); 
     //etaReweighingP(rc_boundedIas.eta_p,rb_boundedIas.eta_p); 
     //etaReweighingP(rc_boundedPt.eta_p,rb_boundedPt.eta_p); 
-   
+  
+    etaReweighingP(rc_med.eta_p,rb_50.eta_p);
+    etaReweighingP(rc_med.eta_p,rb_60.eta_p);
+    etaReweighingP(rc_med.eta_p,rb_70.eta_p);
+    etaReweighingP(rc_med.eta_p,rb_80.eta_p);
+    etaReweighingP(rc_med.eta_p,rb_90.eta_p);
+
     //rbc = rd;
     rbc.eta_p = rc.eta_p;
     rbc.ih_eta = rb.ih_eta;
@@ -186,9 +254,26 @@ void readHisto()
     rdc.eta_p = rc.eta_p;
     rdb.ih_eta = rb.ih_eta;
 
+    rbc_50.eta_p = rc_med.eta_p;    rbc_50.ih_eta = rb_50.ih_eta;
+    rbc_60.eta_p = rc_med.eta_p;    rbc_60.ih_eta = rb_60.ih_eta;
+    rbc_70.eta_p = rc_med.eta_p;    rbc_70.ih_eta = rb_70.ih_eta;
+    rbc_80.eta_p = rc_med.eta_p;    rbc_80.ih_eta = rb_80.ih_eta;
+    rbc_90.eta_p = rc_med.eta_p;    rbc_90.ih_eta = rb_90.ih_eta;
+
     rall.fillMassFrom1DTemplatesEtaBinning();
 
     float normalisationABC = rb.ih_eta->GetEntries()*rc.ih_eta->GetEntries()/ra.ih_eta->GetEntries();
+    
+    float normalisationABC_50 = rb_50.ih_eta->GetEntries()*rc_med.ih_eta->GetEntries()/ra_med.ih_eta->GetEntries();
+    float normalisationABC_60 = rb_60.ih_eta->GetEntries()*rc_med.ih_eta->GetEntries()/ra_med.ih_eta->GetEntries();
+    float normalisationABC_70 = rb_70.ih_eta->GetEntries()*rc_med.ih_eta->GetEntries()/ra_med.ih_eta->GetEntries();
+    float normalisationABC_80 = rb_80.ih_eta->GetEntries()*rc_med.ih_eta->GetEntries()/ra_med.ih_eta->GetEntries();
+    float normalisationABC_90 = rb_90.ih_eta->GetEntries()*rc_med.ih_eta->GetEntries()/ra_med.ih_eta->GetEntries();
+    std::cout << " normaABD50: " << normalisationABC_50 << std::endl;
+    std::cout << " normaABD60: " << normalisationABC_60 << std::endl;
+    std::cout << " normaABD70: " << normalisationABC_70 << std::endl;
+    std::cout << " normaABD80: " << normalisationABC_80 << std::endl;
+    std::cout << " normaABD90: " << normalisationABC_90 << std::endl;
 //    std::cout << "normalisationABC: " << normalisationABC << std::endl;
 
     //rd.mass = (TH1F*) rd.mass->Rebin(vectOfBins.size()-1,"variableBins",vectOfBins.data());
@@ -197,6 +282,16 @@ void readHisto()
 
     rd.fillMassFrom1DTemplatesEtaBinning();
     rbc.fillMassFrom1DTemplatesEtaBinning();
+
+    rbc_50.fillMassFrom1DTemplatesEtaBinning();
+    rbc_60.fillMassFrom1DTemplatesEtaBinning();
+    rbc_70.fillMassFrom1DTemplatesEtaBinning();
+    rbc_80.fillMassFrom1DTemplatesEtaBinning();
+    rbc_90.fillMassFrom1DTemplatesEtaBinning();
+
+    
+
+
     //rbc.fillMassFrom1DTemplatesEtaBinning(normalisationABC);
 
     /*rd_boundedIas.fillMassFrom1DTemplatesEtaBinning();
@@ -309,9 +404,21 @@ void readHisto()
     scale(rbc.massFrom1DTemplatesEtaBinning);
     scale(h_massFrom2D_D);
 
+    scale(rbc_50.massFrom1DTemplatesEtaBinning);
+    scale(rbc_60.massFrom1DTemplatesEtaBinning);
+    scale(rbc_70.massFrom1DTemplatesEtaBinning);
+    scale(rbc_80.massFrom1DTemplatesEtaBinning);
+    scale(rbc_90.massFrom1DTemplatesEtaBinning);
+
     for(int k=0;k<rbc.massFrom1DTemplatesEtaBinning->GetNbinsX()+1;k++){
         rbc.massFrom1DTemplatesEtaBinning->SetBinContent(k,rbc.massFrom1DTemplatesEtaBinning->GetBinContent(k)*normalisationABC);
     }
+
+    massNormalisation(rbc_50.massFrom1DTemplatesEtaBinning,normalisationABC_50);
+    massNormalisation(rbc_60.massFrom1DTemplatesEtaBinning,normalisationABC_60);
+    massNormalisation(rbc_70.massFrom1DTemplatesEtaBinning,normalisationABC_70);
+    massNormalisation(rbc_80.massFrom1DTemplatesEtaBinning,normalisationABC_80);
+    massNormalisation(rbc_90.massFrom1DTemplatesEtaBinning,normalisationABC_90);
 
     /*scale(rd_boundedIas.mass);
     scale(rd_boundedIas.massFrom1DTemplatesEtaBinning);
@@ -348,6 +455,20 @@ void readHisto()
     TH1F* h1DBCR = (TH1F*) ratioIntegral(rbc.massFrom1DTemplatesEtaBinning,rd.mass)->Clone();
     h1DBCR->SetName("mass_predBCR");
     h1DBCR->Write();
+
+
+    saveHistoRatio(rd_50.mass,rbc_50.massFrom1DTemplatesEtaBinning,"mass_obs_50","mass_predBC_50","mass_predBCR_50");
+    saveHistoRatio(rd_60.mass,rbc_60.massFrom1DTemplatesEtaBinning,"mass_obs_60","mass_predBC_60","mass_predBCR_60");
+    saveHistoRatio(rd_70.mass,rbc_70.massFrom1DTemplatesEtaBinning,"mass_obs_70","mass_predBC_70","mass_predBCR_70");
+    saveHistoRatio(rd_80.mass,rbc_80.massFrom1DTemplatesEtaBinning,"mass_obs_80","mass_predBC_80","mass_predBCR_80");
+    saveHistoRatio(rd_90.mass,rbc_90.massFrom1DTemplatesEtaBinning,"mass_obs_90","mass_predBC_90","mass_predBCR_90");
+
+
+    
+
+
+
+
 /*
     rd_boundedIas.mass->SetName("mass_obs_boundedIas");
     rd_boundedIas.mass->Write();
@@ -431,6 +552,12 @@ void readHisto()
     plotting(rd.mass,rd.massFrom1DTemplatesEtaBinning,true,"mass1D_regionD_simpleRatio","Observed","Prediction from 1D templates")->Write();
     plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC","Observed","Prediction from 1D templates in B and C")->Write();
     plotting(rd.mass,rbc.massFrom1DTemplatesEtaBinning,true,"mass1D_regionBC_simpleRatio","Observed","Prediction from 1D templates in B and C")->Write();
+
+    plotting(rd_50.mass,rbc_50.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC_50","Observed","Prediction")->Write();
+    plotting(rd_60.mass,rbc_60.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC_60","Observed","Prediction")->Write();
+    plotting(rd_70.mass,rbc_70.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC_70","Observed","Prediction")->Write();
+    plotting(rd_80.mass,rbc_80.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC_80","Observed","Prediction")->Write();
+    plotting(rd_90.mass,rbc_90.massFrom1DTemplatesEtaBinning,false,"mass1D_regionBC_90","Observed","Prediction")->Write();
 
 
     /*plotting(rall.mass,massFrom2D(rall,"all"),false,"mass2D_all","Observed","Prediction from 2D template - p: 10 GeV - dEdx: 0.1 MeV/cm")->Write();

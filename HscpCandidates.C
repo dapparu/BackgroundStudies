@@ -54,6 +54,12 @@ float HscpCandidates::PFIsolationMuon(int i){
     return iso/Pt->at(i);
 }
 
+float HscpCandidates::PFIsolationTrack(int i){
+    float iso = TrackPFIsolationR03_sumChargedHadronPt->at(i) + std::max(0.0,TrackPFIsolationR03_sumPhotonPt->at(i)+TrackPFIsolationR03_sumNeutralHadronPt->at(i)-0.5*TrackPFIsolationR03_sumPUPt->at(i));
+    return iso/Pt->at(i);
+}
+
+
 void HscpCandidates::Loop()
 {
 //   In a ROOT session, you can do:
@@ -92,15 +98,60 @@ void HscpCandidates::Loop()
    region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
    region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
    region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
+
+   region rA_med("_regionA_med",etabins_,ihbins_,pbins_,massbins_);
+   region rC_med("_regionC_med",etabins_,ihbins_,pbins_,massbins_);
+
+   
+   region rB_50("_regionB_50",etabins_,ihbins_,pbins_,massbins_);
+   region rB_60("_regionB_60",etabins_,ihbins_,pbins_,massbins_);
+   region rB_70("_regionB_70",etabins_,ihbins_,pbins_,massbins_);
+   region rB_80("_regionB_80",etabins_,ihbins_,pbins_,massbins_);
+   region rB_90("_regionB_90",etabins_,ihbins_,pbins_,massbins_);
+   
+   region rD_50("_regionD_50",etabins_,ihbins_,pbins_,massbins_);
+   region rD_60("_regionD_60",etabins_,ihbins_,pbins_,massbins_);
+   region rD_70("_regionD_70",etabins_,ihbins_,pbins_,massbins_);
+   region rD_80("_regionD_80",etabins_,ihbins_,pbins_,massbins_);
+   region rD_90("_regionD_90",etabins_,ihbins_,pbins_,massbins_);
+
+/*   //Ias_outer quantiles
+   float quan50 = 0.052;
+   float quan60 = 0.062;
+   float quan70 = 0.075;
+   float quan80 = 0.093;
+   float quan90 = 0.117;
+*/
+
+   //Ias_all quantiles
+   float quan50 = 0.039;
+   float quan60 = 0.045;
+   float quan70 = 0.053;
+   float quan80 = 0.064;
+   float quan90 = 0.082;
+
+
 /*   region rB_boundedIas("_regionB_boundedIas",etabins_,ihbins_,pbins_,massbins_);
    region rD_boundedIas("_regionD_boundedIas",etabins_,ihbins_,pbins_,massbins_);
    region rC_boundedPt("_regionC_boundedPt",etabins_,ihbins_,pbins_,massbins_);
    region rD_boundedPt("_regionD_boundedPt",etabins_,ihbins_,pbins_,massbins_);*/
 
    TH1F* h_mT = new TH1F("mT",";m_T [GeV];track/bin",200,0,200);
+   TH1F* h_mT_regD = new TH1F("mT_regD",";m_T [GeV];track/bin",200,0,200);
    TH1F* h_probQ = new TH1F("probQ",";probQ;track/bin",100,0,1);
    TH1F* h_isoPFMuon = new TH1F("isoPFMuon",";Iso/p_T;",100,0,2);
    TH1F* h_njets = new TH1F("njets",";njets;",20,0,20);
+   TH1F* h_nhscp = new TH1F("nhscp",";nhscp",20,0,20);
+   TH1F* h_massObs = new TH1F("massObs",";Mass (GeV)",80,0,4000);
+   TH1F* h_isoPFTk = new TH1F("isoPFTk",";p_{T} relative tracker PF-based isolation (GeV)",100,0,1);
+   TH1F* h_ias_outer = new TH1F("ias_outer",";I_{as} outer",100,0,1);
+   TH1F* h_ias = new TH1F("ias",";I_{as}",100,0,1);
+
+   float weightGluino2000 = (9.7e-1*7.04)/97151.0; //Gluino at 2 TeV
+   float weightStau1599 = (1.4e-4*7.04)/7200.0;
+   //FIXME TRIGGER SIGNAL + K&C MC
+   //DISTRIB IAS_OUTER IAS_ALL 
+   //TABLEAU AVEC LES BOXS 
 
    
    //cutindex=19 pt=60 ias=0.025
@@ -124,22 +175,27 @@ void HscpCandidates::Loop()
       if(Pt->size()<1) continue;
 
       if(invMET_ && RecoPFMET>100) continue;
+      
+      if(!HLT_Mu50) continue;
 
       h_njets->Fill(njets);
+
+      int count_hscp_passPre = 0;
 
       int i=0;
       for(int i=0; i<Mass->size(); i++)
       {
-          if(invIso_ && !passPreselection_noIsolation_noIh->at(i)) continue;
-          if(!invIso_ && !passPreselection->at(i)) continue;
+          //if(invIso_ && !passPreselection_noIsolation_noIh->at(i)) continue;
+          //if(!invIso_ && !passPreselection->at(i)) continue;
+
+          if(!passPreselection->at(i)) continue;
 
           float pt = Pt->at(i);
-          //if(pt<50) continue;
 
           //float ih = Ih_StripOnly->at(i);
           float ih = Ih_noL1->at(i);
-          //float ias = Ias->at(i);
-          float ias = Ias_noTIBnoTIDno3TEC->at(i);
+          float ias = Ias->at(i);
+          //float ias = Ias_noTIBnoTIDno3TEC->at(i);
           //float ias = Ias_PixelOnly->at(i);
           float Eta = eta->at(i); 
           float iso = iso_TK->at(i);
@@ -156,22 +212,39 @@ void HscpCandidates::Loop()
           float probChi2 = TMath::Prob(Chi2->at(i),Ndof->at(i));
 
           float IsoRel = PFIsolationMuon(i);
+          float IsoRelTk = PFIsolationTrack(i);
+          h_isoPFTk->Fill(IsoRelTk);
+
+          h_ias_outer->Fill(Ias_noTIBnoTIDno3TEC->at(i));
+          h_ias->Fill(ias);
          
+          if(pt<50) continue;
+          /*if(abs(Eta)>2.1) continue;
+          if(NOPH<=1) continue;
+          if(NOH<=7) continue;
+          if(FOVH<0.8) continue;
+          if(NOM<=5) continue;
+          if(Chi2->at(i)/Ndof->at(i)>5) continue;
+                    if(isotk<50) continue;*/
+          if(isocalo/p>0.3) continue;
+          if(abs(dz)>0.5) continue;
+          if(abs(dxy)>0.02) continue;
+
+          if(ih<ihcut_) continue;
+          if(p>pcut_ && pcut_>0) continue;
+          
           //std::cout << "isHighPurity: " << isHighPurity->at(i) << std::endl;
           //std::cout << "isMuon: " << isMuon->at(i) << std::endl;
 
-          //if(!isHighPurity->at(i)) continue;
+          if(!isHighPurity->at(i)) continue;
           //if(!isMuon->at(i)) continue;
           //if(probChi2<0.1) continue;
-          if(abs(dz)>0.5) continue;
-          if(abs(dxy)>0.02) continue;
-          
+           
+   /*
           if(!(etacutinf_<Eta && Eta<etacutsup_)) continue;
           if(isocalo/p>0.3)continue;
           if((invIso_ && (isotk<50 || isotk>100))) continue;
-          if(ih<ihcut_) continue;
-          if(p>pcut_ && pcut_>0) continue;
-
+*/
           //if(ProbQ_noL1->at(i)>0.1) continue;
 
           //if(mT->at(i)<90) continue;
@@ -179,7 +252,9 @@ void HscpCandidates::Loop()
           h_mT->Fill(mT->at(i));
           h_probQ->Fill(ProbQ_noL1->at(i));
           h_isoPFMuon->Fill(PFIsolationMuon(i));
-          
+         
+          count_hscp_passPre++;
+
           //std::cout << "ProbChi2: " << TMath::Prob(Chi2->at(i),Ndof->at(i)) << std::endl;
           //std::cout << "mT: " << mT->at(i) << std::endl;
 
@@ -205,6 +280,12 @@ void HscpCandidates::Loop()
                       nB_boundedIas++;
                   }
               }
+              if(ias<quan50) rA_med.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+              if(ias>=quan50 && ias<quan60) rB_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan60 && ias<quan70) rB_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan70 && ias<quan80) rB_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan80 && ias<quan90) rB_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan90)              rB_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
           }
           else
           {
@@ -224,6 +305,9 @@ void HscpCandidates::Loop()
               {
                   rD.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
                   nD++;
+                  h_mT_regD->Fill(mT->at(i));
+                  //h_massObs->Fill(massT,weightGluino2000);
+                  h_massObs->Fill(massT,weightStau1599);
                   
                   if(ias<0.1)
                   {
@@ -236,13 +320,23 @@ void HscpCandidates::Loop()
                       //rD_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
                       nD_boundedPt++;
                   }
+
               }
+              if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+              if(ias>=quan50 && ias<quan60) rD_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan60 && ias<quan70) rD_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan70 && ias<quan80) rD_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan80 && ias<quan90) rD_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan90)              rD_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+
           }
 
       }
 
+   h_nhscp->Fill(count_hscp_passPre);
    
    }
+
 
    /*crossHistos(ih_p_from2D,(TH1F*)rD.ih_p->ProjectionX(),(TH1F*)rD.ih_p->ProjectionY());
    crossHistos(ih_p_fromBC,(TH1F*)rC.ih_p->ProjectionX(),(TH1F*)rB.ih_p->ProjectionY());
@@ -294,11 +388,31 @@ void HscpCandidates::Loop()
     std::cout << " region D_boundedPt saved " << std::endl;
 */
 
+    rB_50.write();
+    rB_60.write();
+    rB_70.write();
+    rB_80.write();
+    rB_90.write();
+
+    rD_50.write();
+    rD_60.write();
+    rD_70.write();
+    rD_80.write();
+    rD_90.write();
+
+    rA_med.write();
+    rC_med.write();
 
     h_mT->Write();
+    h_mT_regD->Write();
     h_probQ->Write();
     h_isoPFMuon->Write();
     h_njets->Write();
+    h_nhscp->Write();
+    h_massObs->Write();
+    h_isoPFTk->Write();
+    h_ias_outer->Write();
+    h_ias->Write();
 
       outfile->Write();
       outfile->Close();

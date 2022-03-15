@@ -34,6 +34,8 @@ float K(2.30), C(3.17);
 // Values determined by Dylan Ih_noDrop_StripOnly
 //float K(2.37), C(2.93);
 
+//float K(2.26), C(3.22);
+
 // Function
 TH2F* BetheBlochForMass(float mass)
 {
@@ -106,13 +108,15 @@ void invScale(TH1F* h)
 // This function is used in the Hscp data-driven background estimate to test the mass shape prediction
 // The argument to use this type of ratio is that we're in case of cut & count experiment 
 TH1F* ratioIntegral(TH1F* h1, TH1F* h2)
-{
+{    
+    float SystError = 0.2;
     TH1F* res = (TH1F*) h1->Clone(); res->Reset();
     for(int i=0;i<h1->GetNbinsX()+1;i++)
     {   
         double Perr=0, Derr=0;
         double P=h1->IntegralAndError(i,h1->GetNbinsX()+1,Perr); if(P<=0) continue;
         double D=h2->IntegralAndError(i,h2->GetNbinsX()+1,Derr);
+        Perr = sqrt(Perr*Perr + pow(P*SystError,2));
         res->SetBinContent(i,D/P);
         res->SetBinError(i,sqrt(pow(Derr*P,2)+pow(Perr*D,2))/pow(P,2));
     }
@@ -1097,6 +1101,7 @@ public :
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
    float            PFIsolationMuon(int i);
+   float            PFIsolationTrack(int i);
 };
 
 #endif
@@ -1359,7 +1364,7 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("njets", &njets, &b_njets);
    fChain->SetBranchAddress("Weight", &Weight, &b_Weight);
    fChain->SetBranchAddress("GeneratorWeight", &GeneratorWeight, &b_GeneratorWeight);
-/*  fChain->SetBranchAddress("HLT_Mu50", &HLT_Mu50, &b_HLT_Mu50);
+   fChain->SetBranchAddress("HLT_Mu50", &HLT_Mu50, &b_HLT_Mu50);
    fChain->SetBranchAddress("HLT_PFMET120_PFMHT120_IDTight", &HLT_PFMET120_PFMHT120_IDTight, &b_HLT_PFMET120_PFMHT120_IDTight);
    fChain->SetBranchAddress("HLT_PFHT500_PFMET100_PFMHT100_IDTight", &HLT_PFHT500_PFMET100_PFMHT100_IDTight, &b_HLT_PFHT500_PFMET100_PFMHT100_IDTight);
    fChain->SetBranchAddress("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60", &HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60, &b_HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60);
@@ -1368,7 +1373,7 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("RecoPFMET", &RecoPFMET, &b_RecoPFMET);
    fChain->SetBranchAddress("RecoPFMHT", &RecoPFMHT, &b_RecoPFMHT);
    fChain->SetBranchAddress("HLTPFMET", &HLTPFMET, &b_HLTPFMET);
-   fChain->SetBranchAddress("HLTPFMHT", &HLTPFMHT, &b_HLTPFMHT);*/
+   fChain->SetBranchAddress("HLTPFMHT", &HLTPFMHT, &b_HLTPFMHT);
    fChain->SetBranchAddress("RecoPFMET_eta", &RecoPFMET_eta, &b_RecoPFMET_eta);
    fChain->SetBranchAddress("RecoPFMET_phi", &RecoPFMET_phi, &b_RecoPFMET_phi);
    fChain->SetBranchAddress("RecoPFMET_significance", &RecoPFMET_significance, &b_RecoPFMET_significance);
