@@ -26,7 +26,8 @@
 
 
 // Values determined by Caroline Ih_noDrop_noPixL1
-float K(2.30), C(3.17);
+//float K(2.30), C(3.17); //Data
+float K(2.26), C(3.22); //MC
 
 // Values determined by Caroline Ih_noDrop_StripOnly
 //float K(2.50), C(3.19);
@@ -34,7 +35,6 @@ float K(2.30), C(3.17);
 // Values determined by Dylan Ih_noDrop_StripOnly
 //float K(2.37), C(2.93);
 
-//float K(2.26), C(3.22);
 
 // Function
 TH2F* BetheBlochForMass(float mass)

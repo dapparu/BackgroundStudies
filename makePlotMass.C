@@ -14,22 +14,38 @@
 void makePlotMass()
 {
 
-    bool signal=false;
+    bool signal=true;
+    bool gluino=true;
+    bool stau=true;
 
     //std::string inputfilename = "outfile_SingleMu_TkOnly_2017C_Ih3p24_-50eta50_ias100_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_2017C_Ih3p24_slicesIasOuter_-50eta50_ias100_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     
     
-    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p17_slicesIasAll_-50eta50_ias50_pt60_ih31_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+   // std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p17_slicesIasAll_-50eta50_ias50_pt60_ih31_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p24_slicesIasAll_-50eta50_ias50_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_slicesIasAll_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_slicesIasAll_-50eta50_ias100_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_slicesIasAll_-50eta50_ias200_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    
     std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_slicesIasAll_-50eta50_ias25_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_slicesIasAll_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_WJetsToLNu_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_QCD_Pt-20_MuEnrichedPt15_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
 
     TFile* ifile1 = new TFile((inputfilename+".root").c_str());
     //TFile* ifile2 = new TFile("outfile_Gluino_M-2000_TkOnly_2017C_Ih3p24_slicesIasAll_-50eta50_ias25_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    
     TFile* ifile2 = new TFile("outfile_Stau_M-1599_TkOnly_2017C_slicesIasAll_-50eta50_ias25_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    
+    TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    TFile* ifile_ppStau871 = new TFile("outfile_ppStau_M-871_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    TFile* ifile_ppStau1029 = new TFile("outfile_ppStau_M-1029_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    
+    
     //TFile* ifile2 = new TFile("ooutfile_SingleMu_TkOnly_2017C_Ih2p9_-50eta50_ias100_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p13000_etabins120_ihbins1000_pbins2000_massbins6500_invIso0_invMET0_eta50_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
@@ -43,12 +59,20 @@ void makePlotMass()
 
   //  ifile1=ifile2;
 
-    std::string quan = "_90";
+    std::string quan = "90";
     //std::string quan = "";
 
-    std::string st1 = "mass_obs"+quan;
-    std::string st2 = "mass_predBC"+quan;
-    std::string st3 = "mass_predBCR"+quan;
+    std::string st1 = "mass_obs_"+quan;
+    std::string st2 = "mass_predBC_"+quan;
+    std::string st3 = "mass_predBCR_"+quan;
+    std::string stSignal = "massObs_q"+quan;
+
+if(quan==""){
+    st1 = "mass_obs";
+    st2 = "mass_predBC";
+    st3 = "mass_predBCR";
+    stSignal = "massObs";
+}
 
 
     //TH1F* h1 = (TH1F*)ifile1->Get("mass_obs");
@@ -65,6 +89,13 @@ void makePlotMass()
     TH1F* h5R = (TH1F*)ifile1->Get("mass_predDCR");
 
     TH1F* hSignal = (TH1F*)ifile2->Get("massObs");
+
+    TH1F* h_Gluino1000 = (TH1F*) ifile_Gluino1000->Get(stSignal.c_str());
+    TH1F* h_Gluino1400 = (TH1F*) ifile_Gluino1400->Get(stSignal.c_str());
+    TH1F* h_Gluino2000 = (TH1F*) ifile_Gluino2000->Get(stSignal.c_str());
+    TH1F* h_ppStau871 = (TH1F*) ifile_ppStau871->Get(stSignal.c_str());
+    TH1F* h_ppStau1029 = (TH1F*) ifile_ppStau1029->Get(stSignal.c_str());
+
 
     double SystErr = 0.2;
     float Min_bin = 0.005;
@@ -164,11 +195,59 @@ void makePlotMass()
         hSignal->SetMarkerStyle(21);
         hSignal->SetMarkerColor(8);
         hSignal->GetXaxis()->SetRangeUser(0,max_mass);
-        hSignal->GetYaxis()->SetRangeUser(1e-5,1e6);
+        hSignal->GetYaxis()->SetRangeUser(1e-3,1e6);
         hSignal->SetMarkerSize(1.5);
         hSignal->SetLineColor(1);
         hSignal->SetFillColor(8);
-        hSignal->Draw("same HIST");
+        //hSignal->Draw("same HIST");
+       
+        if(gluino){
+        h_Gluino1000->GetYaxis()->SetTitle("Tracks / bin");
+        h_Gluino1000->SetFillStyle(0);
+        h_Gluino1000->SetFillColor(8);
+        h_Gluino1000->SetLineColor(8);
+        h_Gluino1000->SetLineWidth(2);
+        h_Gluino1000->SetLineStyle(2);
+        h_Gluino1000->GetXaxis()->SetRangeUser(0,max_mass);
+        h_Gluino1000->GetYaxis()->SetRangeUser(5e-5,1e6);
+        h_Gluino1000->Draw("same HIST");
+
+        h_Gluino1400->SetFillStyle(0);
+        h_Gluino1400->SetLineStyle(1);
+        h_Gluino1400->SetLineWidth(2);
+        h_Gluino1400->SetFillColor(30);
+        h_Gluino1400->SetLineColor(30);
+        h_Gluino1400->Draw("same HIST");
+
+        h_Gluino2000->SetFillStyle(0);
+        h_Gluino2000->SetLineStyle(7);
+        h_Gluino2000->SetLineWidth(2);
+        h_Gluino2000->SetFillColor(32);
+        h_Gluino2000->SetLineColor(32);
+        h_Gluino2000->Draw("same HIST");
+
+
+        }
+        if(stau){
+        h_ppStau871->GetXaxis()->SetRangeUser(0,max_mass);
+        h_ppStau871->GetYaxis()->SetRangeUser(5e-5,1e6);
+        h_ppStau871->SetFillStyle(0);
+        h_ppStau871->SetFillColor(9);
+        h_ppStau871->SetLineColor(9);
+        h_ppStau871->SetLineWidth(2);
+        h_ppStau871->Draw("same HIST");
+
+
+        h_ppStau1029->SetFillStyle(0);
+        h_ppStau1029->SetLineStyle(2);
+        h_ppStau1029->SetLineWidth(2);
+        h_ppStau1029->SetFillColor(38);
+        h_ppStau1029->SetLineColor(38);
+        h_ppStau1029->Draw("same HIST");
+        }
+
+
+
     }
 
     h3Err->SetMarkerStyle(22);
@@ -178,7 +257,7 @@ void makePlotMass()
     h3Err->SetFillColor(5);
     h3Err->SetFillStyle(1001);
     h3Err->GetXaxis()->SetRangeUser(0,max_mass);
-    h3Err->GetYaxis()->SetRangeUser(1e-1,1e6);
+    h3Err->GetYaxis()->SetRangeUser(5e-5,1e6);
     h3Err->GetXaxis()->SetTitle("");
     h3Err->Draw("same E5");
 
@@ -222,7 +301,7 @@ void makePlotMass()
 
 
     //leg = new TLegend(0.82,0.85,0.47,0.69);
-    leg = new TLegend(0.82,0.85,0.4,0.6);
+    leg = new TLegend(0.82,0.9,0.4,0.6);
     //leg = new TLegend(0.82,0.85,0.3,0.5);
 
     leg->SetFillStyle(0);
@@ -241,7 +320,15 @@ void makePlotMass()
     //leg->AddEntry(h3,"Prediction templates from B & C","PE1");
     leg->AddEntry(h3leg,"Data-based SM prediction","PF");
     //leg->AddEntry(hSignal,"Gluino (M = 2000 GeV)","F");
-    if(signal)leg->AddEntry(hSignal,"Stau (M = 1599 GeV)","F");
+    if(signal){
+        if(gluino)leg->AddEntry(h_Gluino1000,"Gluino (M = 1000 GeV)","L");
+        if(gluino)leg->AddEntry(h_Gluino1400,"Gluino (M = 1400 GeV)","L");
+        if(gluino)leg->AddEntry(h_Gluino2000,"Gluino (M = 2000 GeV)","L");
+        if(stau)leg->AddEntry(h_ppStau871,"ppStau (M = 871 GeV)","L");
+        if(stau)leg->AddEntry(h_ppStau1029,"ppStau (M = 1029 GeV)","L");
+        
+        //leg->AddEntry(hSignal,"Stau (M = 1599 GeV)","F");
+    }
     //leg->AddEntry(h3_2,"Prediction templates from B & C, new Ias calculation","PE1");
     //leg->AddEntry(h4,"Prediction templates from B & D","PE1");
     //leg->AddEntry(h5,"Prediction templates from C & D","PE1");
@@ -360,6 +447,7 @@ void makePlotMass()
 
 
     //c1->SaveAs(("plotsMassPdf/MassPlot_"+inputfilename+"_quantile"+quan+".pdf").c_str());
-    c1->SaveAs(("plotsMassMarch15/MassPlot_"+inputfilename+"_quantile"+quan+".pdf").c_str());
+    if(quan=="")c1->SaveAs(("plotsMassMarch16_v3/MassPlot_"+inputfilename+".pdf").c_str());
+    else c1->SaveAs(("plotsMassMarch16_v3/MassPlot_"+inputfilename+"_quantile_"+quan+".pdf").c_str());
    
 }

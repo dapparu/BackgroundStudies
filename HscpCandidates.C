@@ -123,18 +123,39 @@ void HscpCandidates::Loop()
    float quan90 = 0.117;
 */
 
-   //Ias_all quantiles
+/*   //Ias_all quantiles //data
    float quan50 = 0.039;
    float quan60 = 0.045;
    float quan70 = 0.053;
    float quan80 = 0.064;
    float quan90 = 0.082;
+*/
 
 
-/*   region rB_boundedIas("_regionB_boundedIas",etabins_,ihbins_,pbins_,massbins_);
-   region rD_boundedIas("_regionD_boundedIas",etabins_,ihbins_,pbins_,massbins_);
-   region rC_boundedPt("_regionC_boundedPt",etabins_,ihbins_,pbins_,massbins_);
-   region rD_boundedPt("_regionD_boundedPt",etabins_,ihbins_,pbins_,massbins_);*/
+   //Ias_all quantiles //MC WJets
+   //double q[5]={ 0.034736341, 0.040516857, 0.047670289, 0.057816411, 0.075263733 }; //MC WJets
+   double q[5]={ 0.039, 0.045, 0.053, 0.064, 0.082 }; //data or signal
+   float quan50 = q[0];
+   float quan60 = q[1];
+   float quan70 = q[2];
+   float quan80 = q[3];
+   float quan90 = q[4];
+
+  
+
+
+   TH1F* h_massObs_q50 = new TH1F("massObs_q50",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q60 = new TH1F("massObs_q60",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q70 = new TH1F("massObs_q70",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q80 = new TH1F("massObs_q80",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q90 = new TH1F("massObs_q90",";Mass (GeV)",80,0,4000);
+
+
+   h_massObs_q50->Sumw2();
+   h_massObs_q60->Sumw2();
+   h_massObs_q70->Sumw2();
+   h_massObs_q80->Sumw2();
+   h_massObs_q90->Sumw2();
 
    TH1F* h_mT = new TH1F("mT",";m_T [GeV];track/bin",200,0,200);
    TH1F* h_mT_regD = new TH1F("mT_regD",";m_T [GeV];track/bin",200,0,200);
@@ -147,8 +168,38 @@ void HscpCandidates::Loop()
    TH1F* h_ias_outer = new TH1F("ias_outer",";I_{as} outer",100,0,1);
    TH1F* h_ias = new TH1F("ias",";I_{as}",100,0,1);
 
+   h_massObs->Sumw2();
+   h_mT->Sumw2();
+   h_mT_regD->Sumw2();
+   h_probQ->Sumw2();
+   h_isoPFTk->Sumw2();
+   h_ias_outer->Sumw2();
+   h_ias->Sumw2();
+
    float weightGluino2000 = (9.7e-1*7.04)/97151.0; //Gluino at 2 TeV
+   float weightGluino1400 = (2.5e1*7.04)/100061.0;
+   float weightGluino1000 = (3.2e2*7.04)/99564.0;
+
    float weightStau1599 = (1.4e-4*7.04)/7200.0;
+   
+   float weightgmStau871 = (6.9e-2*7.04)/25000.0;
+   float weightgmStau1029 = (2.2e-2*7.04)/25000.0;
+
+   float weightppStau871 = (9.9e-3*7.04)/25000.0;
+   float weightppStau1029 = (3.5e-3*7.04)/25000.0;
+   
+
+   
+
+   float weightWJets = (52940e3*7.04)/(6.988236e7);
+   float weightTTTo2L2Nu = (88.29e3*7.04)/(7.5653e7);
+   float weightTTToSemiLeptonic = (365.35e3*7.04)/(1.29985e8);
+   float weightTTToHadronic = (377.96e3*7.04)/(1.0117e8);
+   float weightQCD = (239000.0e3*7.04)/8994317.0;
+   float weightDYJetsToLL = (15343.0e3*7.04)/(4.89014e7);
+
+   float weightMass = weightGluino1400;
+
    //FIXME TRIGGER SIGNAL + K&C MC
    //DISTRIB IAS_OUTER IAS_ALL 
    //TABLEAU AVEC LES BOXS 
@@ -215,8 +266,8 @@ void HscpCandidates::Loop()
           float IsoRelTk = PFIsolationTrack(i);
           h_isoPFTk->Fill(IsoRelTk);
 
-          h_ias_outer->Fill(Ias_noTIBnoTIDno3TEC->at(i));
-          h_ias->Fill(ias);
+          h_ias_outer->Fill(Ias_noTIBnoTIDno3TEC->at(i),weightMass);
+          h_ias->Fill(ias,weightMass);
          
           if(pt<50) continue;
           /*if(abs(Eta)>2.1) continue;
@@ -232,9 +283,6 @@ void HscpCandidates::Loop()
 
           if(ih<ihcut_) continue;
           if(p>pcut_ && pcut_>0) continue;
-          
-          //std::cout << "isHighPurity: " << isHighPurity->at(i) << std::endl;
-          //std::cout << "isMuon: " << isMuon->at(i) << std::endl;
 
           if(!isHighPurity->at(i)) continue;
           //if(!isMuon->at(i)) continue;
@@ -249,13 +297,12 @@ void HscpCandidates::Loop()
 
           //if(mT->at(i)<90) continue;
 
-          h_mT->Fill(mT->at(i));
-          h_probQ->Fill(ProbQ_noL1->at(i));
-          h_isoPFMuon->Fill(PFIsolationMuon(i));
+          h_mT->Fill(mT->at(i),weightMass);
+          h_probQ->Fill(ProbQ_noL1->at(i),weightMass);
+          h_isoPFMuon->Fill(PFIsolationMuon(i),weightMass);
          
           count_hscp_passPre++;
 
-          //std::cout << "ProbChi2: " << TMath::Prob(Chi2->at(i),Ndof->at(i)) << std::endl;
           //std::cout << "mT: " << mT->at(i) << std::endl;
 
           rAll.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
@@ -305,9 +352,8 @@ void HscpCandidates::Loop()
               {
                   rD.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
                   nD++;
-                  h_mT_regD->Fill(mT->at(i));
-                  //h_massObs->Fill(massT,weightGluino2000);
-                  h_massObs->Fill(massT,weightStau1599);
+                  h_mT_regD->Fill(mT->at(i),weightMass);
+                  h_massObs->Fill(massT,weightMass);
                   
                   if(ias<0.1)
                   {
@@ -323,11 +369,11 @@ void HscpCandidates::Loop()
 
               }
               if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-              if(ias>=quan50 && ias<quan60) rD_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-              if(ias>=quan60 && ias<quan70) rD_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-              if(ias>=quan70 && ias<quan80) rD_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-              if(ias>=quan80 && ias<quan90) rD_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-              if(ias>=quan90)              rD_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+              if(ias>=quan50 && ias<quan60) {rD_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q50->Fill(massT,weightMass);}
+              if(ias>=quan60 && ias<quan70) {rD_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q60->Fill(massT,weightMass);}
+              if(ias>=quan70 && ias<quan80) {rD_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q70->Fill(massT,weightMass);}
+              if(ias>=quan80 && ias<quan90) {rD_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q80->Fill(massT,weightMass);}
+              if(ias>=quan90)              {rD_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q90->Fill(massT,weightMass);}
 
           }
 
@@ -337,6 +383,11 @@ void HscpCandidates::Loop()
    
    }
 
+   ntot*=weightMass;
+   nA*=weightMass;
+   nB*=weightMass;
+   nC*=weightMass;
+   nD*=weightMass;
 
    /*crossHistos(ih_p_from2D,(TH1F*)rD.ih_p->ProjectionX(),(TH1F*)rD.ih_p->ProjectionY());
    crossHistos(ih_p_fromBC,(TH1F*)rC.ih_p->ProjectionX(),(TH1F*)rB.ih_p->ProjectionY());
@@ -414,6 +465,12 @@ void HscpCandidates::Loop()
     h_ias_outer->Write();
     h_ias->Write();
 
+    h_massObs_q50->Write();
+    h_massObs_q60->Write();
+    h_massObs_q70->Write();
+    h_massObs_q80->Write();
+    h_massObs_q90->Write();
+
       outfile->Write();
       outfile->Close();
 
@@ -422,11 +479,12 @@ void HscpCandidates::Loop()
       ofile << "nB: " << nB << " " << 100*(float)nB/(float)ntot << " %" << std::endl;
       ofile << "nC: " << nC << " " << 100*(float)nC/(float)ntot << " %" << std::endl;
       ofile << "nD: " << nD << " " << 100*(float)nD/(float)ntot << " %" << std::endl;
-      ofile << "nB_boundedIas: " << nB_boundedIas << " " << 100*(float)nB_boundedIas/(float)ntot << " % (/total)" << " " << 100*(float)nB_boundedIas/(float)nB << " % (/regionB)" << std::endl;
+
+      /*ofile << "nB_boundedIas: " << nB_boundedIas << " " << 100*(float)nB_boundedIas/(float)ntot << " % (/total)" << " " << 100*(float)nB_boundedIas/(float)nB << " % (/regionB)" << std::endl;
       ofile << "nD_boundedIas: " << nD_boundedIas << " " << 100*(float)nD_boundedIas/(float)ntot << " % (/total)" << " " << 100*(float)nD_boundedIas/(float)nD << " % (/regionD)" << std::endl;
       ofile << "nC_boundedPt: " << nC_boundedPt << " " << 100*(float)nC_boundedPt/(float)ntot << " % (/total)" << " " << 100*(float)nC_boundedPt/(float)nC << " % (/regionC)" << std::endl;
       ofile << "nD_boundedPt: " << nD_boundedPt << " " << 100*(float)nD_boundedPt/(float)ntot << " % (/total)" << " " << 100*(float)nD_boundedPt/(float)nD << " % (/regionD)" << std::endl;
-
+        */
       ofile.close();
 
 }
