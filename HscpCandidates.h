@@ -26,8 +26,8 @@
 
 
 // Values determined by Caroline Ih_noDrop_noPixL1
-//float K(2.30), C(3.17); //Data
-float K(2.26), C(3.22); //MC
+float K(2.30), C(3.17); //Data
+//float K(2.26), C(3.22); //MC
 
 // Values determined by Caroline Ih_noDrop_StripOnly
 //float K(2.50), C(3.19);
@@ -468,7 +468,7 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 
     npt = pbins;
     ptlow = 0;
-    ptup = 4000;
+    ptup = 10000; //instead of 4000
 
     nih = ihbins;
     ihlow = 0;
@@ -887,6 +887,7 @@ public :
    vector<float>   *ProbQ_dEdx;
    vector<float>   *Ndof;
    vector<float>   *Chi2;
+   vector<int>     *QualityMask;
    vector<bool>    *isHighPurity;
    vector<bool>    *isMuon;
    vector<int>     *MuonSelector;
@@ -1016,6 +1017,7 @@ public :
    TBranch        *b_ProbQ_dEdx;   //!
    TBranch        *b_Ndof;   //!
    TBranch        *b_Chi2;   //!
+   TBranch        *b_QualityMask;   //!
    TBranch        *b_isHighPurity;   //!
    TBranch        *b_isMuon;   //!
    TBranch        *b_MuonSelector;   //!
@@ -1274,6 +1276,7 @@ void HscpCandidates::Init(TTree *tree)
    ProbQ_dEdx = 0;
    Ndof = 0;
    Chi2 = 0;
+   QualityMask = 0;
    isHighPurity = 0;
    isMuon = 0;
    MuonSelector = 0;
@@ -1408,6 +1411,7 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("ProbQ_dEdx", &ProbQ_dEdx, &b_ProbQ_dEdx);
    fChain->SetBranchAddress("Ndof", &Ndof, &b_Ndof);
    fChain->SetBranchAddress("Chi2", &Chi2, &b_Chi2);
+   fChain->SetBranchAddress("QualityMask", &QualityMask, &b_QualityMask);
    fChain->SetBranchAddress("isHighPurity", &isHighPurity, &b_isHighPurity);
    fChain->SetBranchAddress("isMuon", &isMuon, &b_isMuon);
    fChain->SetBranchAddress("MuonSelector", &MuonSelector, &b_MuonSelector);
