@@ -48,6 +48,7 @@ void massNormalisation(TH1F* h, const float& normalisation){
 
     for(int k=0;k<h->GetNbinsX()+1;k++){
         h->SetBinContent(k,h->GetBinContent(k)*normalisation);
+        h->SetBinError(k,h->GetBinError(k)*normalisation);
     }
 
 }
