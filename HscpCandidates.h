@@ -8,6 +8,8 @@
 #ifndef HscpCandidates_h
 #define HscpCandidates_h
 
+#include "GenHscpCandidates.h"
+
 #include <TROOT.h>
 #include <TChain.h>
 #include <TFile.h>
@@ -138,16 +140,44 @@ float chi2test(TH1F* h1, TH1F* h2,int& dof)
     return res/ndof;
 }
 
+void overflowLastBin(TH1F* h){
+    h->SetBinContent(h->GetNbinsX(),h->GetBinContent(h->GetNbinsX())+h->GetBinContent(h->GetNbinsX()+1));
+    h->SetBinContent(h->GetNbinsX()+1,0);
+}
+
+void overflowLastBin(TH1F* h, const float &x){
+    for(int i=h->FindBin(x);i<=h->GetNbinsX()+1;i++){
+        h->SetBinContent(h->FindBin(x)-1,h->GetBinContent(h->FindBin(x)-1)+h->GetBinContent(i));
+        h->SetBinContent(i,0);
+    }
+}
+
+
+TH1F* rebinHisto(TH1F* h){
+    overflowLastBin(h);
+    //double xbins[20] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000,3000,4000,6000};
+    double xbins[17] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000};
+    std::string newname = h->GetName(); 
+    newname += "_rebinned";
+    TH1F* hres = (TH1F*) h->Rebin(16,newname.c_str(),xbins);
+    overflowLastBin(hres);
+    return hres;
+}
+
 // Function returning a canvas divide in two windows
 // The first one contains the two 1D-histograms, given as arguments, superposed.
 // There also is a legend associated to this window where the names are defined as arguments.
 // The second window contains the ratio of these 1D-histograms or the ratio of right integers of them. 
 // We define which kind of ratio we want with tha 'ratioSimple' boolean.
 // The 'name' given corresponds to the name of the canvas 
-TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name="", std::string leg1="", std::string leg2="")
+TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name="", std::string leg1="", std::string leg2="", bool rebin=false)
 {
 
-    h1->Sumw2(); h2->Sumw2();
+    //h1->Sumw2(); h2->Sumw2();
+    if(rebin) h1=rebinHisto(h1);
+    if(rebin) h2=rebinHisto(h2);
+    //overflowLastBin(h1);
+    //overflowLastBin(h2);
     TCanvas* c1 = new TCanvas(("plotting_"+name).c_str(),"");
     c1->Divide(1,2);
     gStyle->SetOptStat(0);
@@ -205,8 +235,8 @@ TH1F* rebinning(TH1F* h1, float min, std::vector<double>& vect)
         }
         v_val.push_back(h1->GetBinLowEdge(i));
     }
-
-    TH1F* h2 = new TH1F("Rebinned","",v_val.size()-1,v_val.data());
+    std::string tit = "Rebinned_"; tit+=h1->GetName();
+    TH1F* h2 = new TH1F(tit.c_str(),"",v_val.size()-1,v_val.data());
     for(int j=0;j<h1->GetNbinsX()+1;j++)
     {
         for(int c=0;c<h1->GetBinContent(j);c++)
@@ -543,7 +573,10 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
     massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
     massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
-    
+   
+    mass->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    massFrom1DTemplates->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    massFrom1DTemplatesEtaBinning->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
 
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
@@ -665,10 +698,12 @@ void region::fillQuantile()
 // contents are added 
 // errors: the sqrt of the squared uncertainties are added
 // 
+    
+TRandom3* RNG = new TRandom3();
 
 void region::fillMassFrom1DTemplatesEtaBinning(float weight_=-1) 
 {
-    errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,2000);
+    //errMass = new TH1F(("errMass"+suffix_).c_str(),";Mass error",200,0,2000);
     TH1F* eta = (TH1F*) ih_eta->ProjectionX();
     //ih_p_eta->GetYaxis()->SetRange(ih_p_eta->GetYaxis()->FindBin(0.),ih_p_eta->GetYaxis()->FindBin(200.)); //test did in order to see the impact to take ih at low p --> huge impact 
     for(int i=1;i<eta->GetNbinsX();i++)
@@ -824,11 +859,14 @@ public :
     int massbins_;
     bool invIso_;
     bool invMET_;
+    std::string dataset_;
 
     std::string outfilename_;
    
    TTree          *fChain;   //!pointer to the analyzed TTree or TChain
    Int_t           fCurrent; //!current Tree number in a TChain
+
+   TTree          *fChainGen;
 
 // Fixed size dimensions of array or collections stored in the TTree if any.
 
@@ -836,6 +874,7 @@ public :
    UInt_t          Trig;
    UInt_t          Run;
    ULong64_t       Event;
+   ULong64_t       EventGen;
    UInt_t          Lumi;
    UInt_t          PileUp;
    UInt_t          nofVtx;
@@ -966,6 +1005,7 @@ public :
    TBranch        *b_Trig;   //!
    TBranch        *b_Run;   //!
    TBranch        *b_Event;   //!
+   TBranch        *b_EventGen;   //!
    TBranch        *b_Lumi;   //!
    TBranch        *b_PileUp;   //!
    TBranch        *b_nofVtx;   //!
@@ -1097,8 +1137,10 @@ public :
    virtual ~HscpCandidates();
    virtual Int_t    Cut(Long64_t entry);
    virtual Int_t    GetEntry(Long64_t entry);
+   virtual Int_t    GetEntryGen(Long64_t entry);
    virtual Long64_t LoadTree(Long64_t entry);
-   virtual void     Init(TTree *tree);
+   virtual Long64_t LoadTreeGen(Long64_t entry);
+   virtual void     Init(TTree *tree, TTree *genTree);
    virtual void     Loop();
    virtual Bool_t   Notify();
    virtual void     Show(Long64_t entry = -1);
@@ -1122,13 +1164,14 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     int etabins,ihbins,pbins,massbins;
     bool invIso, invMET;
     std::string label;
+    std::string dataset;
 
     while(std::getline(ifile,line))
     {
         if(std::strncmp(line.c_str(),"#",1)==0) continue;
         std::cout << line << std::endl;
         std::stringstream ss(line);
-        ss >> filename >> label >> iascut >> ptcut >> ihcut >> pcut >> etacutinf >> etacutsup >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET;
+        ss >> filename >> label >> iascut >> ptcut >> ihcut >> pcut >> etacutinf >> etacutsup >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET >> dataset;
     }
     iascut_ = iascut;
     ptcut_ = ptcut;
@@ -1142,7 +1185,10 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     massbins_ = massbins;
     invIso_ = invIso;
     invMET_ = invMET;
+    dataset_ = dataset;
 
+
+    if(dataset_ != "data"){K=2.26; C=3.22;} //MC
 
     outfilename_ = "outfile_"+label+"_"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
 
@@ -1150,6 +1196,8 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
 
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
+      
+    TTree* genTree;
    if (tree == 0) {
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
       if (!f || !f->IsOpen()) {
@@ -1158,7 +1206,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/BaseName").c_str());
       //TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
       dir->GetObject("HscpCandidates",tree);
-
+      dir->GetObject("GenHscpCandidates",genTree);
 
       regD_ih = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_I").c_str());
       regD_p = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_P").c_str());
@@ -1170,7 +1218,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       regD_mass = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/Mass").c_str());
 */
    }
-   Init(tree);
+   Init(tree, genTree);
    Loop();
 }
 
@@ -1220,6 +1268,8 @@ HscpCandidates::~HscpCandidates()
 {
    if (!fChain) return;
    delete fChain->GetCurrentFile();
+   if (!fChainGen) return;
+   delete fChainGen->GetCurrentFile();
 }
 
 Int_t HscpCandidates::GetEntry(Long64_t entry)
@@ -1228,6 +1278,14 @@ Int_t HscpCandidates::GetEntry(Long64_t entry)
    if (!fChain) return 0;
    return fChain->GetEntry(entry);
 }
+
+Int_t HscpCandidates::GetEntryGen(Long64_t entry)
+{
+// Read contents of entry.
+   if (!fChainGen) return 0;
+   return fChainGen->GetEntry(entry);
+}
+
 Long64_t HscpCandidates::LoadTree(Long64_t entry)
 {
 // Set the environment to read one entry
@@ -1241,7 +1299,21 @@ Long64_t HscpCandidates::LoadTree(Long64_t entry)
    return centry;
 }
 
-void HscpCandidates::Init(TTree *tree)
+Long64_t HscpCandidates::LoadTreeGen(Long64_t entry)
+{
+// Set the environment to read one entry
+   if (!fChainGen) return -5;
+   Long64_t centry = fChainGen->LoadTree(entry);
+   if (centry < 0) return centry;
+   if (fChainGen->GetTreeNumber() != fCurrent) {
+      fCurrent = fChainGen->GetTreeNumber();
+      Notify();
+   }
+   return centry;
+}
+
+
+void HscpCandidates::Init(TTree *tree,TTree *treeGen)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the branch addresses and branch
@@ -1480,11 +1552,16 @@ void HscpCandidates::Init(TTree *tree)
    fChain->SetBranchAddress("clust_isStrip", &clust_isStrip, &b_clust_isStrip);
    fChain->SetBranchAddress("clust_isPixel", &clust_isPixel, &b_clust_isPixel);
    fChain->SetBranchAddress("GenId", &GenId, &b_GenId);
-   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
-   fChain->SetBranchAddress("GenMass", &GenMass, &b_GenMass);
-   fChain->SetBranchAddress("GenPt", &GenPt, &b_GenPt);
-   fChain->SetBranchAddress("GenEta", &GenEta, &b_GenEta);
-   fChain->SetBranchAddress("GenPhi", &GenPhi, &b_GenPhi);*/
+   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);*/
+   if (!treeGen) return;
+   fChainGen = treeGen;
+   fCurrent = -1;
+   fChainGen->SetMakeClass(1);
+   fChainGen->SetBranchAddress("Event", &EventGen, &b_EventGen);
+   fChainGen->SetBranchAddress("GenMass", &GenMass, &b_GenMass);
+   fChainGen->SetBranchAddress("GenPt", &GenPt, &b_GenPt);
+   fChainGen->SetBranchAddress("GenEta", &GenEta, &b_GenEta);
+   fChainGen->SetBranchAddress("GenPhi", &GenPhi, &b_GenPhi);
    Notify();
 }
 
