@@ -15,12 +15,14 @@ void makePlotMass()
 {
 
     bool reb = false;
-    std::string quan = "50";
+    std::string quan = "90";
     
     bool blind=false;
     if(quan=="90") blind=true;
+    if(quan=="50_100") blind=true;
+    blind = false;
 
-    bool signal=true;
+    bool signal=false;
     bool gluino=true;
     bool stau=false;
 
@@ -42,7 +44,11 @@ void makePlotMass()
     //std::string inputfilename = "outfile_WJetsToLNu_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_QCD_Pt-20_MuEnrichedPt15_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     
-    std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    
+    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_WJetsToLNu_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    std::string inputfilename = "outfile_TTTo2L2Nu_TkOnly_2017_Ih3p47_CutPtErrQ95_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
 
     TFile* ifile1 = new TFile((inputfilename+".root").c_str());
     //TFile* ifile2 = new TFile("outfile_Gluino_M-2000_TkOnly_2017C_Ih3p24_slicesIasAll_-50eta50_ias25_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
@@ -93,12 +99,17 @@ void makePlotMass()
 
     //if(reb)quan+="_rebinned";
 
-    std::string st1 = "mass_obs_"+quan+"ias_50";
+    /*std::string st1 = "mass_obs_"+quan+"ias_50";
     std::string st2 = "mass_predBC_"+quan+"ias_50";
     std::string st3 = "mass_predBCR_"+quan+"ias_50";
+    std::string stSignal = "massObs_q"+quan;*/
+
+    quan = "50_100";
+
+    std::string st1 = "mass_obs_"+quan;
+    std::string st2 = "mass_predBC_"+quan;
+    std::string st3 = "mass_predBCR_"+quan;
     std::string stSignal = "massObs_q"+quan;
-
-
    
 if(quan==""){
     st1 = "mass_obs";
@@ -175,7 +186,7 @@ if(quan==""){
     }
     h3R = ratioIntegral(h3,h1);
 
-    double SystErr = 0.;
+    double SystErr = 0.5;
     float Min_bin = 0.005;
     h1->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     TH1F* h1Err = (TH1F*)h1->Clone();
@@ -194,7 +205,7 @@ if(quan==""){
     //h1_2->Scale(h1_2->GetEntries());
 
 
-    float min_entries = 5e-4;
+    float min_entries = 5e-6;
     float max_entries = 1e6;
     
 

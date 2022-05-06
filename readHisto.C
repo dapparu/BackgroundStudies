@@ -196,6 +196,7 @@ void readHisto()
     region rb_80;
     region rb_90;
     region rb_50_90;
+    region rb_50_100;
 
 /*    region rc_40_pt;
     region rc_50_pt;
@@ -211,6 +212,7 @@ void readHisto()
     region rbc_80;
     region rbc_90;
     region rbc_50_90;
+    region rbc_50_100;
     
 /*    region rbc_40_pt;
     region rbc_50_pt;
@@ -226,6 +228,7 @@ void readHisto()
     region rd_80;
     region rd_90;
     region rd_50_90;
+    region rd_50_100;
     
 /*    region rd_40_pt;
     region rd_50_pt;
@@ -234,14 +237,14 @@ void readHisto()
     region rd_80_pt;
     region rd_90_pt;*/
 
-    region ra_40;
-    region ra_40_pt;
+//    region ra_40;
+//    region ra_40_pt;
     region ra_med;
-    region ra_med_pt;
-    region rc_40;
+//    region ra_med_pt;
+//    region rc_40;
     region rc_med;
-    region rb_40_pt;
-    region rb_med_pt;
+//    region rb_40_pt;
+//    region rb_med_pt;
     
     bool bool_rebin=rebin;
     
@@ -263,13 +266,14 @@ void readHisto()
     loadHistograms(rd_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(rbc_boundedPt,ifile,"regionD_boundedPt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass*/
 
-    loadHistograms(rb_40,ifile,"regionB_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rb_40,ifile,"regionB_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_50,ifile,"regionB_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_60,ifile,"regionB_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_70,ifile,"regionB_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_80,ifile,"regionB_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_90,ifile,"regionB_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rb_50_90,ifile,"regionB_50_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rb_50_100,ifile,"regionB_50_100",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     
 /*    loadHistograms(rc_40_pt,ifile,"regionC_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rc_50_pt,ifile,"regionC_50pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
@@ -278,13 +282,14 @@ void readHisto()
     loadHistograms(rc_80_pt,ifile,"regionC_80pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rc_90_pt,ifile,"regionC_90pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); */
 
-    loadHistograms(rbc_40,ifile,"regionD_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rbc_40,ifile,"regionD_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_50,ifile,"regionD_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_60,ifile,"regionD_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_70,ifile,"regionD_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_80,ifile,"regionD_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_90,ifile,"regionD_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_50_90,ifile,"regionD_50_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rbc_50_100,ifile,"regionD_50_100",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     
 /*    loadHistograms(rbc_40_pt,ifile,"regionD_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_50_pt,ifile,"regionD_50pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
@@ -293,13 +298,14 @@ void readHisto()
     loadHistograms(rbc_80_pt,ifile,"regionD_80pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rbc_90_pt,ifile,"regionD_90pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); */
 
-    loadHistograms(rd_40,ifile,"regionD_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rd_40,ifile,"regionD_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_50,ifile,"regionD_50",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_60,ifile,"regionD_60",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_70,ifile,"regionD_70",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_80,ifile,"regionD_80",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_90,ifile,"regionD_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_50_90,ifile,"regionD_50_90",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rd_50_100,ifile,"regionD_50_100",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     
 /*    loadHistograms(rd_40_pt,ifile,"regionD_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_50_pt,ifile,"regionD_50pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
@@ -308,14 +314,14 @@ void readHisto()
     loadHistograms(rd_80_pt,ifile,"regionD_80pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rd_90_pt,ifile,"regionD_90pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); */
     
-    loadHistograms(ra_40,ifile,"regionA_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
-    loadHistograms(ra_40_pt,ifile,"regionA_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(ra_40,ifile,"regionA_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(ra_40_pt,ifile,"regionA_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(ra_med,ifile,"regionA_med",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
-    loadHistograms(ra_med_pt,ifile,"regionA_med_pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
-    loadHistograms(rc_40,ifile,"regionC_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(ra_med_pt,ifile,"regionA_med_pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rc_40,ifile,"regionC_40",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
     loadHistograms(rc_med,ifile,"regionC_med",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
-    loadHistograms(rb_40_pt,ifile,"regionB_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
-    loadHistograms(rb_med_pt,ifile,"regionB_med_pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rb_40_pt,ifile,"regionB_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+//    loadHistograms(rb_med_pt,ifile,"regionB_med_pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
 
 
     std::cout << "Regions loaded" << std::endl;
@@ -376,7 +382,7 @@ void readHisto()
         rall.massFrom1DTemplatesEtaBinning = (TH1F*) rall.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
         rd.massFrom1DTemplatesEtaBinning = (TH1F*) rd.massFrom1DTemplatesEtaBinning->Rebin(vectOfBins.size()-1,"",vectOfBins.data());
     }
-    
+/*    
     etaReweighingP(rc.eta_p,rb.eta_p); 
     //etaReweighingP(rc_boundedIas.eta_p,rb_boundedIas.eta_p); 
     //etaReweighingP(rc_boundedPt.eta_p,rb_boundedPt.eta_p); 
@@ -392,12 +398,12 @@ void readHisto()
     rbc.eta_p = rc.eta_p;
     rbc.ih_eta = rb.ih_eta;
 
-    /*rbc_boundedIas.eta_p = rc_boundedIas.eta_p;
+    rbc_boundedIas.eta_p = rc_boundedIas.eta_p;
     rbc_boundedIas.ih_eta = rb_boundedIas.ih_eta;
 
     rbc_boundedPt.eta_p = rc_boundedPt.eta_p;
     rbc_boundedPt.ih_eta = rb_boundedPt.ih_eta;
-    */
+    
     rdc.eta_p = rc.eta_p;
     rdb.ih_eta = rb.ih_eta;
 
@@ -440,7 +446,7 @@ void readHisto()
     rbc_70.fillMassFrom1DTemplatesEtaBinning();
     rbc_80.fillMassFrom1DTemplatesEtaBinning();
     rbc_90.fillMassFrom1DTemplatesEtaBinning();
-
+*/
     
 
 
@@ -480,6 +486,7 @@ void readHisto()
     std::cout << "saving... " << std::endl;
 
     doAll(rb_50_90,rc_med,rbc_50_90,ra_med,rd_50_90,"50_90");
+    doAll(rb_50_100,rc_med,rbc_50_100,ra_med,rd_50_100,"50_100");
     //doAll(rb_50_90,rc_med,rbc_50_90,ra_med,rd_50_90,"50_90",1);
 
     //doAll(rb_40,rc_40,rbc_40,ra_40,rd_40,"40",);

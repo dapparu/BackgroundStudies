@@ -412,7 +412,7 @@ class region{
         ~region();
         void initHisto();
         void initHisto(int& etabins,int& ihbins,int& pbins,int& massbins);
-        void fill(float& eta, float& nhits, float&p, float& pt, float& ih, float& ias, float& m, float& tof);
+        void fill(float& eta, float& nhits, float&p, float& pt, float& pterr, float& ih, float& ias, float& m, float& tof, float& w);
         void fillStdDev();
         void fillQuantile();
         void fillMassFrom1DTemplatesEtaBinning(float weight_);
@@ -433,7 +433,8 @@ class region{
         TH2F* ih_eta;
         TH2F* ih_p;
         TH2F* ias_p;
-        TH1F* stdDevIh_p;
+        TH2F* pt_pterroverpt;
+        /*TH1F* stdDevIh_p;
         TH1F* stdDevIas_pt;
         TH1F* stdDevIas_p;
         TH1F* stdDevIas_p_y;
@@ -457,7 +458,7 @@ class region{
         TH1F* quantile50Ias_p;
         TH1F* quantile30Ias_p;
         TH1F* quantile10Ias_p;
-        TH1F* quantile01Ias_p;
+        TH1F* quantile01Ias_p;*/
         TH1F* mass;
         TH1F* massFrom1DTemplates;
         TH1F* massFrom1DTemplatesEtaBinning;
@@ -521,22 +522,23 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 
     c = new TCanvas(suffix.c_str(),"");
 
-    ih_p_eta = new TH3F(("ih_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{h} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nih,ihlow,ihup);
-    ias_p_eta = new TH3F(("ias_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{as} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nias,iaslow,iasup);
+    ih_p_eta = new TH3F(("ih_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{h} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nih,ihlow,ihup); ih_p_eta->Sumw2();
+    ias_p_eta = new TH3F(("ias_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{as} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nias,iaslow,iasup); ias_p_eta->Sumw2();
 
-    ih_pt = new TH2F(("ih_pt"+suffix).c_str(),";pt [GeV];I_{h} [MeV/cm]",npt,ptlow,ptup,nih,ihlow,ihup);
-    ias_pt = new TH2F(("ias_pt"+suffix).c_str(),";pt [GeV];I_{as}",npt,ptlow,ptup,nias,iaslow,iasup);
-    ih_ias = new TH2F(("ias_ih"+suffix).c_str(),";I_{as};I_{h} [MeV/cm]",nias,iaslow,iasup,nih,ihlow,ihup);
-    ih_nhits = new TH2F(("ih_nhits"+suffix).c_str(),";nhits;I_{h} [MeV/cm]",20,0,20,nih,ihlow,ihup);
-    ias_nhits = new TH2F(("ias_nhits"+suffix).c_str(),";nhits;I_{as}",20,0,20,nias,iaslow,iasup);
-    eta_pt = new TH2F(("eta_pt"+suffix).c_str(),";pt [GeV];#eta",npt,ptlow,ptup,neta,etalow,etaup);
-    eta_p = new TH2F(("eta_p"+suffix).c_str(),";p [GeV];#eta",np,plow,pup,neta,etalow,etaup);
-    eta_p_rebinned = nullptr;
-    nhits_pt = new TH2F(("nhits_pt"+suffix).c_str(),";pt [GeV];nhits",npt,ptlow,ptup,20,0,20);
-    eta_nhits = new TH2F(("eta_nhits"+suffix).c_str(),";nhits;#eta",20,0,20,neta,etalow,etaup);
-    ih_eta = new TH2F(("ih_eta"+suffix).c_str(),";#eta;I_{h} [MeV/cm]",neta,etalow,etaup,nih,ihlow,ihup);
-    ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
-    ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",np,plow,pup,nias,iaslow,iasup);
+    ih_pt = new TH2F(("ih_pt"+suffix).c_str(),";pt [GeV];I_{h} [MeV/cm]",npt,ptlow,ptup,nih,ihlow,ihup); ih_pt->Sumw2();
+    ias_pt = new TH2F(("ias_pt"+suffix).c_str(),";pt [GeV];I_{as}",npt,ptlow,ptup,nias,iaslow,iasup); ias_pt->Sumw2();
+    ih_ias = new TH2F(("ias_ih"+suffix).c_str(),";I_{as};I_{h} [MeV/cm]",nias,iaslow,iasup,nih,ihlow,ihup); ih_ias->Sumw2();
+    ih_nhits = new TH2F(("ih_nhits"+suffix).c_str(),";nhits;I_{h} [MeV/cm]",20,0,20,nih,ihlow,ihup); ih_nhits->Sumw2();
+    ias_nhits = new TH2F(("ias_nhits"+suffix).c_str(),";nhits;I_{as}",20,0,20,nias,iaslow,iasup); ias_nhits->Sumw2();
+    eta_pt = new TH2F(("eta_pt"+suffix).c_str(),";pt [GeV];#eta",npt,ptlow,ptup,neta,etalow,etaup); eta_pt->Sumw2();
+    eta_p = new TH2F(("eta_p"+suffix).c_str(),";p [GeV];#eta",np,plow,pup,neta,etalow,etaup); eta_p->Sumw2();
+    eta_p_rebinned = nullptr; 
+    nhits_pt = new TH2F(("nhits_pt"+suffix).c_str(),";pt [GeV];nhits",npt,ptlow,ptup,20,0,20); nhits_pt->Sumw2();
+    eta_nhits = new TH2F(("eta_nhits"+suffix).c_str(),";nhits;#eta",20,0,20,neta,etalow,etaup); eta_nhits->Sumw2();
+    ih_eta = new TH2F(("ih_eta"+suffix).c_str(),";#eta;I_{h} [MeV/cm]",neta,etalow,etaup,nih,ihlow,ihup); ih_eta->Sumw2();
+    ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup); ih_p->Sumw2();
+    ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",np,plow,pup,nias,iaslow,iasup); ias_p->Sumw2();
+    pt_pterroverpt = new TH2F(("pt_pterroverpt"+suffix).c_str(),";p_{T} [GeV];#frac{#sigma_{pT}}{p_{T}}",npt,ptlow,ptup,100,0,1); pt_pterroverpt->Sumw2();
 
     /*
     stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",np,plow,pup);
@@ -570,53 +572,54 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     */
 
     
-    mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
-    massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
-    massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup);
+    mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); mass->Sumw2();
+    massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); massFrom1DTemplates->Sumw2();
+    massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); massFrom1DTemplatesEtaBinning->Sumw2();
    
     mass->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     massFrom1DTemplates->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     massFrom1DTemplatesEtaBinning->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
 
-    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup);
-    Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup);
-    cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+    errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup); errMass->Sumw2();
+    Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup); Mass_errMass->Sumw2();
+    cross1Dtemplates = new TH2F(("cross1Dtemplates_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup); cross1Dtemplates->Sumw2();
 
-    ih_used         = new TH1F(("ih_used"+suffix).c_str(),";I_{h} [MeV/cm];",nih,ihlow,ihup);
-    mapM800         = new TH2F(("mapM800_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup);
+    ih_used         = new TH1F(("ih_used"+suffix).c_str(),";I_{h} [MeV/cm];",nih,ihlow,ihup); ih_used->Sumw2();
+    mapM800         = new TH2F(("mapM800_ih_p_"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup); mapM800->Sumw2();
 
-    momentumDistribM1000    = new TH1F(("momentumDistribM1000_"+suffix).c_str(),";p [GeV]",np,plow,pup);
-    dedxDistribM1000    = new TH1F(("dedxDistribM1000_"+suffix).c_str(),";I_{h} [MeV/cm]",nih,ihlow,ihup);
+    momentumDistribM1000    = new TH1F(("momentumDistribM1000_"+suffix).c_str(),";p [GeV]",np,plow,pup); momentumDistribM1000->Sumw2();
+    dedxDistribM1000    = new TH1F(("dedxDistribM1000_"+suffix).c_str(),";I_{h} [MeV/cm]",nih,ihlow,ihup); dedxDistribM1000->Sumw2();
 
-    hTOF    = new TH1F(("hTOF_"+suffix).c_str(),";TOF",200,-10,10);
+    hTOF    = new TH1F(("hTOF_"+suffix).c_str(),";TOF",200,-10,10); hTOF->Sumw2();
 
 }
 
 // Function which fills histograms
-void region::fill(float& eta, float& nhits, float& p, float& pt, float& ih, float& ias, float& m, float& tof)
+void region::fill(float& eta, float& nhits, float& p, float& pt, float& pterr, float& ih, float& ias, float& m, float& tof, float& w)
 {
-   ih_p_eta->Fill(eta,p,ih);
-   ias_p_eta->Fill(eta,p,ias);
-   ih_pt->Fill(pt,ih);
-   ias_pt->Fill(pt,ias);
-   ih_ias->Fill(ias,ih);
-   ih_nhits->Fill(nhits,ih);
-   ias_nhits->Fill(nhits,ias);
-   eta_pt->Fill(pt,eta);
-   eta_p->Fill(p,eta);
-   nhits_pt->Fill(pt,nhits);
-   eta_nhits->Fill(nhits,eta);
-   ih_eta->Fill(eta,ih);
-   ih_p->Fill(p,ih);
-   ias_p->Fill(p,ias);
-   mass->Fill(m);
-   hTOF->Fill(tof);
+   ih_p_eta->Fill(eta,p,ih,w);
+   ias_p_eta->Fill(eta,p,ias,w);
+   ih_pt->Fill(pt,ih,w);
+   ias_pt->Fill(pt,ias,w);
+   ih_ias->Fill(ias,ih,w);
+   ih_nhits->Fill(nhits,ih,w);
+   ias_nhits->Fill(nhits,ias,w);
+   eta_pt->Fill(pt,eta,w);
+   eta_p->Fill(p,eta,w);
+   nhits_pt->Fill(pt,nhits,w);
+   eta_nhits->Fill(nhits,eta,w);
+   ih_eta->Fill(eta,ih,w);
+   ih_p->Fill(p,ih,w);
+   ias_p->Fill(p,ias,w);
+   mass->Fill(m,w);
+   hTOF->Fill(tof,w);
+   pt_pterroverpt->Fill(pt,pterr/pt,w);
    //fillStdDev();
    //fillQuantile();
 }
 
 
-void region::fillStdDev()
+/*void region::fillStdDev()
 {
     for(int i=0;i<ih_p->GetNbinsX();i++)
     {
@@ -646,9 +649,9 @@ void region::fillStdDev()
         stdDevIas_p_y->SetBinContent(j,stddev);
         stdDevIas_p_y->SetBinError(j,stddeverr);
     }
-}
+}*/
 
-void region::fillQuantile()
+/*void region::fillQuantile()
 {
     int n_quan=7;
     double p[7]={0.01,0.10,0.30,0.50,0.70,0.90,0.99};
@@ -687,7 +690,7 @@ void region::fillQuantile()
         quantile99Ias_p->SetBinContent(i,q[6]);
     }
     
-}
+}*/
 
 // in order to compute properly the uncertainties we use the methods SetBinContent SetBinError instead of Fill
 // as several couples of bins in (p,ih) can provide the same mass estimate we need to properly sum the entries and errors
@@ -797,6 +800,7 @@ void region::write()
     ih_p->Write();
     cross1Dtemplates->Write();
     ias_p->Write();
+    pt_pterroverpt->Write();
 /*    stdDevIh_p->Write();
     stdDevIas_pt->Write();
     stdDevIas_p->Write();
@@ -1551,7 +1555,6 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("clust_detid", &clust_detid, &b_clust_detid);
    fChain->SetBranchAddress("clust_isStrip", &clust_isStrip, &b_clust_isStrip);
    fChain->SetBranchAddress("clust_isPixel", &clust_isPixel, &b_clust_isPixel);
-   fChain->SetBranchAddress("GenId", &GenId, &b_GenId);
    fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);*/
    if (!treeGen) return;
    fChainGen = treeGen;
@@ -1562,6 +1565,8 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChainGen->SetBranchAddress("GenPt", &GenPt, &b_GenPt);
    fChainGen->SetBranchAddress("GenEta", &GenEta, &b_GenEta);
    fChainGen->SetBranchAddress("GenPhi", &GenPhi, &b_GenPhi);
+   fChainGen->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
+   fChainGen->SetBranchAddress("GenId", &GenId, &b_GenId);
    Notify();
 }
 

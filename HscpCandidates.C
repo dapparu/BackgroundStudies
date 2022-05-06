@@ -32,6 +32,50 @@ TObject* GetObjectFromPath(TDirectory* File, std::string Path, bool GetACopy=fal
     }
 }
 
+bool isLepton(float pID){
+    int id = abs((int)pID);
+    if( id == 11 ||
+        id == 13 ||
+        id == 15 ) return true;
+    else return false;
+}
+
+bool isRHadron(float pID){
+    int id = abs((int)pID);
+    if( id == 1000993 ||
+        id == 1009113 ||
+        id == 1009213 ||
+        id == 1009223 ||
+        id == 1009313 ||
+        id == 1009323 ||
+        id == 1009333 ||
+        id == 1091114 ||
+        id == 1092114 ||
+        id == 1092214 ||
+        id == 1092224 ||
+        id == 1093114 ||
+        id == 1093214 ||
+        id == 1093224 ||
+        id == 1093314 ||
+        id == 1093324 ||
+        id == 1093334 ||
+        id == 1000612 ||
+        id == 1000622 ||
+        id == 1000632 ||
+        id == 1000642 ||
+        id == 1000652 ||
+        id == 1006113 ||
+        id == 1006211 ||
+        id == 1006213 ||
+        id == 1006223 ||
+        id == 1006311 ||
+        id == 1006313 ||
+        id == 1006321 ||
+        id == 1006323 ||
+        id == 1006333 ) return true;
+    else return false;
+}
+
 double deltaR(double eta1,double phi1,double eta2,double phi2){
     double deta=eta1-eta2;
     double dphi=phi1-phi2;
@@ -150,7 +194,9 @@ void HscpCandidates::Loop()
    if (fChain == 0) return;
    
    Long64_t nentries = fChain->GetEntriesFast();
+   std::cout << "entries: " << nentries << std::endl;
 
+   //nentries = 1e7;
 
    int ntot=0, nA=0, nB=0, nC=0, nD=0, nB_boundedIas=0, nD_boundedIas=0, nC_boundedPt=0, nD_boundedPt=0;
 
@@ -161,34 +207,36 @@ void HscpCandidates::Loop()
    region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
 
    region rA_med("_regionA_med",etabins_,ihbins_,pbins_,massbins_);
-   region rA_med_pt("_regionA_med_pt",etabins_,ihbins_,pbins_,massbins_);
-   region rB_med_pt("_regionB_med_pt",etabins_,ihbins_,pbins_,massbins_);
+//   region rA_med_pt("_regionA_med_pt",etabins_,ihbins_,pbins_,massbins_);
+//   region rB_med_pt("_regionB_med_pt",etabins_,ihbins_,pbins_,massbins_);
    region rC_med("_regionC_med",etabins_,ihbins_,pbins_,massbins_);
 
 
-   region rA_40("_regionA_40",etabins_,ihbins_,pbins_,massbins_);
+/*   region rA_40("_regionA_40",etabins_,ihbins_,pbins_,massbins_);
    region rA_40pt("_regionA_40pt",etabins_,ihbins_,pbins_,massbins_);
    region rB_40pt("_regionB_40pt",etabins_,ihbins_,pbins_,massbins_);
    region rC_40("_regionC_40",etabins_,ihbins_,pbins_,massbins_);
-
+*/
    
-   region rB_40("_regionB_40",etabins_,ihbins_,pbins_,massbins_);
+//   region rB_40("_regionB_40",etabins_,ihbins_,pbins_,massbins_);
    region rB_50("_regionB_50",etabins_,ihbins_,pbins_,massbins_);
    region rB_60("_regionB_60",etabins_,ihbins_,pbins_,massbins_);
    region rB_70("_regionB_70",etabins_,ihbins_,pbins_,massbins_);
    region rB_80("_regionB_80",etabins_,ihbins_,pbins_,massbins_);
    region rB_90("_regionB_90",etabins_,ihbins_,pbins_,massbins_);
    region rB_50_90("_regionB_50_90",etabins_,ihbins_,pbins_,massbins_);
+   region rB_50_100("_regionB_50_100",etabins_,ihbins_,pbins_,massbins_);
 
-   region rD_40("_regionD_40",etabins_,ihbins_,pbins_,massbins_);
+//   region rD_40("_regionD_40",etabins_,ihbins_,pbins_,massbins_);
    region rD_50("_regionD_50",etabins_,ihbins_,pbins_,massbins_);
    region rD_60("_regionD_60",etabins_,ihbins_,pbins_,massbins_);
    region rD_70("_regionD_70",etabins_,ihbins_,pbins_,massbins_);
    region rD_80("_regionD_80",etabins_,ihbins_,pbins_,massbins_);
    region rD_90("_regionD_90",etabins_,ihbins_,pbins_,massbins_);
    region rD_50_90("_regionD_50_90",etabins_,ihbins_,pbins_,massbins_);
+   region rD_50_100("_regionD_50_100",etabins_,ihbins_,pbins_,massbins_);
 
-   region rC_40pt("_regionC_40pt",etabins_,ihbins_,pbins_,massbins_);
+/*   region rC_40pt("_regionC_40pt",etabins_,ihbins_,pbins_,massbins_);
    region rC_50pt("_regionC_50pt",etabins_,ihbins_,pbins_,massbins_);
    region rC_60pt("_regionC_60pt",etabins_,ihbins_,pbins_,massbins_);
    region rC_70pt("_regionC_70pt",etabins_,ihbins_,pbins_,massbins_);
@@ -200,7 +248,9 @@ void HscpCandidates::Loop()
    region rD_60pt("_regionD_60pt",etabins_,ihbins_,pbins_,massbins_);
    region rD_70pt("_regionD_70pt",etabins_,ihbins_,pbins_,massbins_);
    region rD_80pt("_regionD_80pt",etabins_,ihbins_,pbins_,massbins_);
-   region rD_90pt("_regionD_90pt",etabins_,ihbins_,pbins_,massbins_);
+   region rD_90pt("_regionD_90pt",etabins_,ihbins_,pbins_,massbins_);*/
+
+   region r_mass800("_reg_mass800",etabins_,ihbins_,pbins_,massbins_);
 
 
 
@@ -227,6 +277,8 @@ void HscpCandidates::Loop()
    //double q[5]={ 0.039, 0.045, 0.053, 0.064, 0.082 }; //data or signal
    double q[6]={ 0.033863945, 0.039237098, 0.045422508, 0.053164483, 0.063867635, 0.082214175 }; //data or signal
    double q_pt[6]={ 57.013944, 59.648194, 63.123116, 67.930817, 75.501106, 90.672101 }; //data or signal
+
+   double q[5] = { 0.038786767, 0.045297877, 0.054489588, 0.069096781, 0.097055567 }; //MC QCD
    
    float quan40 = q[0];
    float quan50 = q[1];
@@ -254,6 +306,7 @@ void HscpCandidates::Loop()
    TH1F* h_massObs_q80 = new TH1F("massObs_q80",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q90 = new TH1F("massObs_q90",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q50_90 = new TH1F("massObs_q50_90",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q50_100 = new TH1F("massObs_q50_100",";Mass (GeV)",80,0,4000);
 
 
    TH1F* h_massObs_q40_pt = new TH1F("massObs_q40_pt",";Mass (GeV)",80,0,4000);
@@ -272,6 +325,7 @@ void HscpCandidates::Loop()
    h_massObs_q80->Sumw2();
    h_massObs_q90->Sumw2();
    h_massObs_q50_90->Sumw2();
+   h_massObs_q50_100->Sumw2();
    
    h_massObs_q40_pt->Sumw2();
    h_massObs_q50_pt->Sumw2();
@@ -341,6 +395,12 @@ void HscpCandidates::Loop()
    TH2F* h_pT_pTerrOverpT_0p8_eta_1p7 = new TH2F("pT_pTerrOverpT_0p8_eta_1p7","0.8<|#eta|<1.7;p_{T} (GeV);#frac{#sigma_{pT}}{p_{T}};tracks/bin",1000,0,6000,1000,0,1);
    TH2F* h_pT_pTerrOverpT_1p7_eta_2p1 = new TH2F("pT_pTerrOverpT_1p7_eta_2p1","1.7<|#eta|<2.1;p_{T} (GeV);#frac{#sigma_{pT}}{p_{T}};tracks/bin",1000,0,6000,1000,0,1);
   
+   TH2F* h_mass_pTerrOverpT = new TH2F("mass_pTerrOverpT",";Mass (GeV);#frac{#sigma_{pT}}{p_{T}};tracks/bin",80,0,2000,1000,0,1);
+   TH2F* h_ias_pTerrOverpT = new TH2F("ias_pTerrOverpT",";I_{as};#frac{#sigma_{pT}}{p_{T}};tracks/bin",100,0,1,1000,0,1);
+   TH2F* h_pT_pTerrOverpT_rhad = new TH2F("pT_pTerrOverpT_rhad","isRHadron;p_{T} (GeV);#frac{#sigma_{pT}}{p_{T}};tracks/bin",1000,0,6000,1000,0,1);
+
+   TH2F* h_mass_fracLepton = new TH2F("mass_fracLepton",";Mass (GeV);is leptons;tracks/bin",80,0,2000,2,0,2);
+   
    TH2F* h_pT_PULLpT = new TH2F("pT_PULLpT","DeltaR(RECO,GEN)<0.1;p_{T} (GeV);#frac{RECO pT-GEN pT}{#sigma_{pT}}",100,0,1000,100,-5,5);
    TH1F* h_PULLpT = new TH1F("PULLpT","DeltaR(RECO,GEN)<0.1;#frac{RECO pT-GEN pT}{#sigma_{pT}}",1000,-100,100);
    
@@ -359,6 +419,11 @@ void HscpCandidates::Loop()
    h_pT_pTerrOverpT_1p3_eta_1p7->Sumw2();
    h_pT_pTerrOverpT_0p8_eta_1p7->Sumw2();
    h_pT_pTerrOverpT_1p7_eta_2p1->Sumw2();
+   h_pT_pTerrOverpT_rhad->Sumw2();
+
+   h_mass_fracLepton->Sumw2();
+   h_mass_pTerrOverpT->Sumw2();
+   h_ias_pTerrOverpT->Sumw2();
 
    h_massObs->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    
@@ -369,6 +434,7 @@ void HscpCandidates::Loop()
    h_massObs_q80->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q90->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q50_90->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_q50_100->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    
    h_massObs_q40_pt->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q50_pt->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
@@ -442,12 +508,14 @@ void HscpCandidates::Loop()
    
 
 
-   float weightWJets = (52940e3*lumi)/(6.988236e7);
-   float weightTTTo2L2Nu = (88.29e3*lumi)/(7.5653e7);
-   float weightTTToSemiLeptonic = (365.35e3*lumi)/(1.29985e8);
-   float weightTTToHadronic = (377.96e3*lumi)/(1.0117e8);
-   float weightQCD = (239000.0e3*lumi)/8994317.0;
-   float weightDYJetsToLL = (15343.0e3*lumi)/(4.89014e7);
+   float weightWJets = (52940*1e3*lumi)/(6.988236e7);
+   float weightTTTo2L2Nu = (88.29*1e3*lumi)/(7.5653e7);
+   float weightTTToSemiLeptonic = (365.35*1e3*lumi)/(1.29985e8);
+   float weightTTToHadronic = (377.96*1e3*lumi)/(1.0117e8);
+   float weightQCD = (239000.0*1e3*lumi)/8994317.0;
+   float weightDYJetsToLL = (15343.0*1e3*lumi)/(4.89014e7);
+
+   float weightQCD_pt15_7000 = (1375000000.0*1e3*lumi)/20121999.;
 
    float weightMass = weightppStau1029;
   
@@ -458,6 +526,13 @@ void HscpCandidates::Loop()
    if(dataset_ == "gluino2000") weightMass = weightGluino2000;
    if(dataset_ == "gluino2600") weightMass = weightGluino2600;
    if(dataset_ == "gluino1600on") weightMass = weightGluino1600on;
+   if(dataset_ == "WJets") weightMass = weightWJets;
+   if(dataset_ == "TTTo2L2Nu") weightMass = weightTTTo2L2Nu;
+   if(dataset_ == "TTToSemiLept") weightMass = weightTTToSemiLeptonic;
+   if(dataset_ == "TTToHadr") weightMass = weightTTToHadronic;
+   if(dataset_ == "QCD") weightMass = weightQCD;
+   if(dataset_ == "QCD_pt_15_7000") weightMass = weightQCD_pt15_7000;
+   if(dataset_ == "DY") weightMass = weightDYJetsToLL;
 
    std::cout << "weight: " << weightMass << std::endl;
    std::cout << "K: " << K << " C: " << C << std::endl;
@@ -471,6 +546,8 @@ void HscpCandidates::Loop()
    int n1=0, n2=0, n3=0, n4=0;
    int n50=0, n95=0, n99=0, n999=0;
 
+   int n_print = 0;
+
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
        Long64_t ientry = LoadTree(jentry);
@@ -482,8 +559,16 @@ void HscpCandidates::Loop()
        //if(jentry%2==0) continue;
        //if(jentry%2==1) continue;
 
+       float percentEntry = jentry*100/(float)nentries;
 
-       if(jentry%1000000==0) std::cout << "entry: " << jentry << std::endl;
+       if(percentEntry>=n_print){
+               std::cout << "percent: " << percentEntry << "%" << std::endl;
+               //std::cout << "entry: " << jentry << std::endl;
+               n_print+=5;
+       }
+
+
+       //if(jentry%1000000==0) std::cout << "entry: " << jentry << " --> " << percentEntry << std::endl;
 
        if(Hscp<1) continue;
        if(Pt->size()<1) continue;
@@ -505,6 +590,7 @@ void HscpCandidates::Loop()
            //if(!passPreselection->at(i)) continue;
 
            float pt = Pt->at(i);
+           float sigmapt = PtErr->at(i);
 
            //float ih = Ih_StripOnly->at(i);
            float ih = Ih_noL1->at(i);
@@ -554,15 +640,18 @@ void HscpCandidates::Loop()
            //if(ih>3.17) continue;
            if(p>pcut_ && pcut_>0) continue;
 
-           if(GenMass!=NULL){
+           /*if(GenMass!= NULL){
                for(unsigned int g=0;g<GenMass->size();g++){
+                   float pID = GenId->at(g);
+                if(GenCharge->at(g)==0) continue;
+               h_mass_fracLepton->Fill(massT,isLepton(pID),weightMass);
+                //if(abs((int)pID) == 13) continue; // is muon
                float dR=deltaR(Eta,phi->at(i),GenEta->at(g),GenPhi->at(g));
                if(dR>0.1) continue;
                //std::cout << "deltaR: " << dR << " pT: " << pt << " genPt: " << GenPt->at(g) << std::endl;
                h_pT_PULLpT->Fill(pt,(pt-GenPt->at(g))/PtErr->at(i));
                h_PULLpT->Fill((pt-GenPt->at(g))/PtErr->at(i));
-               }
-           }
+               if(isRHadron(pID)) h_pT_pTerrOverpT_rhad->Fill(pt,PtErr->at(i)/pt,weightMass);*/
 
            bool pTerrCut1 = false;
            bool pTerrCut2 = false;
@@ -657,6 +746,8 @@ void HscpCandidates::Loop()
            if(pt>=400 && pt<800) h_pTerrOverpT2_400_pT_800->Fill(PtErr->at(i)/pow(pt,2),weightMass);
            if(pt>=800) h_pTerrOverpT2_800_pT->Fill(PtErr->at(i)/pow(pt,2),weightMass);
 
+           h_mass_pTerrOverpT->Fill(massT,PtErr->at(i)/pt,weightMass);
+           h_ias_pTerrOverpT->Fill(ias,PtErr->at(i)/pt,weightMass);
 
            n1++;
            if(pTerrCut1) n3++;
@@ -667,7 +758,7 @@ void HscpCandidates::Loop()
            if(PtErr->at(i)/pt < pTerr_over_pT_etaBin(pt,Eta,999)) n999++;
 
            //if(PtErr->at(i)/pt>pTerrOverpT_forPt(pt)) continue;
-           if(PtErr->at(i)/pt > pTerr_over_pT_etaBin(pt,Eta)) continue;
+           if(PtErr->at(i)/pt > pTerr_over_pT_etaBin(pt,Eta,999)) continue;
 
            n2++;
 
@@ -691,113 +782,119 @@ void HscpCandidates::Loop()
 
            count_hscp_passPre++;
 
+           if(massT>800) r_mass800.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+
            //std::cout << "mT: " << mT->at(i) << std::endl;
 
-           rAll.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+           rAll.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
            ntot++;
 
-              if(pt<=pt_cut)
-              {
-              if(ias<=ias_cut) //regionA
-              {
-              rA.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-              nA++;
+           if(pt<=pt_cut)
+           {
+                if(ias<=ias_cut) //regionA
+                {
+                    rA.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    nA++;
+                }
+                else //regionB
+                {
+                    rB.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    nB++;
 
-              }
-              else //regionB
-              {
-              rB.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-              nB++;
-
-              if(ias<0.1)
-              {
-           //rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           nB_boundedIas++;
-           }
-           }
-           if(ias<quan40) rA_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           if(ias<quan50) rA_med.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           if(ias>=quan40 && ias<quan50) rB_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan50 && ias<quan60) rB_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan60 && ias<quan70) rB_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan70 && ias<quan80) rB_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan80 && ias<quan90) rB_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan90)              rB_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(ias>=quan50 && ias<quan90)rB_50_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+                    if(ias<0.1)
+                    {
+                        //rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+                        nB_boundedIas++;
+                    }
+                }
+                //if(ias<quan40) rA_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass); 
+                if(ias<quan50) rA_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                //if(ias>=quan40 && ias<quan50) rB_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan50 && ias<quan60) rB_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan60 && ias<quan70) rB_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan70 && ias<quan80) rB_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan80 && ias<quan90) rB_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan90)              rB_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan50 && ias<quan90)rB_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan50)rB_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
 
            }
            else
            {
-           if(ias<=ias_cut) //regionC
-           {
-           rC.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           nC++;
+                if(ias<=ias_cut) //regionC
+                {
+                    rC.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    nC++;
 
-           if(pt<70)
-           {
-           //rC_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           nC_boundedPt++;
-           }
+                    if(pt<70)
+                    {
+                        //rC_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+                        nC_boundedPt++;
+                    }
+                }
+                else //regionD
+                {
+                    rD.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    nD++;
+                    h_mT_regD->Fill(mT->at(i),weightMass);
+                    h_massObs->Fill(massT,weightMass);
 
-           }
-           else //regionD
-           {
-           rD.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           nD++;
-           h_mT_regD->Fill(mT->at(i),weightMass);
-           h_massObs->Fill(massT,weightMass);
+                    if(ias<0.1)
+                    {
+                        //rD_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
+                        nD_boundedIas++;
+                    } 
 
-           if(ias<0.1)
-           {
-           //rD_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           nD_boundedIas++;
-           } 
+                    if(pt<70)
+                    {
+                        //rD_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
+                        nD_boundedPt++;
+                    }
 
-           if(pt<70)
-           {
-           //rD_boundedPt.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           nD_boundedPt++;
-           }
+                }
+                //if(ias<quan40) rC_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass); 
+                if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                //if(ias>=quan40 && ias<quan50) {rD_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q40->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan60) {rD_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50->Fill(massT,weightMass);}
+                if(ias>=quan60 && ias<quan70) {rD_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q60->Fill(massT,weightMass);}
+                if(ias>=quan70 && ias<quan80) {rD_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q70->Fill(massT,weightMass);}
+                if(ias>=quan80 && ias<quan90) {rD_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q80->Fill(massT,weightMass);}
+                if(ias>=quan90)              {rD_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q90->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan90){rD_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50_90->Fill(massT,weightMass);}
+                if(ias>=quan50){rD_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50_100->Fill(massT,weightMass);}
 
-           }
-           if(ias<quan40) rC_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,ih,ias,massT,tof); 
-           if(ias>=quan40 && ias<quan50) {rD_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q40->Fill(massT,weightMass);}
-           if(ias>=quan50 && ias<quan60) {rD_50.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q50->Fill(massT,weightMass);}
-           if(ias>=quan60 && ias<quan70) {rD_60.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q60->Fill(massT,weightMass);}
-           if(ias>=quan70 && ias<quan80) {rD_70.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q70->Fill(massT,weightMass);}
-           if(ias>=quan80 && ias<quan90) {rD_80.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q80->Fill(massT,weightMass);}
-           if(ias>=quan90)              {rD_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q90->Fill(massT,weightMass);}
-           if(ias>=quan50 && ias<quan90){rD_50_90.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q50_90->Fill(massT,weightMass);}
+            }
 
-       }
+            /*if(ias<=ias_cut){
+                if(pt<quan40_pt) rA_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt<quan50_pt) rA_med_pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan40_pt && pt<quan50_pt) rC_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan50_pt && pt<quan60_pt) rC_50pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan60_pt && pt<quan70_pt) rC_60pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan70_pt && pt<quan80_pt) rC_70pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan80_pt && pt<quan90_pt) rC_80pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan90_pt) rC_90pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+            }
+            else{
+                if(pt<quan40_pt) rB_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt<quan50_pt) rB_med_pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
+                if(pt>=quan40_pt && pt<quan50_pt) {rD_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q40_pt->Fill(massT,weightMass);}
+                if(pt>=quan50_pt && pt<quan60_pt) {rD_50pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q50_pt->Fill(massT,weightMass);}
+                if(pt>=quan60_pt && pt<quan70_pt) {rD_60pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q60_pt->Fill(massT,weightMass);}
+                if(pt>=quan70_pt && pt<quan80_pt) {rD_70pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q70_pt->Fill(massT,weightMass);}
+                if(pt>=quan80_pt && pt<quan90_pt) {rD_80pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q80_pt->Fill(massT,weightMass);}
+                if(pt>=quan90_pt) {rD_90pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q90_pt->Fill(massT,weightMass);}
 
-       if(ias<=ias_cut){
-           if(pt<quan40_pt) rA_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt<quan50_pt) rA_med_pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan40_pt && pt<quan50_pt) rC_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan50_pt && pt<quan60_pt) rC_50pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan60_pt && pt<quan70_pt) rC_60pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan70_pt && pt<quan80_pt) rC_70pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan80_pt && pt<quan90_pt) rC_80pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan90_pt) rC_90pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-       }
-       else{
-           if(pt<quan40_pt) rB_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt<quan50_pt) rB_med_pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
-           if(pt>=quan40_pt && pt<quan50_pt) {rD_40pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q40_pt->Fill(massT,weightMass);}
-           if(pt>=quan50_pt && pt<quan60_pt) {rD_50pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q50_pt->Fill(massT,weightMass);}
-           if(pt>=quan60_pt && pt<quan70_pt) {rD_60pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q60_pt->Fill(massT,weightMass);}
-           if(pt>=quan70_pt && pt<quan80_pt) {rD_70pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q70_pt->Fill(massT,weightMass);}
-           if(pt>=quan80_pt && pt<quan90_pt) {rD_80pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q80_pt->Fill(massT,weightMass);}
-           if(pt>=quan90_pt) {rD_90pt.fill(Eta,nhits,p,pt,ih,ias,massT,tof);h_massObs_q90_pt->Fill(massT,weightMass);}
+            }*/
 
-       }
+  //     }
+  // }
 
-       }
-           h_nhscp->Fill(count_hscp_passPre);
+        }// end loop mass --> loop over the candidates of the event 'ientry'
+           
+       h_nhscp->Fill(count_hscp_passPre);
 
-   }
+   }// end loop HscpCandidateTree entry
 
    ntot*=weightMass;
    nA*=weightMass;
@@ -839,6 +936,9 @@ void HscpCandidates::Loop()
     TFile* outfile = new TFile((outfilename_+".root").c_str(),"RECREATE");
 
     std::cout << "saving..." << std::endl;
+    
+    r_mass800.write();
+
       rAll.write();
 //    std::cout << " region all saved " << std::endl;
       rA.write();
@@ -859,23 +959,25 @@ void HscpCandidates::Loop()
     std::cout << " region D_boundedPt saved " << std::endl;
 */
 
-    rB_40.write();
+//    rB_40.write();
     rB_50.write();
     rB_60.write();
     rB_70.write();
     rB_80.write();
     rB_90.write();
     rB_50_90.write();
+    rB_50_100.write();
 
-    rD_40.write();
+//    rD_40.write();
     rD_50.write();
     rD_60.write();
     rD_70.write();
     rD_80.write();
     rD_90.write();
     rD_50_90.write();
+    rD_50_100.write();
 
-    rC_40pt.write();
+/*    rC_40pt.write();
     rC_50pt.write();
     rC_60pt.write();
     rC_70pt.write();
@@ -887,17 +989,17 @@ void HscpCandidates::Loop()
     rD_60pt.write();
     rD_70pt.write();
     rD_80pt.write();
-    rD_90pt.write();
+    rD_90pt.write();*/
 
     rA_med.write();
-    rA_med_pt.write();
-    rB_med_pt.write();
+//    rA_med_pt.write();
+//    rB_med_pt.write();
     rC_med.write();
 
-    rA_40.write();
+/*    rA_40.write();
     rA_40pt.write();
     rB_40pt.write();
-    rC_40.write();
+    rC_40.write();*/
 
     h_mT->Write();
     h_mT_regD->Write();
@@ -920,6 +1022,7 @@ void HscpCandidates::Loop()
     h_massObs_q80->Write();
     h_massObs_q90->Write();
     h_massObs_q50_90->Write();
+    h_massObs_q50_100->Write();
     
     h_massObs_q40_pt->Write();
     h_massObs_q50_pt->Write();
@@ -974,6 +1077,11 @@ void HscpCandidates::Loop()
     h_pT_pTerrOverpT_1p3_eta_1p7->Write();
     h_pT_pTerrOverpT_0p8_eta_1p7->Write();
     h_pT_pTerrOverpT_1p7_eta_2p1->Write();
+
+    h_pT_pTerrOverpT_rhad->Write();
+    h_mass_pTerrOverpT->Write();
+    h_ias_pTerrOverpT->Write();
+    h_mass_fracLepton->Write();
 
     h_pT_PULLpT->Write();
     h_PULLpT->Write();
