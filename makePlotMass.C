@@ -14,15 +14,28 @@
 void makePlotMass()
 {
 
-    bool reb = false;
-    std::string quan = "90";
+    bool reb = true;
+    //std::string quan = "50_90"; std::string quanSignal = "q50_90";
+    //std::string quan = "50_100"; std::string quanSignal = "q50_100";
+    //std::string quan = "50ias_50"; std::string quanSignal = "q50";
+    //std::string quan = "60ias_50"; std::string quanSignal = "q60";
+    //std::string quan = "70ias_50"; std::string quanSignal = "q70";
+    //std::string quan = "80ias_50"; std::string quanSignal = "q80";
+    //std::string quan = "90ias_50"; std::string quanSignal = "q90";
+    
+    //std::string quan = "005ias01"; std::string quanSignal = "005ias01";
+    //std::string quan = "005ias015"; std::string quanSignal = "005ias015";
+    //std::string quan = "50ias90_eta08"; std::string quanSignal = "50ias90_eta08";
+    //std::string quan = "50ias90_08eta17"; std::string quanSignal = "50ias90_08eta17";
+    std::string quan = "50ias90_17eta21"; std::string quanSignal = "50ias90_17eta21";
     
     bool blind=false;
     if(quan=="90") blind=true;
     if(quan=="50_100") blind=true;
-    blind = false;
+    if(quan=="90ias_50") blind=true;
+    //blind = false;
 
-    bool signal=false;
+    bool signal=true;
     bool gluino=true;
     bool stau=false;
 
@@ -48,7 +61,14 @@ void makePlotMass()
     
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_WJetsToLNu_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
-    std::string inputfilename = "outfile_TTTo2L2Nu_TkOnly_2017_Ih3p47_CutPtErrQ95_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_TTTo2L2Nu_TkOnly_2017_Ih3p47_CutPtErrQ95_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+   
+
+    // plots 24 may
+    std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErrCurQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+
 
     TFile* ifile1 = new TFile((inputfilename+".root").c_str());
     //TFile* ifile2 = new TFile("outfile_Gluino_M-2000_TkOnly_2017C_Ih3p24_slicesIasAll_-50eta50_ias25_pt60_ih32_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
@@ -74,13 +94,40 @@ void makePlotMass()
     TFile* ifile_ppStau1029 = new TFile("outfile_ppStau_M-1029_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
 
     //26 avril 2022
-    TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    /*TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
     TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
     TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
     TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
     TFile* ifile_Gluino2600 = new TFile("outfile_Gluino_M-2600_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
-    TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0.root");*/
     
+    //24 mai 2022
+    TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2600 = new TFile("outfile_Gluino_M-2600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+
+
+    /*TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2600 = new TFile("outfile_Gluino_M-2600_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");*/
+
+
+    /*TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2600 = new TFile("outfile_Gluino_M-2600_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");*/
+
+
+
+
     //TFile* ifile2 = new TFile("ooutfile_SingleMu_TkOnly_2017C_Ih2p9_-50eta50_ias100_pt60_ih29_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p4000_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
 //    TFile* ifile1 = new TFile("outfile_ias50_pt60_ih29_p13000_etabins120_ihbins1000_pbins2000_massbins6500_invIso0_invMET0_eta50_rebinEta2_rebinIh5_rebinP10_rebinMass25_analysed.root");
@@ -104,12 +151,12 @@ void makePlotMass()
     std::string st3 = "mass_predBCR_"+quan+"ias_50";
     std::string stSignal = "massObs_q"+quan;*/
 
-    quan = "50_100";
+    //quan = "50_100";
 
     std::string st1 = "mass_obs_"+quan;
     std::string st2 = "mass_predBC_"+quan;
     std::string st3 = "mass_predBCR_"+quan;
-    std::string stSignal = "massObs_q"+quan;
+    std::string stSignal = "massObs_"+quanSignal;
    
 if(quan==""){
     st1 = "mass_obs";
@@ -565,7 +612,7 @@ if(quan==""){
 
    c1->cd();
 
-   std::string directory = "plotsMassApril28/";
+   std::string directory = "plotsMassMay24/";
 
     //c1->SaveAs(("plotsMassPdf/MassPlot_"+inputfilename+"_quantile"+quan+".pdf").c_str());
     if(quan==""){

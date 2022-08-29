@@ -157,9 +157,13 @@ TH1F* rebinHisto(TH1F* h){
     overflowLastBin(h);
     //double xbins[20] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000,3000,4000,6000};
     double xbins[17] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000};
+    //double xbins[13] = {0.0,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
+    std::vector<double> xbins_v;
+    for(double i=0.0;i<=1000.0;i+=50) xbins_v.push_back(i);
     std::string newname = h->GetName(); 
     newname += "_rebinned";
     TH1F* hres = (TH1F*) h->Rebin(16,newname.c_str(),xbins);
+    //TH1F* hres = (TH1F*) h->Rebin(xbins_v.size()-1,newname.c_str(),xbins_v.data());
     overflowLastBin(hres);
     return hres;
 }
@@ -377,6 +381,200 @@ void mapOfDifferences(TH2F* res, TH2F* h1, TH2F* h2)
             if(diff>=0) res->SetBinContent(i,j,diff);
         }
     }
+}
+
+class mini_region{
+    public:
+        mini_region(std::string suffix);
+        ~mini_region();
+        void fill(float& weight,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt);
+        void write();
+        void saveEvent(int& run,int& event,int& lumi,int& pu);
+        std::ofstream ofile;
+        void setOutputFileName(std::string name);
+        std::string suffix_;
+        TH1F* h_eta;
+        TH1F* h_phi;
+        TH1F* h_p;
+        TH1F* h_ih;
+        TH1F* h_pt;
+        TH1F* h_sigmaPtOverPt;
+        TH1F* h_ias;
+        TH1F* h_probQ;
+        TH1F* h_tkbased_iso_abs;
+        TH1F* h_tkbased_iso_rel;
+        TH1F* h_mini_iso_rel;
+        TH1F* h_calo_iso_rel;
+        TH1F* h_mt;
+        TH1F* h_mass;
+        TH1F* h_ntracks;
+        TH1F* h_njets;
+        TH1F* h_ecal;
+        TH1F* h_iso_ecal;
+        TH1F* h_hcal;
+        TH1F* h_iso_hcal;
+        TH2F* h_ecal_hcal;
+        TH1F* h_NOM;
+        TH1F* h_NOH;
+        TH1F* h_nstrips;
+        TH1F* h_sat254;
+        TH1F* h_sat255;
+        TH1F* h_clusterCleaning;
+        TH1F* h_Fstrip;
+        TH1F* h_dRjetMin;
+        TH1F* h_dRjetHighestPt;
+        TH2F* h_ias_Fstrip;
+        TH2F* h_ias_dRjetMin;
+        TH2F* h_ias_dRjetHighestPt;
+        TH2F* h_iasStripOnly_ias;
+        TH2F* h_iasOuter_ias;
+        TH2F* h_iasOuter_Fstrip;
+        TH2F* h_NOSH_Fstrip;
+        TH2F* h_NOM_Fstrip;
+        TH2F* h_sigmaPtOverPt_Fstrip;
+
+};
+
+mini_region::mini_region(std::string suffix){
+    suffix_ = suffix;
+    h_eta = new TH1F(("h_eta"+suffix).c_str(),";#eta;",100,-3,3); h_eta->Sumw2();
+    h_phi = new TH1F(("h_phi"+suffix).c_str(),";#phi;",100,-3.2,3.2); h_phi->Sumw2();
+    h_p = new TH1F(("h_p"+suffix).c_str(),";momentum (GeV);",200,0,2000); h_p->Sumw2();
+    h_ih = new TH1F(("h_ih"+suffix).c_str(),";I_{h} (MeV/cm);",100,0,20); h_ih->Sumw2();
+    h_pt = new TH1F(("h_pt"+suffix).c_str(),";transverse momentum (GeV);",200,0,2000); h_pt->Sumw2();
+    h_sigmaPtOverPt = new TH1F(("h_sigmaPtOverPt"+suffix).c_str(),";#sigma_{p_{T}}/p_{T};",500,0,5); h_sigmaPtOverPt->Sumw2();
+    h_ias = new TH1F(("h_ias"+suffix).c_str(),";I_{as};",100,0,1); h_ias->Sumw2();
+    h_probQ = new TH1F(("h_probQ"+suffix).c_str(),";probQ;",100,0,1); h_probQ->Sumw2();
+    h_tkbased_iso_abs = new TH1F(("h_tkbased_iso_abs"+suffix).c_str(),";Tk-based iso (GeV);",100,0,100); h_tkbased_iso_abs->Sumw2();
+    h_tkbased_iso_rel = new TH1F(("h_tkbased_iso_rel"+suffix).c_str(),";Tk-based iso / p;",200,0,2); h_tkbased_iso_rel->Sumw2();
+    h_mini_iso_rel = new TH1F(("h_mini_iso_rel"+suffix).c_str(),";Relative mini isolation;",200,0,2); h_mini_iso_rel->Sumw2();
+    h_calo_iso_rel = new TH1F(("h_calo_iso_rel"+suffix).c_str(),";(iso_{ecal}+iso_{hcal})/p;",200,0,2); h_calo_iso_rel->Sumw2();
+    h_mt = new TH1F(("h_mt"+suffix).c_str(),";transverse mass (GeV);",100,0,200); h_mt->Sumw2();
+    h_mass = new TH1F(("h_mass"+suffix).c_str(),";mass (GeV);",100,0,1000); h_mass->Sumw2();
+    h_ntracks = new TH1F(("h_ntracks"+suffix).c_str(),";# tracks;",100,0,100); h_ntracks->Sumw2();
+    h_njets = new TH1F(("h_njets"+suffix).c_str(),";# jets;",200,0,200); h_njets->Sumw2();
+    h_ecal = new TH1F(("h_ecal"+suffix).c_str(),";E_{ecal} (GeV);",100,0,50); h_ecal->Sumw2();
+    h_iso_ecal = new TH1F(("h_iso_ecal"+suffix).c_str(),";E_{ecal} (GeV);",100,0,50); h_ecal->Sumw2();
+    h_hcal = new TH1F(("h_hcal"+suffix).c_str(),";E_{hcal} (GeV);",100,0,50); h_hcal->Sumw2();
+    h_iso_hcal = new TH1F(("h_iso_hcal"+suffix).c_str(),";E_{hcal} (GeV);",100,0,50); h_hcal->Sumw2();
+    h_ecal_hcal = new TH2F(("h_ecal_hcal"+suffix).c_str(),";E_{ecal} (GeV);E_{hcal} (GeV);",100,0,50,100,0,50); h_ecal_hcal->Sumw2();
+    h_NOM = new TH1F(("h_NOM"+suffix).c_str(),";Number of measurements;",40,0,40); h_NOM->Sumw2();
+    h_NOH = new TH1F(("h_NOH"+suffix).c_str(),";Number of hits;",40,0,40); h_NOH->Sumw2();
+    h_nstrips = new TH1F(("h_nstrips"+suffix).c_str(),";Number of strips;",40,0,40); h_nstrips->Sumw2();
+    h_sat254 = new TH1F(("h_sat254"+suffix).c_str(),";saturation 254;",100,0,1); h_sat254->Sumw2();
+    h_sat255 = new TH1F(("h_sat255"+suffix).c_str(),";saturation 255;",100,0,1); h_sat255->Sumw2();
+    h_clusterCleaning = new TH1F(("h_clusterCleaning"+suffix).c_str(),";cluster cleaning;",100,0,1); h_clusterCleaning->Sumw2();
+    h_Fstrip = new TH1F(("h_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};",20,0,1); h_Fstrip->Sumw2();
+    h_dRjetMin = new TH1F(("h_dRjetMin"+suffix).c_str(),";min dR(hscp,jet[p_{T}>30 GeV]);",100,0,2); h_dRjetMin->Sumw2();
+    h_dRjetHighestPt = new TH1F(("h_dRjetHighestPt"+suffix).c_str(),";dR(hscp,jet[p_{T} max]);",100,0,2); h_dRjetHighestPt->Sumw2();
+    h_ias_Fstrip = new TH2F(("h_ias_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};I_{as}",20,0,1,100,0,1); h_ias_Fstrip->Sumw2();
+    h_ias_dRjetMin = new TH2F(("h_ias_dRjetMin"+suffix).c_str(),";min dR(hscp,jet[p_{T}>30 GeV]);I_{as}",100,0,2,100,0,1); h_ias_dRjetMin->Sumw2();
+    h_ias_dRjetHighestPt = new TH2F(("h_ias_dRjetHighestPt"+suffix).c_str(),";dR(hscp,jet[p_{T} max]);I_{as}",100,0,2,100,0,1); h_ias_dRjetHighestPt->Sumw2();
+    h_iasStripOnly_ias = new TH2F(("h_iasStripOnly_ias"+suffix).c_str(),";I_{as};I_{as} [strip only]",100,0,1,100,0,1); h_iasStripOnly_ias->Sumw2();
+    h_iasOuter_ias = new TH2F(("h_iasOuter_ias"+suffix).c_str(),"I_{as};I_{as} [outer]",100,0,1,100,0,1); h_iasOuter_ias->Sumw2();
+    h_iasOuter_Fstrip = new TH2F(("h_iasOuter_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};I_{as} [outer]",20,0,1,100,0,1); h_iasOuter_Fstrip->Sumw2();
+    h_NOSH_Fstrip = new TH2F(("h_NOSH_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};Nof valid strip hits",20,0,1,30,0,30); h_NOSH_Fstrip->Sumw2();
+    h_NOM_Fstrip = new TH2F(("h_NOM_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};Nof strip measurements",20,0,1,30,0,30); h_NOM_Fstrip->Sumw2();
+    h_sigmaPtOverPt_Fstrip = new TH2F(("h_sigmaPtOverPt_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};#sigma_{p_{T}}/p_{T}",100,0,1,500,0,5); h_sigmaPtOverPt_Fstrip->Sumw2();
+    //h_ = new TH1F((""+suffix).c_str(),"",40,0,40); h_->Sumw2();
+}
+
+void mini_region::setOutputFileName(std::string name){
+    ofile.open(("save"+name+suffix_+".txt").c_str());
+}
+
+mini_region::~mini_region(){
+    ofile.close();
+}
+
+void mini_region::fill(float& w,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt){
+    h_eta->Fill(eta,w);
+    h_phi->Fill(phi,w);
+    h_p->Fill(p,w);
+    h_ih->Fill(ih,w);
+    h_pt->Fill(pt,w);
+    h_sigmaPtOverPt->Fill(pterr/pt,w);
+    h_ias->Fill(ias,w);
+    h_probQ->Fill(probQ,w);
+    h_tkbased_iso_abs->Fill(tkbased_iso,w);
+    h_tkbased_iso_rel->Fill(tkbased_iso/p,w);
+    h_mini_iso_rel->Fill(mini_iso,w);
+    h_calo_iso_rel->Fill((iso_ecal+iso_hcal)/p,w);
+    h_mt->Fill(mt,w);
+    h_mass->Fill(mass,w);
+    h_ntracks->Fill(ntracks,w);
+    h_njets->Fill(njets,w);
+    h_ecal->Fill(ecal,w);
+    h_iso_ecal->Fill(iso_ecal,w);
+    h_hcal->Fill(hcal,w);
+    h_iso_hcal->Fill(iso_hcal,w);
+    h_ecal_hcal->Fill(ecal,hcal,w);
+    h_NOM->Fill(NOM,w);
+    h_NOH->Fill(NOH,w);
+    h_nstrips->Fill(nstrips,w);
+    h_sat254->Fill(sat254,w);
+    h_sat255->Fill(sat255,w);
+    h_clusterCleaning->Fill(clusterCleaning,w);
+    h_Fstrip->Fill(Fstrip,w);
+    h_dRjetMin->Fill(dRjetMin,w);
+    h_dRjetHighestPt->Fill(dRjetHighestPt,w);
+    h_ias_Fstrip->Fill(Fstrip,ias,w);
+    h_ias_dRjetMin->Fill(dRjetMin,ias,w);
+    h_ias_dRjetHighestPt->Fill(dRjetHighestPt,ias,w);
+    h_iasStripOnly_ias->Fill(ias,ias_stripOnly,w);
+    h_iasOuter_ias->Fill(ias,ias_outer,w);
+    h_iasOuter_Fstrip->Fill(Fstrip,ias_outer,w);
+    h_NOSH_Fstrip->Fill(Fstrip,NOSH,w);
+    h_NOM_Fstrip->Fill(Fstrip,NOM,w);
+    h_sigmaPtOverPt_Fstrip->Fill(Fstrip,pterr/pt,w);
+    //h_->Fill(,w);
+}
+
+void mini_region::write(){
+    h_eta->Write();
+    h_phi->Write();
+    h_p->Write();
+    h_ih->Write();
+    h_pt->Write();
+    h_sigmaPtOverPt->Write();
+    h_ias->Write();
+    h_probQ->Write();
+    h_tkbased_iso_abs->Write();
+    h_tkbased_iso_rel->Write();
+    h_mini_iso_rel->Write();
+    h_calo_iso_rel->Write();
+    h_mt->Write();
+    h_mass->Write();
+    h_ntracks->Write();
+    h_njets->Write();
+    h_ecal->Write();
+    h_iso_ecal->Write();
+    h_hcal->Write();
+    h_iso_hcal->Write();
+    h_ecal_hcal->Write();
+    h_NOM->Write();
+    h_NOH->Write();
+    h_nstrips->Write();
+    h_sat254->Write();
+    h_sat255->Write();
+    h_clusterCleaning->Write();
+    h_Fstrip->Write();
+    h_dRjetMin->Write();
+    h_dRjetHighestPt->Write();
+    h_ias_Fstrip->Write();
+    h_ias_dRjetMin->Write();
+    h_ias_dRjetHighestPt->Write();
+    h_iasStripOnly_ias->Write();
+    h_iasOuter_ias->Write();
+    h_iasOuter_Fstrip->Write();
+    h_NOSH_Fstrip->Write();
+    h_NOM_Fstrip->Write();
+    h_sigmaPtOverPt_Fstrip->Write();
+    //h_->Write();
+}
+
+void mini_region::saveEvent(int& run,int& event,int& lumi,int& pu){
+    ofile << "run: " << run << " event: " << event << " lumi: " << lumi << " pile-up: " << pu << std::endl;
 }
 
 // class using to definite signal and control regions. 
@@ -840,7 +1038,9 @@ void region::write()
 }
 
 class HscpCandidates {
-public :        
+public :     
+
+    float nof_event;
     
     TH1F* hA;
     TH1F* hB;
@@ -906,17 +1106,28 @@ public :
    Float_t         Muon2_Pt;
    Float_t         Muon2_eta;
    Float_t         Muon2_phi;
+   vector<float>   *jet_pt;
+   vector<float>   *jet_eta;
+   vector<float>   *jet_phi;
+   vector<float>   *jet_mass;
+   vector<float>   *jet_energy;
+   vector<float>   *jet_pdgId;
+   vector<float>   *jet_et;
+   vector<float>   *jet_chargedEmEnergyFraction;
+   vector<float>   *jet_neutralEmEnergyFraction;
    vector<float>   *mT;
    vector<bool>    *passCutPt55;
    vector<bool>    *passPreselection_noIsolation_noIh;
    vector<bool>    *passPreselection;
    vector<bool>    *passSelection;
+   vector<bool>    *isPFMuon;
    vector<float>   *Charge;
    vector<float>   *Pt;
    vector<float>   *PtErr;
    vector<float>   *Ias;
    vector<float>   *Ias_noTIBnoTIDno3TEC;
    vector<float>   *Ias_PixelOnly;
+   vector<float>   *Ias_StripOnly;
    vector<float>   *Ias1;
    vector<float>   *Ias2;
    vector<float>   *Ias3;
@@ -964,6 +1175,8 @@ public :
    vector<float>   *iso_TK;
    vector<float>   *iso_ECAL;
    vector<float>   *iso_HCAL;
+   vector<float>   *iso_MiniIso;
+   vector<float>   *iso_MiniIso_wMuon;
    vector<float>   *TrackPFIsolationR005_sumChargedHadronPt;
    vector<float>   *TrackPFIsolationR005_sumNeutralHadronPt;
    vector<float>   *TrackPFIsolationR005_sumPhotonPt;
@@ -1037,17 +1250,28 @@ public :
    TBranch        *b_Muon2_Pt;   //!
    TBranch        *b_Muon2_eta;   //!
    TBranch        *b_Muon2_phi;   //!
+   TBranch        *b_jet_pt;
+   TBranch        *b_jet_eta;
+   TBranch        *b_jet_phi;
+   TBranch        *b_jet_mass;
+   TBranch        *b_jet_energy;
+   TBranch        *b_jet_pdgId;
+   TBranch        *b_jet_et;
+   TBranch        *b_jet_chargerEmEnergyFraction;
+   TBranch        *b_jet_neutralEmEnergyFraction;
    TBranch        *b_mT;   //!
    TBranch        *b_passCutPt55;   //!
    TBranch        *b_passPreselection_noIsolation_noIh;   //!
    TBranch        *b_passPreselection;   //!
    TBranch        *b_passSelection;   //!
+   TBranch        *b_isPFMuon;
    TBranch        *b_Charge;   //!
    TBranch        *b_Pt;   //!
    TBranch        *b_PtErr;   //!
    TBranch        *b_Ias;   //!
    TBranch        *b_Ias_noTIBnoTIDno3TEC;   //!
    TBranch        *b_Ias_PixelOnly;   //!
+   TBranch        *b_Ias_StripOnly;   //!
    TBranch        *b_Ias1;   //!
    TBranch        *b_Ias2;   //!
    TBranch        *b_Ias3;   //!
@@ -1095,6 +1319,8 @@ public :
    TBranch        *b_iso_TK;   //!
    TBranch        *b_iso_ECAL;   //!
    TBranch        *b_iso_HCAL;   //!
+   TBranch        *b_iso_MiniIso;   //!
+   TBranch        *b_iso_MiniIso_wMuon;   //!
    TBranch        *b_TrackPFIsolationR005_sumChargedHadronPt;   //!
    TBranch        *b_TrackPFIsolationR005_sumNeutralHadronPt;   //!
    TBranch        *b_TrackPFIsolationR005_sumPhotonPt;   //!
@@ -1203,7 +1429,9 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       
     TTree* genTree;
    if (tree == 0) {
-      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject(filename.c_str());
+      TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject((filename+".root").c_str());
+      //TFile *f_skimmed = new TFile((filename+"_skimmed.root").c_str());
+      filename+=".root";
       if (!f || !f->IsOpen()) {
          f = new TFile(filename.c_str());
       }
@@ -1212,10 +1440,19 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       dir->GetObject("HscpCandidates",tree);
       dir->GetObject("GenHscpCandidates",genTree);
 
+      std::cout << "entries before skimming: " << tree->GetEntries() << std::endl;
+
       regD_ih = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_I").c_str());
       regD_p = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_P").c_str());
       regD_mass = (TH2F*) f->Get((filename+":/analyzer/BaseName/Mass").c_str());
 
+      TH1F* htempTotalE = (TH1F*) f->Get((filename+":/analyzer/BaseName/NumEvents").c_str());
+
+      nof_event = htempTotalE->GetEntries();
+
+      //if(f_skimmed) tree = (TTree*) f_skimmed->Get("HscpCandidates"); 
+      
+      std::cout << "entries after skimming: " << tree->GetEntries() << std::endl;
 
 /*      regD_ih = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_I").c_str());
       regD_p = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/RegionD_P").c_str());
@@ -1328,17 +1565,28 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    // (once per file to be processed).
 
    // Set object pointer
+   jet_pt = 0;
+   jet_eta = 0;
+   jet_phi = 0;
+   jet_mass = 0;
+   jet_energy = 0;
+   jet_pdgId = 0;
+   jet_et = 0;
+   jet_chargedEmEnergyFraction = 0;
+   jet_neutralEmEnergyFraction = 0;
    mT = 0;
    passCutPt55 = 0;
    passPreselection_noIsolation_noIh = 0;
    passPreselection = 0;
    passSelection = 0;
+   isPFMuon = 0;
    Charge = 0;
    Pt = 0;
    PtErr = 0;
    Ias = 0;
    Ias_noTIBnoTIDno3TEC = 0;
    Ias_PixelOnly = 0;
+   Ias_StripOnly = 0;
    Ias1 = 0;
    Ias2 = 0;
    Ias3 = 0;
@@ -1386,6 +1634,8 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    iso_TK = 0;
    iso_ECAL = 0;
    iso_HCAL = 0;
+   iso_MiniIso = 0;
+   iso_MiniIso_wMuon = 0;
    TrackPFIsolationR005_sumChargedHadronPt = 0;
    TrackPFIsolationR005_sumNeutralHadronPt = 0;
    TrackPFIsolationR005_sumPhotonPt = 0;
@@ -1462,18 +1712,29 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("Muon2_Pt", &Muon2_Pt, &b_Muon2_Pt);
    fChain->SetBranchAddress("Muon2_eta", &Muon2_eta, &b_Muon2_eta);
    fChain->SetBranchAddress("Muon2_phi", &Muon2_phi, &b_Muon2_phi);
+   fChain->SetBranchAddress("Jet_pt", &jet_pt, &b_jet_pt);
+   fChain->SetBranchAddress("Jet_eta", &jet_eta, &b_jet_eta);
+   fChain->SetBranchAddress("Jet_phi", &jet_phi, &b_jet_phi);
+   fChain->SetBranchAddress("Jet_mass", &jet_mass, &b_jet_mass);
+   fChain->SetBranchAddress("Jet_energy", &jet_energy, &b_jet_energy);
+   fChain->SetBranchAddress("Jet_pdgId", &jet_pdgId, &b_jet_pdgId);
+   fChain->SetBranchAddress("Jet_et", &jet_et, &b_jet_et);
+   fChain->SetBranchAddress("Jet_chargedEmEnergyFraction", &jet_chargedEmEnergyFraction, &b_jet_chargerEmEnergyFraction);
+   fChain->SetBranchAddress("Jet_neutralEmEnergyFraction", &jet_neutralEmEnergyFraction, &b_jet_neutralEmEnergyFraction);
    fChain->SetBranchAddress("mT", &mT, &b_mT);
 
    fChain->SetBranchAddress("passCutPt55", &passCutPt55, &b_passCutPt55);
    fChain->SetBranchAddress("passPreselection_noIsolation_noIh", &passPreselection_noIsolation_noIh, &b_passPreselection_noIsolation_noIh);
    fChain->SetBranchAddress("passPreselection", &passPreselection, &b_passPreselection);
    fChain->SetBranchAddress("passSelection", &passSelection, &b_passSelection);
+   fChain->SetBranchAddress("isPFMuon", &isPFMuon, &b_isPFMuon);
    fChain->SetBranchAddress("Charge", &Charge, &b_Charge);
    fChain->SetBranchAddress("Pt", &Pt, &b_Pt);
    fChain->SetBranchAddress("PtErr", &PtErr, &b_PtErr);
    fChain->SetBranchAddress("Ias", &Ias, &b_Ias);
    fChain->SetBranchAddress("Ias_noTIBnoTIDno3TEC", &Ias_noTIBnoTIDno3TEC, &b_Ias_noTIBnoTIDno3TEC);
    fChain->SetBranchAddress("Ias_PixelOnly", &Ias_PixelOnly, &b_Ias_PixelOnly);
+   fChain->SetBranchAddress("Ias_StripOnly", &Ias_StripOnly, &b_Ias_StripOnly);
 //   fChain->SetBranchAddress("Ias1", &Ias1, &b_Ias1);
 //   fChain->SetBranchAddress("Ias2", &Ias2, &b_Ias2);
 //   fChain->SetBranchAddress("Ias3", &Ias3, &b_Ias3);
@@ -1521,6 +1782,8 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("iso_TK", &iso_TK, &b_iso_TK);
    fChain->SetBranchAddress("iso_ECAL", &iso_ECAL, &b_iso_ECAL);
    fChain->SetBranchAddress("iso_HCAL", &iso_HCAL, &b_iso_HCAL);
+   fChain->SetBranchAddress("PFMiniIso_relative", &iso_MiniIso, &b_iso_MiniIso);
+   fChain->SetBranchAddress("PFMiniIso_wMuon_relative", &iso_MiniIso_wMuon, &b_iso_MiniIso_wMuon);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumChargedHadronPt", &TrackPFIsolationR005_sumChargedHadronPt, &b_TrackPFIsolationR005_sumChargedHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumNeutralHadronPt", &TrackPFIsolationR005_sumNeutralHadronPt, &b_TrackPFIsolationR005_sumNeutralHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumPhotonPt", &TrackPFIsolationR005_sumPhotonPt, &b_TrackPFIsolationR005_sumPhotonPt);
@@ -1546,7 +1809,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("Ih_StripOnly", &Ih_StripOnly, &b_Ih_StripOnly);
    fChain->SetBranchAddress("Ih_StripOnly_15drop", &Ih_StripOnly_15drop, &b_Ih_StripOnly_15drop);
    fChain->SetBranchAddress("Ih_SaturationCorrectionFromFits", &Ih_SaturationCorrectionFromFits, &b_Ih_SaturationCorrectionFromFits);
-/*   fChain->SetBranchAddress("clust_charge", &clust_charge, &b_clust_charge);
+   fChain->SetBranchAddress("clust_charge", &clust_charge, &b_clust_charge);
    fChain->SetBranchAddress("clust_pathlength", &clust_pathlength, &b_clust_pathlength);
    fChain->SetBranchAddress("clust_ClusterCleaning", &clust_ClusterCleaning, &b_clust_ClusterCleaning);
    fChain->SetBranchAddress("clust_nstrip", &clust_nstrip, &b_clust_nstrip);
@@ -1555,7 +1818,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("clust_detid", &clust_detid, &b_clust_detid);
    fChain->SetBranchAddress("clust_isStrip", &clust_isStrip, &b_clust_isStrip);
    fChain->SetBranchAddress("clust_isPixel", &clust_isPixel, &b_clust_isPixel);
-   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);*/
+   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
    if (!treeGen) return;
    fChainGen = treeGen;
    fCurrent = -1;

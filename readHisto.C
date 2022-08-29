@@ -322,7 +322,61 @@ void readHisto()
     loadHistograms(rc_med,ifile,"regionC_med",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
 //    loadHistograms(rb_40_pt,ifile,"regionB_40pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
 //    loadHistograms(rb_med_pt,ifile,"regionB_med_pt",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    
+    region rA_ias50_eta08;
+    region rC_ias50_eta08;
+    region rB_50ias90_eta08;
+    region rD_50ias90_eta08;
+    region rBC_50ias90_eta08;
+    loadHistograms(rA_ias50_eta08,ifile,"regA_ias50_eta08",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_ias50_eta08,ifile,"regC_ias50_eta08",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_50ias90_eta08,ifile,"regB_50ias90_eta08",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_50ias90_eta08,ifile,"regD_50ias90_eta08",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_50ias90_eta08,ifile,"regD_50ias90_eta08",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
 
+    region rA_ias50_08eta17;
+    region rC_ias50_08eta17;
+    region rB_50ias90_08eta17;
+    region rD_50ias90_08eta17;
+    region rBC_50ias90_08eta17;
+    loadHistograms(rA_ias50_08eta17,ifile,"regA_ias50_08eta17",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_ias50_08eta17,ifile,"regC_ias50_08eta17",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_50ias90_08eta17,ifile,"regB_50ias90_08eta17",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_50ias90_08eta17,ifile,"regD_50ias90_08eta17",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_50ias90_08eta17,ifile,"regD_50ias90_08eta17",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+
+    region rA_ias50_17eta21;
+    region rC_ias50_17eta21;
+    region rB_50ias90_17eta21;
+    region rD_50ias90_17eta21;
+    region rBC_50ias90_17eta21;
+    loadHistograms(rA_ias50_17eta21,ifile,"regA_ias50_17eta21",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_ias50_17eta21,ifile,"regC_ias50_17eta21",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_50ias90_17eta21,ifile,"regB_50ias90_17eta21",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_50ias90_17eta21,ifile,"regD_50ias90_17eta21",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_50ias90_17eta21,ifile,"regD_50ias90_17eta21",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    
+    region rA_005ias01;
+    region rB_005ias01;
+    region rC_005ias01;
+    region rD_005ias01;
+    region rBC_005ias01;
+    loadHistograms(rA_005ias01,ifile,"regA_005ias01",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_005ias01,ifile,"regB_005ias01",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_005ias01,ifile,"regC_005ias01",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_005ias01,ifile,"regD_005ias01",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_005ias01,ifile,"regD_005ias01",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+
+    region rA_005ias015;
+    region rB_005ias015;
+    region rC_005ias015;
+    region rD_005ias015;
+    region rBC_005ias015;
+    loadHistograms(rA_005ias015,ifile,"regA_005ias015",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_005ias015,ifile,"regB_005ias015",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_005ias015,ifile,"regC_005ias015",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_005ias015,ifile,"regD_005ias015",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_005ias015,ifile,"regD_005ias015",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
 
     std::cout << "Regions loaded" << std::endl;
 
@@ -485,6 +539,8 @@ void readHisto()
 
     std::cout << "saving... " << std::endl;
 
+    doAll(rb,rc,rbc,ra,rd,"pt60_ias025");
+
     doAll(rb_50_90,rc_med,rbc_50_90,ra_med,rd_50_90,"50_90");
     doAll(rb_50_100,rc_med,rbc_50_100,ra_med,rd_50_100,"50_100");
     //doAll(rb_50_90,rc_med,rbc_50_90,ra_med,rd_50_90,"50_90",1);
@@ -500,6 +556,13 @@ void readHisto()
     doAll(rb_80,rc_med,rbc_80,ra_med,rd_80,"80ias_50");
     //doAll(rb_80,rc_med,rbc_80,ra_med,rd_80,"80ias_50",1);
     doAll(rb_90,rc_med,rbc_90,ra_med,rd_90,"90ias_50");
+
+    doAll(rB_50ias90_eta08, rC_ias50_eta08, rBC_50ias90_eta08, rA_ias50_eta08, rD_50ias90_eta08, "50ias90_eta08"); 
+    doAll(rB_50ias90_08eta17, rC_ias50_08eta17, rBC_50ias90_08eta17, rA_ias50_08eta17, rD_50ias90_08eta17, "50ias90_08eta17"); 
+    doAll(rB_50ias90_17eta21, rC_ias50_17eta21, rBC_50ias90_17eta21, rA_ias50_17eta21, rD_50ias90_17eta21, "50ias90_17eta21"); 
+
+    doAll(rB_005ias01, rC_005ias01, rBC_005ias01, rA_005ias01, rD_005ias01, "005ias01");
+    doAll(rB_005ias015, rC_005ias015, rBC_005ias015, rA_005ias015, rD_005ias015, "005ias015");
     
     /*doAll(rb_40,rc_40,rbc_40,ra_40,rd_40,"40ias_40");
     doAll(rb_50,rc_40,rbc_50,ra_40,rd_50,"50ias_40");
