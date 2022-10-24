@@ -37,6 +37,63 @@ float K(2.30), C(3.17); //Data
 // Values determined by Dylan Ih_noDrop_StripOnly
 //float K(2.37), C(2.93);
 
+TF1 f_eta_0p8_q50("f_eta_0p8_q50","0.006370+0.000086*x",0,10000);
+TF1 f_0p8_eta_1p7_q50("f_0p8_eta_1p7_q50","0.012008+0.000110*x",0,10000);
+TF1 f_1p7_eta_2p1_q50("f_1p7_eta_2p1_q50","0.015181+0.000194*x",0,10000);
+
+TF1 f_eta_0p8_q95("f_eta_0p8_q95","0.006725+0.000122*x",0,10000);
+TF1 f_0p8_eta_1p7_q95("f_0p8_eta_1p7_q95","0.012919+0.000168*x",0,10000);
+TF1 f_1p7_eta_2p1_q95("f_1p7_eta_2p1_q95","0.015408+0.000320*x",0,10000);
+
+TF1 f_eta_0p8_q99("f_eta_0p8_q99","0.006428+0.000174*x",0,10000);
+TF1 f_0p8_eta_1p7_q99("f_0p8_eta_1p7_q99","0.012825+0.000222*x",0,10000);
+TF1 f_1p7_eta_2p1_q99("f_1p7_eta_2p1_q99","0.015597+0.000403*x",0,10000);
+
+TF1 f_eta_0p8("f_eta_0p8","0.006260+0.000258*x",0,10000);
+TF1 f_0p8_eta_1p7("f_0p8_eta_1p7","0.018252+0.000372*x",0,10000);
+TF1 f_1p7_eta_2p1("f_1p7_eta_2p1","-0.008672+0.001016*x",0,10000);
+
+TF1 f_eta_0p8_3sig("f_eta_0p8_3sig","0.014739+0.000093*x",0,10000);
+TF1 f_0p8_eta_1p7_3sig("f_0p8_eta_1p7_3sig","0.025137+0.000119*x",0,10000);
+TF1 f_1p7_eta_2p1_3sig("f_1p7_eta_2p1_3sig","0.036763+0.000206*x",0,10000);
+
+float pTerr_over_pT_etaBin(const float& pt, const float& eta, const float& q){
+    if(q==999){
+    /*if(abs(eta)<=0.8) return std::max(0.006260+0.000258*pt,0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(0.018252+0.000372*pt,0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(-0.008672+0.001016*pt,0.01);*/
+    if(abs(eta)<=0.8) return std::max(f_eta_0p8(pt),0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(f_0p8_eta_1p7(pt),0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(f_1p7_eta_2p1(pt),0.01);
+    return -1;
+    }
+    else if(q==99){
+        //std::cout << f_eta_0p8_q99(pt) << std::endl;
+    if(abs(eta)<=0.8) return std::max(0.006428+0.000174*pt,0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(0.012825+0.000222*pt,0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(0.015597+0.000403*pt,0.01);
+    //if(abs(eta)<=0.8) return std::max(f_eta_0p8_q99(pt),0.01);
+    //else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(f_0p8_eta_1p7_q99(pt),0.01);
+    //else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(f_1p7_eta_2p1_q99(pt),0.01);
+    return -1;
+    }
+    else if(q==95){
+    if(abs(eta)<=0.8) return std::max(f_eta_0p8_q95(pt),0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(f_0p8_eta_1p7_q95(pt),0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(f_1p7_eta_2p1_q95(pt),0.01);
+    }
+    else if(q==50){
+    if(abs(eta)<=0.8) return std::max(f_eta_0p8_q50(pt),0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(f_0p8_eta_1p7_q50(pt),0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(f_1p7_eta_2p1_q50(pt),0.01); 
+    }
+    else if(q==3){
+    if(abs(eta)<=0.8) return std::max(f_eta_0p8_3sig(pt),0.01);
+    else if(abs(eta)>0.8 && abs(eta)<=1.7) return std::max(f_0p8_eta_1p7_3sig(pt),0.01);
+    else if(abs(eta)>1.7 && abs(eta)<=2.1) return std::max(f_1p7_eta_2p1_3sig(pt),0.01); 
+    }
+    else return -1;
+}
 
 // Function
 TH2F* BetheBlochForMass(float mass)
@@ -111,14 +168,14 @@ void invScale(TH1F* h)
 // The argument to use this type of ratio is that we're in case of cut & count experiment 
 TH1F* ratioIntegral(TH1F* h1, TH1F* h2)
 {    
-    float SystError = 0.2;
+    //float SystError = 0.2;
     TH1F* res = (TH1F*) h1->Clone(); res->Reset();
     for(int i=0;i<h1->GetNbinsX()+1;i++)
     {   
         double Perr=0, Derr=0;
         double P=h1->IntegralAndError(i,h1->GetNbinsX()+1,Perr); if(P<=0) continue;
         double D=h2->IntegralAndError(i,h2->GetNbinsX()+1,Derr);
-        Perr = sqrt(Perr*Perr + pow(P*SystError,2));
+        //Perr = sqrt(Perr*Perr + pow(P*SystError,2));
         res->SetBinContent(i,D/P);
         res->SetBinError(i,sqrt(pow(Derr*P,2)+pow(Perr*D,2))/pow(P,2));
     }
@@ -156,13 +213,14 @@ void overflowLastBin(TH1F* h, const float &x){
 TH1F* rebinHisto(TH1F* h){
     overflowLastBin(h);
     //double xbins[20] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000,3000,4000,6000};
-    double xbins[17] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000};
+    double xbins[12] = {0,100,200,300,400,500,600,700,800,1000,1500,2000};
+    //double xbins[17] = {0,50,100,150,200,250,300,350,400,450,500,600,700,800,1000,1500,2000};
     //double xbins[13] = {0.0,0.05,0.1,0.15,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0};
     std::vector<double> xbins_v;
     for(double i=0.0;i<=1000.0;i+=50) xbins_v.push_back(i);
     std::string newname = h->GetName(); 
     newname += "_rebinned";
-    TH1F* hres = (TH1F*) h->Rebin(16,newname.c_str(),xbins);
+    TH1F* hres = (TH1F*) h->Rebin(11,newname.c_str(),xbins);
     //TH1F* hres = (TH1F*) h->Rebin(xbins_v.size()-1,newname.c_str(),xbins_v.data());
     overflowLastBin(hres);
     return hres;
@@ -177,6 +235,8 @@ TH1F* rebinHisto(TH1F* h){
 TCanvas* plotting(TH1F* h1, TH1F* h2, bool ratioSimple=true, std::string name="", std::string leg1="", std::string leg2="", bool rebin=false)
 {
 
+    h1->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    h2->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     //h1->Sumw2(); h2->Sumw2();
     if(rebin) h1=rebinHisto(h1);
     if(rebin) h2=rebinHisto(h2);
@@ -383,11 +443,305 @@ void mapOfDifferences(TH2F* res, TH2F* h1, TH2F* h2)
     }
 }
 
+class preS_analysis{
+    public:
+        preS_analysis(std::string name);
+        ~preS_analysis();
+        void fill(const float& weight, const float& pt, const float& pterr, const float& isoTK, const float& miniIso, const float& ih, const float& eta, const float& Fstrip, const float& EoverP);
+        void loadCuts(const float& cut_pterr, const float& cut_isoTK, const float& cut_miniIso, const float& cut_ih, const float& cut_eta, const float& cut_Fstrip, const float& cut_EoverP);
+        void write();
+        void computeEfficiencies();
+        void changePtErrCut(const float& pt, const float& eta, const int& quantile);
+
+    private:
+
+        void addOverflow(TH1F* h);
+
+        std::string name_;
+
+        float cut_pterr_;
+        float cut_isoTK_;
+        float cut_miniIso_;
+        float cut_ih_;
+        float cut_eta_;
+        float cut_Fstrip_;
+        float cut_EoverP_;
+       
+        int count_;
+        int count_N1;
+        int count_pterr_;
+        int count_pterr_N1;
+        int quantile_;
+
+        TH1F* h_pterr;
+        TH2F* h_pterr_pt;
+        TH1F* h_isoTK;
+        TH1F* h_miniIso;
+        TH1F* h_ih;
+        TH1F* h_eta;
+        TH1F* h_Fstrip;
+        TH1F* h_EoverP;
+
+        TH1F* h_pterr_N1;
+        TH2F* h_pterr_pt_N1;
+        TH1F* h_isoTK_N1;
+        TH1F* h_miniIso_N1;
+        TH1F* h_ih_N1;
+        TH1F* h_eta_N1;
+        TH1F* h_Fstrip_N1;
+        TH1F* h_EoverP_N1;
+
+        TH2F* h_pterr_pt_cutQ;
+
+        std::ofstream ofile;
+        TFile* ofileROOT;
+   
+};
+
+preS_analysis::preS_analysis(std::string name){
+    name_ = name;
+    cut_pterr_ = 0.25;
+    cut_isoTK_ = 15.;
+    cut_miniIso_ = 0.3;
+    cut_ih_ = 3.47;
+    cut_eta_ = 2.1;
+    cut_Fstrip_ = 0.5;
+    cut_EoverP_ = 0.3; 
+
+    h_pterr = new TH1F("h_pterr","Basic preS;#frac{#sigma_{p_{T}}}{p_{T}};",500,0,0.5);h_pterr->Sumw2();
+    h_pterr_pt = new TH2F("h_pterr_pt","Basic preS;p_{T};#frac{#sigma_{p_{T}}}{p_{T}};",100,0,2000,500,0,0.5);h_pterr_pt->Sumw2();
+    h_isoTK = new TH1F("h_isoTK","Basic preS;isoTK;",100,0,100);h_isoTK->Sumw2();
+    h_miniIso = new TH1F("h_miniIso","Basic preS;relative miniIso;",100,0,2);h_miniIso->Sumw2();
+    h_ih = new TH1F("h_ih","Basic preS;I_{h};",100,0,15);h_ih->Sumw2();
+    h_eta = new TH1F("h_eta","Basic preS;|#eta|;",30,0,3);h_eta->Sumw2();
+    h_Fstrip = new TH1F("h_Fstrip","Basic preS;F^{strip};",50,0,1);h_Fstrip->Sumw2();
+    h_EoverP = new TH1F("h_EoverP","Basic preS;E/p;",100,0,2);h_EoverP->Sumw2();
+
+    h_pterr_N1 = new TH1F("h_pterr_N1","N-1;#frac{#sigma_{p_{T}}}{p_{T}};",500,0,0.5);h_pterr_N1->Sumw2();
+    h_pterr_pt_N1 = new TH2F("h_pterr_pt_N1","N-1;p_{T};#frac{#sigma_{p_{T}}}{p_{T}};",100,0,2000,500,0,0.5);h_pterr_pt_N1->Sumw2();
+    h_isoTK_N1 = new TH1F("h_isoTK_N1","N-1;isoTK;",100,0,100);h_isoTK_N1->Sumw2();
+    h_miniIso_N1 = new TH1F("h_miniIso_N1","N-1;relative miniIso;",100,0,2);h_miniIso_N1->Sumw2();
+    h_ih_N1 = new TH1F("h_ih_N1","N-1;I_{h};",100,0,15);h_ih_N1->Sumw2();
+    h_eta_N1 = new TH1F("h_eta_N1","N-1;|#eta|;",30,0,3);h_eta_N1->Sumw2();
+    h_Fstrip_N1 = new TH1F("h_Fstrip_N1","N-1;F^{strip};",50,0,1);h_Fstrip_N1->Sumw2();
+    h_EoverP_N1 = new TH1F("h_EoverP_N1","N-1;E/p;",100,0,2);h_EoverP_N1->Sumw2();
+    
+    h_pterr_pt_cutQ = new TH2F("h_pterr_pt_cutQ","CutQ;p_{T};#frac{#sigma_{p_{T}}}{p_{T}};",100,0,2000,500,0,0.5);h_pterr_pt_cutQ->Sumw2();
+
+    count_ = 0;
+    count_N1 = 0;
+    count_pterr_ = 0;
+    count_pterr_N1 = 0;
+    quantile_ = -1;
+
+    ofile.open(("efficiencies"+name_+".txt").c_str());
+    ofileROOT = new TFile(("histo_selection"+name_+".root").c_str(),"RECREATE");
+
+}
+
+preS_analysis::~preS_analysis(){
+
+}
+
+void preS_analysis::changePtErrCut(const float& pt, const float& eta, const int& q){
+    quantile_ = q;
+    cut_pterr_ = pTerr_over_pT_etaBin(pt,eta,q);
+}
+
+void preS_analysis::fill(const float& w, const float& pt, const float& pterr, const float& isoTK, const float& miniIso, const float& ih, const float& eta, const float& Fstrip, const float& EoverP){
+    count_++;
+    h_pterr->Fill(pterr,w);
+    h_pterr_pt->Fill(pt,pterr,w);
+    h_isoTK->Fill(isoTK,w);
+    h_miniIso->Fill(miniIso,w);
+    h_ih->Fill(ih,w);
+    h_eta->Fill(eta,w);
+    h_Fstrip->Fill(Fstrip,w);
+    h_EoverP->Fill(EoverP,w);
+    //cut_pterr_ = pTerr_over_pT_etaBin(pt,eta,99);
+    if(pterr < cut_pterr_) count_pterr_++;
+    
+    if(     isoTK < cut_isoTK_ && 
+            miniIso < cut_miniIso_ && 
+            ih > cut_ih_ &&
+            eta < cut_eta_ && 
+            Fstrip > cut_Fstrip_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        count_N1++;
+        h_pterr_N1->Fill(pterr,w);
+        h_pterr_pt_N1->Fill(pt,pterr,w);
+        if(pterr < cut_pterr_) {
+            count_pterr_N1++;
+            h_pterr_pt_cutQ->Fill(pt,pterr,w);
+        }
+
+    }
+ 
+    if(     pterr < cut_pterr_ && 
+            miniIso < cut_miniIso_ && 
+            ih > cut_ih_ &&
+            eta < cut_eta_ && 
+            Fstrip > cut_Fstrip_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        h_isoTK_N1->Fill(isoTK,w);
+
+    }
+   
+    if(     pterr < cut_pterr_ && 
+            isoTK < cut_isoTK_ && 
+            ih > cut_ih_ &&
+            eta < cut_eta_ && 
+            Fstrip > cut_Fstrip_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        h_miniIso_N1->Fill(miniIso,w);
+
+    }
+
+    if(     pterr < cut_pterr_ && 
+            isoTK < cut_isoTK_ && 
+            miniIso < cut_miniIso_ && 
+            eta < cut_eta_ && 
+            Fstrip > cut_Fstrip_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        h_ih_N1->Fill(ih,w);
+
+    }
+
+    if(     pterr < cut_pterr_ && 
+            isoTK < cut_isoTK_ && 
+            miniIso < cut_miniIso_ && 
+            ih > cut_ih_ &&
+            Fstrip > cut_Fstrip_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        h_eta_N1->Fill(eta,w);
+
+    }
+
+    
+    if(     pterr < cut_pterr_ && 
+            isoTK < cut_isoTK_ && 
+            miniIso < cut_miniIso_ && 
+            ih > cut_ih_ &&
+            eta < cut_eta_ && 
+            EoverP < cut_EoverP_    
+            ){
+
+        h_Fstrip_N1->Fill(Fstrip,w);
+
+    }
+    
+    if(     pterr < cut_pterr_ && 
+            isoTK < cut_isoTK_ && 
+            miniIso < cut_miniIso_ && 
+            ih > cut_ih_ &&
+            eta < cut_eta_ && 
+            Fstrip > cut_Fstrip_  
+            ){
+
+        h_EoverP_N1->Fill(EoverP,w);
+
+    }
+
+}
+
+void preS_analysis::loadCuts(const float& cut_pterr, const float& cut_isoTK, const float& cut_miniIso, const float& cut_ih, const float& cut_eta, const float& cut_Fstrip, const float& cut_EoverP){
+    cut_pterr_ = cut_pterr;
+    cut_isoTK_ = cut_isoTK;
+    cut_miniIso_ = cut_miniIso;
+    cut_ih_ = cut_ih;
+    cut_eta_ = cut_eta;
+    cut_Fstrip_ = cut_Fstrip;
+    cut_EoverP_ = cut_EoverP;
+}
+
+void preS_analysis::addOverflow(TH1F* h){
+    h->SetBinContent(h->GetNbinsX(),h->GetBinContent(h->GetNbinsX())+h->GetBinContent(h->GetNbinsX()+1));
+}
+
+void preS_analysis::write(){
+    ofileROOT->cd();
+
+    addOverflow(h_pterr);
+    addOverflow(h_isoTK);
+    addOverflow(h_miniIso);
+    addOverflow(h_ih);
+    addOverflow(h_eta);
+    addOverflow(h_Fstrip);
+    addOverflow(h_EoverP);
+
+    addOverflow(h_pterr_N1);
+    addOverflow(h_isoTK_N1);
+    addOverflow(h_miniIso_N1);
+    addOverflow(h_ih_N1);
+    addOverflow(h_eta_N1);
+    addOverflow(h_Fstrip_N1);
+    addOverflow(h_EoverP_N1);
+
+
+    h_pterr->Write();
+    h_pterr_pt->Write();
+    h_isoTK->Write();
+    h_miniIso->Write();
+    h_ih->Write();
+    h_eta->Write();
+    h_Fstrip->Write();
+    h_EoverP->Write();
+    
+    h_pterr_N1->Write();
+    h_pterr_pt_N1->Write();
+    h_isoTK_N1->Write();
+    h_miniIso_N1->Write();
+    h_ih_N1->Write();
+    h_eta_N1->Write();
+    h_Fstrip_N1->Write();
+    h_EoverP_N1->Write();
+
+    h_pterr_pt_cutQ->Write();
+}
+
+void preS_analysis::computeEfficiencies(){
+    scale(h_pterr);
+    scale(h_pterr_N1);
+    scale(h_isoTK);
+    scale(h_isoTK_N1);
+    scale(h_miniIso);
+    scale(h_miniIso_N1);
+    scale(h_ih);
+    scale(h_ih_N1);
+    scale(h_eta);
+    scale(h_eta_N1);
+    scale(h_Fstrip);
+    scale(h_Fstrip_N1);
+    scale(h_EoverP);
+    scale(h_EoverP_N1);
+    //ofile << "count: " << count_ << " count_pterr: " << count_pterr_ << " count_pterr_N1: " << count_pterr_N1 << std::endl;
+    if(quantile_<0) ofile << " pterr cut: " << to_string(cut_pterr_) << " efficiencies: " << h_pterr->Integral(0,h_pterr->FindBin(cut_pterr_)) << " N-1: " << h_pterr_N1->Integral(0,h_pterr_N1->FindBin(cut_pterr_)) << std::endl;
+    if(quantile_>0) ofile << " pterr cut quantile: " << to_string(quantile_) << " efficiencies: " << (float)count_pterr_/(float)count_ << " N-1: " << (float)count_pterr_N1/(float)count_N1 << std::endl;
+    ofile << " isoTK cut: " << to_string(cut_isoTK_) << " efficiencies: " << h_isoTK->Integral(0,h_isoTK->FindBin(cut_isoTK_)) << " N-1: " << h_isoTK_N1->Integral(0,h_isoTK_N1->FindBin(cut_isoTK_)) << std::endl;
+    ofile << " miniIso cut: " << to_string(cut_miniIso_) << " efficiencies: " << h_miniIso->Integral(0,h_miniIso->FindBin(cut_miniIso_)) << " N-1: " << h_miniIso_N1->Integral(0,h_miniIso_N1->FindBin(cut_miniIso_)) << std::endl;
+    ofile << " ih cut: " << to_string(cut_ih_) << " efficiencies: " << h_ih->Integral(h_ih->FindBin(cut_ih_),h_ih->GetNbinsX()+1) << " N-1: " << h_ih_N1->Integral(h_ih_N1->FindBin(cut_ih_),h_ih_N1->GetNbinsX()+1) << std::endl;
+    ofile << " eta cut: " << to_string(cut_eta_) << " efficiencies: " << h_eta->Integral(0,h_eta->FindBin(cut_eta_)) << " N-1: " << h_eta_N1->Integral(0,h_eta_N1->FindBin(cut_eta_)) << std::endl;
+    ofile << " Fstrip cut: " << to_string(cut_Fstrip_) << " efficiencies: " << h_Fstrip->Integral(h_Fstrip->FindBin(cut_Fstrip_),h_Fstrip->GetNbinsX()+1) << " N-1: " << h_Fstrip_N1->Integral(h_Fstrip_N1->FindBin(cut_Fstrip_),h_Fstrip_N1->GetNbinsX()+1) << std::endl;
+    ofile << " EoverP cut: " << to_string(cut_EoverP_) << " efficiencies: " << h_EoverP->Integral(0,h_EoverP->FindBin(cut_EoverP_)) << " N-1: " << h_EoverP_N1->Integral(0,h_EoverP_N1->FindBin(cut_EoverP_)) << std::endl;
+    //ofile << "  cut: " << to_string(cut_) << " efficiencies: " << h_->Integral(0,cut_) << " N-1: " << h_->Integral(0,cut_) << std::endl;
+}
+
+
 class mini_region{
     public:
         mini_region(std::string suffix);
         ~mini_region();
-        void fill(float& weight,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt);
+        void fill(float& weight,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_pixelOnly,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt);
         void write();
         void saveEvent(int& run,int& event,int& lumi,int& pu);
         std::ofstream ofile;
@@ -424,9 +778,12 @@ class mini_region{
         TH1F* h_dRjetMin;
         TH1F* h_dRjetHighestPt;
         TH2F* h_ias_Fstrip;
+        TH2F* h_iasStripOnly_Fstrip;
         TH2F* h_ias_dRjetMin;
         TH2F* h_ias_dRjetHighestPt;
         TH2F* h_iasStripOnly_ias;
+        TH2F* h_iasPixelOnly_ias;
+        TH2F* h_iasPixelOnly_iasStripOnly;
         TH2F* h_iasOuter_ias;
         TH2F* h_iasOuter_Fstrip;
         TH2F* h_NOSH_Fstrip;
@@ -468,14 +825,17 @@ mini_region::mini_region(std::string suffix){
     h_dRjetMin = new TH1F(("h_dRjetMin"+suffix).c_str(),";min dR(hscp,jet[p_{T}>30 GeV]);",100,0,2); h_dRjetMin->Sumw2();
     h_dRjetHighestPt = new TH1F(("h_dRjetHighestPt"+suffix).c_str(),";dR(hscp,jet[p_{T} max]);",100,0,2); h_dRjetHighestPt->Sumw2();
     h_ias_Fstrip = new TH2F(("h_ias_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};I_{as}",20,0,1,100,0,1); h_ias_Fstrip->Sumw2();
+    h_iasStripOnly_Fstrip = new TH2F(("h_iasStripOnly_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};I_{as} [strip-only]",20,0,1,100,0,1); h_iasStripOnly_Fstrip->Sumw2();
     h_ias_dRjetMin = new TH2F(("h_ias_dRjetMin"+suffix).c_str(),";min dR(hscp,jet[p_{T}>30 GeV]);I_{as}",100,0,2,100,0,1); h_ias_dRjetMin->Sumw2();
     h_ias_dRjetHighestPt = new TH2F(("h_ias_dRjetHighestPt"+suffix).c_str(),";dR(hscp,jet[p_{T} max]);I_{as}",100,0,2,100,0,1); h_ias_dRjetHighestPt->Sumw2();
     h_iasStripOnly_ias = new TH2F(("h_iasStripOnly_ias"+suffix).c_str(),";I_{as};I_{as} [strip only]",100,0,1,100,0,1); h_iasStripOnly_ias->Sumw2();
-    h_iasOuter_ias = new TH2F(("h_iasOuter_ias"+suffix).c_str(),"I_{as};I_{as} [outer]",100,0,1,100,0,1); h_iasOuter_ias->Sumw2();
+    h_iasPixelOnly_ias = new TH2F(("h_iasPixelOnly_ias"+suffix).c_str(),";I_{as};I_{as} [pixel only]",100,0,1,100,0,1); h_iasPixelOnly_ias->Sumw2();
+    h_iasPixelOnly_iasStripOnly = new TH2F(("h_iasPixelOnly_iasStripOnly"+suffix).c_str(),";I_{as} [strip only];I_{as} [pixel only]",100,0,1,100,0,1); h_iasPixelOnly_iasStripOnly->Sumw2();
+    h_iasOuter_ias = new TH2F(("h_iasOuter_ias"+suffix).c_str(),";I_{as};I_{as} [outer]",100,0,1,100,0,1); h_iasOuter_ias->Sumw2();
     h_iasOuter_Fstrip = new TH2F(("h_iasOuter_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};I_{as} [outer]",20,0,1,100,0,1); h_iasOuter_Fstrip->Sumw2();
-    h_NOSH_Fstrip = new TH2F(("h_NOSH_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};Nof valid strip hits",20,0,1,30,0,30); h_NOSH_Fstrip->Sumw2();
-    h_NOM_Fstrip = new TH2F(("h_NOM_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};Nof strip measurements",20,0,1,30,0,30); h_NOM_Fstrip->Sumw2();
-    h_sigmaPtOverPt_Fstrip = new TH2F(("h_sigmaPtOverPt_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};#sigma_{p_{T}}/p_{T}",100,0,1,500,0,5); h_sigmaPtOverPt_Fstrip->Sumw2();
+    h_NOSH_Fstrip = new TH2F(("h_NOSH_Fstrip"+suffix).c_str(),";Nof valid strip hits;#frac{Nof strip measurements}{Nof valid strip hits}",30,0,30,20,0,1); h_NOSH_Fstrip->Sumw2();
+    h_NOM_Fstrip = new TH2F(("h_NOM_Fstrip"+suffix).c_str(),";Nof strip measurements;#frac{Nof strip measurements}{Nof valid strip hits}",30,0,30,20,0,1); h_NOM_Fstrip->Sumw2();
+    h_sigmaPtOverPt_Fstrip = new TH2F(("h_sigmaPtOverPt_Fstrip"+suffix).c_str(),";#frac{Nof strip measurements}{Nof valid strip hits};#sigma_{p_{T}}/p_{T}",100,0,1,500,0,0.5); h_sigmaPtOverPt_Fstrip->Sumw2();
     //h_ = new TH1F((""+suffix).c_str(),"",40,0,40); h_->Sumw2();
 }
 
@@ -487,7 +847,7 @@ mini_region::~mini_region(){
     ofile.close();
 }
 
-void mini_region::fill(float& w,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt){
+void mini_region::fill(float& w,float& eta,float& phi,float& p, float& ih,float& pt,float& pterr,float& ias,float& ias_pixelOnly,float& ias_stripOnly,float& ias_outer,float& probQ,float& tkbased_iso,float& mini_iso,float& mt,float& mass,int& ntracks,int& njets,float& ecal,float& hcal,float& iso_ecal,float& iso_hcal,int& NOM,int& NOH,int& NOSH,int& nstrips,float& sat254,float& sat255,float& clusterCleaning,float& Fstrip,float& dRjetMin,float& dRjetHighestPt){
     h_eta->Fill(eta,w);
     h_phi->Fill(phi,w);
     h_p->Fill(p,w);
@@ -519,13 +879,16 @@ void mini_region::fill(float& w,float& eta,float& phi,float& p, float& ih,float&
     h_dRjetMin->Fill(dRjetMin,w);
     h_dRjetHighestPt->Fill(dRjetHighestPt,w);
     h_ias_Fstrip->Fill(Fstrip,ias,w);
+    h_iasStripOnly_Fstrip->Fill(Fstrip,ias_stripOnly,w);
     h_ias_dRjetMin->Fill(dRjetMin,ias,w);
     h_ias_dRjetHighestPt->Fill(dRjetHighestPt,ias,w);
     h_iasStripOnly_ias->Fill(ias,ias_stripOnly,w);
+    h_iasPixelOnly_ias->Fill(ias,ias_pixelOnly,w);
+    h_iasPixelOnly_iasStripOnly->Fill(ias_stripOnly,ias_pixelOnly,w);
     h_iasOuter_ias->Fill(ias,ias_outer,w);
     h_iasOuter_Fstrip->Fill(Fstrip,ias_outer,w);
-    h_NOSH_Fstrip->Fill(Fstrip,NOSH,w);
-    h_NOM_Fstrip->Fill(Fstrip,NOM,w);
+    h_NOSH_Fstrip->Fill(NOSH,Fstrip,w);
+    h_NOM_Fstrip->Fill(NOM,Fstrip,w);
     h_sigmaPtOverPt_Fstrip->Fill(Fstrip,pterr/pt,w);
     //h_->Fill(,w);
 }
@@ -562,9 +925,12 @@ void mini_region::write(){
     h_dRjetMin->Write();
     h_dRjetHighestPt->Write();
     h_ias_Fstrip->Write();
+    h_iasStripOnly_Fstrip->Write();
     h_ias_dRjetMin->Write();
     h_ias_dRjetHighestPt->Write();
     h_iasStripOnly_ias->Write();
+    h_iasPixelOnly_ias->Write();
+    h_iasPixelOnly_iasStripOnly->Write();
     h_iasOuter_ias->Write();
     h_iasOuter_Fstrip->Write();
     h_NOSH_Fstrip->Write();
@@ -632,6 +998,7 @@ class region{
         TH2F* ih_p;
         TH2F* ias_p;
         TH2F* pt_pterroverpt;
+        TH2F* ias_eta;
         /*TH1F* stdDevIh_p;
         TH1F* stdDevIas_pt;
         TH1F* stdDevIas_p;
@@ -660,6 +1027,7 @@ class region{
         TH1F* mass;
         TH1F* massFrom1DTemplates;
         TH1F* massFrom1DTemplatesEtaBinning;
+        TH1F* pred_mass;
         TH2F* eta_p_rebinned;
         TH3F* ih_p_eta;
         TH3F* ias_p_eta;
@@ -737,6 +1105,7 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup); ih_p->Sumw2();
     ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",np,plow,pup,nias,iaslow,iasup); ias_p->Sumw2();
     pt_pterroverpt = new TH2F(("pt_pterroverpt"+suffix).c_str(),";p_{T} [GeV];#frac{#sigma_{pT}}{p_{T}}",npt,ptlow,ptup,100,0,1); pt_pterroverpt->Sumw2();
+    ias_eta =new TH2F(("ias_eta"+suffix).c_str(),";#eta;I_{as}",neta,etalow,etaup,nias,iaslow,iasup); ias_eta->Sumw2();
 
     /*
     stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",np,plow,pup);
@@ -773,10 +1142,13 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     mass = new TH1F(("massFromTree"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); mass->Sumw2();
     massFrom1DTemplates = new TH1F(("massFrom1DTemplates"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); massFrom1DTemplates->Sumw2();
     massFrom1DTemplatesEtaBinning = new TH1F(("massFrom1DTemplatesEtaBinning"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); massFrom1DTemplatesEtaBinning->Sumw2();
+    pred_mass = new TH1F(("pred_mass"+suffix).c_str(),";Mass [GeV]",nmass,masslow,massup); pred_mass->Sumw2();
+
    
     mass->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     massFrom1DTemplates->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     massFrom1DTemplatesEtaBinning->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    pred_mass->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
 
     errMass = new TH1F(("errMass"+suffix).c_str(),";Mass error [GeV]",nmass,masslow,massup); errMass->Sumw2();
     Mass_errMass = new TH2F(("Mass_errMass"+suffix).c_str(),";Mass [GeV];Mass error [GeV]",nmass,masslow,massup,nmass,masslow,massup); Mass_errMass->Sumw2();
@@ -812,6 +1184,7 @@ void region::fill(float& eta, float& nhits, float& p, float& pt, float& pterr, f
    mass->Fill(m,w);
    hTOF->Fill(tof,w);
    pt_pterroverpt->Fill(pt,pterr/pt,w);
+   ias_eta->Fill(eta,ias,w);
    //fillStdDev();
    //fillQuantile();
 }
@@ -933,7 +1306,8 @@ void region::fillMassFrom1DTemplatesEtaBinning(float weight_=-1)
                 float err_weight = weight*sqrt((1./(ih->GetBinContent(k)))+(1./(p->GetBinContent(j)*ih->Integral())));
                 float mass = GetMass(mom,dedx,K,C);
                 int bin_mass = massFrom1DTemplatesEtaBinning->FindBin(mass);
-                float mass_err = mass*GetMassErr(mom,p->GetBinWidth(j)/sqrt(12),dedx,ih->GetBinWidth(k)/sqrt(12),mass,K,C); 
+                float mass_err = mass*GetMassErr(mom,p->GetBinWidth(j)/sqrt(12),dedx,ih->GetBinWidth(k)/sqrt(12),mass,K,C);
+                std::cout << "mass: " << mass << std::endl;
                 if(prob>=0)
                 {
                     // first version : wrong --> bad computation of errors
@@ -999,6 +1373,7 @@ void region::write()
     cross1Dtemplates->Write();
     ias_p->Write();
     pt_pterroverpt->Write();
+    ias_eta->Write();
 /*    stdDevIh_p->Write();
     stdDevIas_pt->Write();
     stdDevIas_p->Write();
@@ -1064,6 +1439,7 @@ public :
     bool invIso_;
     bool invMET_;
     std::string dataset_;
+    bool chaining_;
 
     std::string outfilename_;
    
@@ -1127,6 +1503,7 @@ public :
    vector<float>   *Ias;
    vector<float>   *Ias_noTIBnoTIDno3TEC;
    vector<float>   *Ias_PixelOnly;
+   vector<float>   *Ias_PixelOnly_noL1;
    vector<float>   *Ias_StripOnly;
    vector<float>   *Ias1;
    vector<float>   *Ias2;
@@ -1143,6 +1520,7 @@ public :
    vector<float>   *Chi2;
    vector<int>     *QualityMask;
    vector<bool>    *isHighPurity;
+   vector<float>   *EoverP;
    vector<bool>    *isMuon;
    vector<int>     *MuonSelector;
    vector<bool>    *isElectron;
@@ -1271,6 +1649,7 @@ public :
    TBranch        *b_Ias;   //!
    TBranch        *b_Ias_noTIBnoTIDno3TEC;   //!
    TBranch        *b_Ias_PixelOnly;   //!
+   TBranch        *b_Ias_PixelOnly_noL1;   //!
    TBranch        *b_Ias_StripOnly;   //!
    TBranch        *b_Ias1;   //!
    TBranch        *b_Ias2;   //!
@@ -1287,6 +1666,7 @@ public :
    TBranch        *b_Chi2;   //!
    TBranch        *b_QualityMask;   //!
    TBranch        *b_isHighPurity;   //!
+   TBranch        *b_EoverP;   //!
    TBranch        *b_isMuon;   //!
    TBranch        *b_MuonSelector;   //!
    TBranch        *b_isElectron;   //!
@@ -1387,7 +1767,7 @@ public :
 HscpCandidates::HscpCandidates(TTree *tree) : fChain(0) 
 {
     ifstream ifile;
-    ifile.open("./configFile.txt");
+    ifile.open("./configTemplate_7.txt");
     std::string line;
     std::string filename;
     float iascut,ptcut,ihcut,pcut,etacutinf,etacutsup;
@@ -1395,13 +1775,15 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     bool invIso, invMET;
     std::string label;
     std::string dataset;
+    bool chaining = false;
+    int jobNum;
 
     while(std::getline(ifile,line))
     {
         if(std::strncmp(line.c_str(),"#",1)==0) continue;
         std::cout << line << std::endl;
         std::stringstream ss(line);
-        ss >> filename >> label >> iascut >> ptcut >> ihcut >> pcut >> etacutinf >> etacutsup >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET >> dataset;
+        ss >> filename >> label >> iascut >> ptcut >> ihcut >> pcut >> etacutinf >> etacutsup >> etabins >> ihbins >> pbins >> massbins >> invIso >> invMET >> dataset >> chaining >> jobNum;
     }
     iascut_ = iascut;
     ptcut_ = ptcut;
@@ -1416,19 +1798,20 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     invIso_ = invIso;
     invMET_ = invMET;
     dataset_ = dataset;
-
+    chaining_ = chaining;
 
     if(dataset_ != "data"){K=2.26; C=3.22;} //MC
 
-    outfilename_ = "outfile_"+label+"_"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_);
+    //outfilename_ = "tmpOut/outfile_"+label+"_"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_"+to_string(jobNum);
 
+    outfilename_ = "tmpOut/outfile_"+label+"_"+to_string(jobNum);
     std::cout << outfilename_ << std::endl;
 
 // if parameter tree is not specified (or zero), connect the file
 // used to generate this class and read the Tree.
       
     TTree* genTree;
-   if (tree == 0) {
+   if (!chaining && tree == 0) {
       TFile *f = (TFile*)gROOT->GetListOfFiles()->FindObject((filename+".root").c_str());
       //TFile *f_skimmed = new TFile((filename+"_skimmed.root").c_str());
       filename+=".root";
@@ -1459,7 +1842,24 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       regD_mass = (TH2F*) f->Get((filename+":/analyzer/Data_2017_UL/Mass").c_str());
 */
    }
+   else if (chaining && tree == 0) {
+       std::cout << "filename: " << filename << std::endl;
+        
+       TChain* ch1 = new TChain("analyzer/BaseName/HscpCandidates");
+       TChain* ch2 = new TChain("analyzer/BaseName/GenHscpCandidates");
+
+       ch1->Add(filename.c_str());
+       //ch2->Add(filename);
+
+        //tree = ch1->GetTree();
+        //genTree = ch2->GetTree();
+
+       fChain = ch1;
+       fChainGen = 0;
+   }
+   std::cout << "init..." << std::endl;
    Init(tree, genTree);
+   std::cout << "loop..." << std::endl;
    Loop();
 }
 
@@ -1586,6 +1986,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    Ias = 0;
    Ias_noTIBnoTIDno3TEC = 0;
    Ias_PixelOnly = 0;
+   Ias_PixelOnly_noL1 = 0;
    Ias_StripOnly = 0;
    Ias1 = 0;
    Ias2 = 0;
@@ -1602,6 +2003,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    Chi2 = 0;
    QualityMask = 0;
    isHighPurity = 0;
+   EoverP = 0;
    isMuon = 0;
    MuonSelector = 0;
    isElectron = 0;
@@ -1677,8 +2079,8 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    GenEta = 0;
    GenPhi = 0;
    // Set branch addresses and branch pointers
-   if (!tree) return;
-   fChain = tree;
+   if (!tree && !fChain) return;
+   else if(tree && !fChain) fChain = tree;
    fCurrent = -1;
    fChain->SetMakeClass(1);
 
@@ -1734,6 +2136,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("Ias", &Ias, &b_Ias);
    fChain->SetBranchAddress("Ias_noTIBnoTIDno3TEC", &Ias_noTIBnoTIDno3TEC, &b_Ias_noTIBnoTIDno3TEC);
    fChain->SetBranchAddress("Ias_PixelOnly", &Ias_PixelOnly, &b_Ias_PixelOnly);
+   fChain->SetBranchAddress("Ias_PixelOnly_noL1", &Ias_PixelOnly_noL1, &b_Ias_PixelOnly_noL1);
    fChain->SetBranchAddress("Ias_StripOnly", &Ias_StripOnly, &b_Ias_StripOnly);
 //   fChain->SetBranchAddress("Ias1", &Ias1, &b_Ias1);
 //   fChain->SetBranchAddress("Ias2", &Ias2, &b_Ias2);
@@ -1750,6 +2153,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("Chi2", &Chi2, &b_Chi2);
    fChain->SetBranchAddress("QualityMask", &QualityMask, &b_QualityMask);
    fChain->SetBranchAddress("isHighPurity", &isHighPurity, &b_isHighPurity);
+   fChain->SetBranchAddress("EoverP", &EoverP, &b_EoverP);
    fChain->SetBranchAddress("isMuon", &isMuon, &b_isMuon);
    fChain->SetBranchAddress("MuonSelector", &MuonSelector, &b_MuonSelector);
    fChain->SetBranchAddress("isElectron", &isElectron, &b_isElectron);
@@ -1819,7 +2223,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("clust_isStrip", &clust_isStrip, &b_clust_isStrip);
    fChain->SetBranchAddress("clust_isPixel", &clust_isPixel, &b_clust_isPixel);
    fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
-   if (!treeGen) return;
+   /*if (!treeGen && !fChainGen) return;
    fChainGen = treeGen;
    fCurrent = -1;
    fChainGen->SetMakeClass(1);
@@ -1829,7 +2233,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChainGen->SetBranchAddress("GenEta", &GenEta, &b_GenEta);
    fChainGen->SetBranchAddress("GenPhi", &GenPhi, &b_GenPhi);
    fChainGen->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
-   fChainGen->SetBranchAddress("GenId", &GenId, &b_GenId);
+   fChainGen->SetBranchAddress("GenId", &GenId, &b_GenId);*/
    Notify();
 }
 

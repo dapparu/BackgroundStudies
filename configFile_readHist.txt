@@ -65,11 +65,27 @@
 
 
 #outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErrCurQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
-outfile_SingleMuon_TkOnly_20UL17C_v27p0_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v27p0_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#WIP
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_1p0eta_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_eta1p0_Quantile90_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+
+#WIP
+outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaLowerThan1p0_setp8preS_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaBetween1p0And2p1_setp8preS_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaLowerThan1p0_setp8preS_Q90_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaBetween1p0And2p1_setp8preS_Q90_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+
+
+#outfile_SingleMuon_TkOnly_20UL17C_v28p2_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
 #outfile_MET_TkOnly_20UL17C_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
 #outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
 #outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
 #outfile_TTTo2L2Nu_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_WJetsToLNu_TkOnly_2017_trigSingleMu_v28p2_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
+#outfile_TTTo2L2Nu_TkOnly_2017_trigSingleMu_v28p2_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  0       2           2           2          25          0                       0                   80                  500
 #  0       2           2           2          25          0                       0                   80                  500
 
 ##### Read MC samples
@@ -102,4 +118,6 @@ outfile_SingleMuon_TkOnly_20UL17C_v27p0_-50eta50_ias50_pt60_ih34_p-1_etabins120_
 #outfile_ppStau_M-1029_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0  1       2           2           2          25          0                       0                   80                  500
 #outfile_gmStau_M-871_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0  1       2           2           2          25          0                       0                   80                  500
 #outfile_gmStau_M-1029_TkOnly_2017C_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins1000_pbins2000_massbins2000_invIso0_invMET0  1       2           2           2          25          0                       0                   80                  500
+#outfile_Gluino_M-2000_TkOnly_20UL17C_v28p3_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  1       2           2           2          25          0                       0                   80                  500
+#outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0  1       2           2           2          25          0                       0                   80                  500
 #  1       2           2           2          25          0                       0                   80                  500

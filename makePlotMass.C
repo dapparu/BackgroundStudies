@@ -11,11 +11,17 @@
 #include <TLine.h>
 #include "HscpCandidates.h"
 
+float punziSignificance(TH1F* S, TH1F* B, float cut){
+    float nB = B->Integral(B->FindBin(cut),B->GetNbinsX()+1);
+    float eS = S->Integral(S->FindBin(cut),S->GetNbinsX()+1)/S->Integral(0,S->GetNbinsX()+1);
+    return eS/(3./2. + sqrt(nB));
+}
+
 void makePlotMass()
 {
 
     bool reb = true;
-    //std::string quan = "50_90"; std::string quanSignal = "q50_90";
+    std::string quan = "50_90"; std::string quanSignal = "q50_90";
     //std::string quan = "50_100"; std::string quanSignal = "q50_100";
     //std::string quan = "50ias_50"; std::string quanSignal = "q50";
     //std::string quan = "60ias_50"; std::string quanSignal = "q60";
@@ -27,15 +33,15 @@ void makePlotMass()
     //std::string quan = "005ias015"; std::string quanSignal = "005ias015";
     //std::string quan = "50ias90_eta08"; std::string quanSignal = "50ias90_eta08";
     //std::string quan = "50ias90_08eta17"; std::string quanSignal = "50ias90_08eta17";
-    std::string quan = "50ias90_17eta21"; std::string quanSignal = "50ias90_17eta21";
+    //std::string quan = "50ias90_17eta21"; std::string quanSignal = "50ias90_17eta21";
     
-    bool blind=false;
+    bool blind=true;
     if(quan=="90") blind=true;
     if(quan=="50_100") blind=true;
     if(quan=="90ias_50") blind=true;
     //blind = false;
 
-    bool signal=true;
+    bool signal=false;
     bool gluino=true;
     bool stau=false;
 
@@ -65,9 +71,25 @@ void makePlotMass()
    
 
     // plots 24 may
-    std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErrCurQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErrCurQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
     //std::string inputfilename = "outfile_SingleMu_TkOnly_20UL17C_trigSingleMu_NoPtErr_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    //plots 30 august
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    //plots 09/09
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_1p0eta_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    
+    
+    //plots 15/09
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaLowerThan1p0_setp8preS_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaBetween1p0And2p1_setp8preS_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    
+    //std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaLowerThan1p0_setp8preS_Q90_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
+    std::string inputfilename = "outfile_SingleMuon_TkOnly_20UL17C_v28p2_etaBetween1p0And2p1_setp8preS_Q90_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0_rebinEta2_rebinIh2_rebinP2_rebinMass25_analysed";
 
 
     TFile* ifile1 = new TFile((inputfilename+".root").c_str());
@@ -104,11 +126,25 @@ void makePlotMass()
     //24 mai 2022
     TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
     TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
-    TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
-    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
     TFile* ifile_Gluino2600 = new TFile("outfile_Gluino_M-2600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
     TFile* ifile_Gluino1600on = new TFile("outfile_GluinoOnlyNeutral_M-1600_TkOnly_2017_trigSingleMu_PtErrCutQ99_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
 
+    //TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_1p0eta_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_etaLowerThan1p0_sept8preS_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_etaBetween1p0And2p1_sept8preS_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_1p0eta_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_etaLowerThan1p0_sept8preS_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_etaBetween1p0And2p1_sept8preS_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    
+    //TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_etaLowerThan1p0_sept8preS_Q90_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino2000 = new TFile("outfile_Gluino_M-2000_TkOnly_20UL17C_v28p5_etaBetween1p0And2p1_sept8preS_Q90_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_etaLowerThan1p0_sept8preS_Q90_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+    TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_etaBetween1p0And2p1_sept8preS_Q90_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
+
+    
+    //TFile* ifile_Gluino1600 = new TFile("outfile_Gluino_M-1600_TkOnly_20UL17C_v28p5_eta1p0_Quantile90_-50eta50_ias50_pt60_ih34_p2000_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
 
     /*TFile* ifile_Gluino1000 = new TFile("outfile_Gluino_M-1000_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
     TFile* ifile_Gluino1400 = new TFile("outfile_Gluino_M-1400_TkOnly_2017_trigSingleMu_PtErr0p25_Ih3p47_-50eta50_ias50_pt60_ih34_p-1_etabins120_ihbins200_pbins200_massbins50_invIso0_invMET0.root");
@@ -152,11 +188,15 @@ void makePlotMass()
     std::string stSignal = "massObs_q"+quan;*/
 
     //quan = "50_100";
+    
+    quan = "sc1";
 
     std::string st1 = "mass_obs_"+quan;
     std::string st2 = "mass_predBC_"+quan;
     std::string st3 = "mass_predBCR_"+quan;
     std::string stSignal = "massObs_"+quanSignal;
+
+    stSignal = "massFromTree_regD_"+quan;
    
 if(quan==""){
     st1 = "mass_obs";
@@ -164,6 +204,7 @@ if(quan==""){
     st3 = "mass_predBCR";
     stSignal = "massObs";
 }
+
 
 
     //TH1F* h1 = (TH1F*)ifile1->Get("mass_obs");
@@ -195,6 +236,13 @@ if(quan==""){
     TH1F* h_ppStau871 = (TH1F*) ifile_ppStau871->Get(stSignal.c_str());
     TH1F* h_ppStau1029 = (TH1F*) ifile_ppStau1029->Get(stSignal.c_str());
     TH1F* h_Gluino1600on = (TH1F*) ifile_Gluino1600on->Get(stSignal.c_str());
+    
+    
+    float x[16] = {0,80,160,240,320,400,480,560,640,720,800,880,960,1040,1120,1200};
+    float y[16];
+    for(int i=0;i<16;i++){
+        y[i] = punziSignificance(h_Gluino1600, h3, x[i]);
+    }
 
     /*overflowLastBin(h1);
     overflowLastBin(h3);
@@ -211,6 +259,8 @@ if(quan==""){
         h1 = rebinHisto(h1);
         h3 = rebinHisto(h3);
         //h3R = rebinHisto(h3R);
+        h_Gluino1600 = rebinHisto(h_Gluino1600);
+        h_Gluino2000 = rebinHisto(h_Gluino2000);
         if(signal){
         h_Gluino1000 = rebinHisto(h_Gluino1000);
         h_Gluino1400 = rebinHisto(h_Gluino1400);
@@ -233,7 +283,7 @@ if(quan==""){
     }
     h3R = ratioIntegral(h3,h1);
 
-    double SystErr = 0.5;
+    double SystErr = 0.;
     float Min_bin = 0.005;
     h1->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     TH1F* h1Err = (TH1F*)h1->Clone();
@@ -251,9 +301,26 @@ if(quan==""){
     //h1->Scale(h1->GetEntries());
     //h1_2->Scale(h1_2->GetEntries());
 
+    int massCut = 400;
+    float nobs = h1->Integral(h1->FindBin(massCut),h1->GetNbinsX()+1);
+    float npred = h3->Integral(h3->FindBin(massCut),h3->GetNbinsX()+1);
+    float ngl1600 = h_Gluino1600->Integral(h_Gluino1600->FindBin(massCut),h_Gluino1600->GetNbinsX()+1);
+    float ngl2000 = h_Gluino2000->Integral(h_Gluino2000->FindBin(massCut),h_Gluino2000->GetNbinsX()+1);
+    float effgl1600 = ngl1600/h_Gluino1600->Integral(0,h_Gluino1600->GetNbinsX()+1);
+    float effgl2000 = ngl2000/h_Gluino2000->Integral(0,h_Gluino2000->GetNbinsX()+1);
+
+
+    float fomgl1600 = ngl1600/sqrt(npred);
+    float fomgl2000 = ngl2000/sqrt(npred);
+
+    float punzigl1600 = effgl1600/(3./2.+sqrt(npred));
+    float punzigl2000 = effgl2000/(3./2.+sqrt(npred));
+
+
+
 
     float min_entries = 5e-6;
-    float max_entries = 1e6;
+    float max_entries = 1e9;
     
 
     TH1F* h1b = (TH1F*)ifile1->Get("mass_obs");
@@ -276,7 +343,7 @@ if(quan==""){
     t2->SetGridy(true);
     //t2->SetPad(0,0.15,1.0,0.3);
     t2->SetTopMargin(0.1);
-    t2->SetBottomMargin(0.05);
+    t2->SetBottomMargin(0.03);
     TPad* t3 = new TPad("t3","t3", 0.0, 0.0, 1.0, 0.2); 
     t3->Draw();
     //t3->cd();
@@ -290,7 +357,12 @@ if(quan==""){
 
     h1->SetBinContent(h1->GetNbinsX(),h1->GetBinContent(h1->GetNbinsX())+h1->GetBinContent(h1->GetNbinsX()+1));
     //h1->GetYaxis()->SetRangeUser(1e-8,1);
+    h1->GetYaxis()->SetTitle("Tracks / bin");
+    h1->GetYaxis()->SetTitleOffset(0.);
     h3Err->GetYaxis()->SetTitle("Tracks / bin");
+    h3Err->GetYaxis()->SetTitleOffset(0.);
+    h3->GetYaxis()->SetTitle("Tracks / bin");
+    h3->GetYaxis()->SetTitleOffset(0.);
     h3Err->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
     h3Err->GetYaxis()->SetLabelSize(20); //font size
     h3Err->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
@@ -304,7 +376,7 @@ if(quan==""){
     h1->SetLineColor(1);
     h1->SetFillColor(0);
     h1->GetXaxis()->SetRangeUser(0,max_mass);
-    //h1->GetYaxis()->SetRangeUser(1,1e7);
+    h1->GetYaxis()->SetRangeUser(min_entries,max_entries);
 
 /*    h1_2->SetMarkerStyle(33);
     h1_2->SetMarkerColor(4);
@@ -329,6 +401,26 @@ if(quan==""){
     h2->SetFillColor(0);
     //h2->Draw("same P");*/
 
+        h_Gluino1600->SetFillStyle(0);
+        h_Gluino1600->SetLineStyle(2);
+        h_Gluino1600->SetLineWidth(2);
+        h_Gluino1600->SetFillColor(8);
+        h_Gluino1600->SetLineColor(8);
+        h_Gluino1600->GetXaxis()->SetRangeUser(0,max_mass);
+        h_Gluino1600->GetYaxis()->SetRangeUser(min_entries,max_entries);
+        h_Gluino1600->GetYaxis()->SetTitle("Tracks / bin");
+        h_Gluino1600->Draw("same HIST");
+        
+        h_Gluino2000->SetFillStyle(0);
+        h_Gluino2000->SetLineStyle(7);
+        h_Gluino2000->SetLineWidth(2);
+        h_Gluino2000->SetFillColor(32);
+        h_Gluino2000->SetLineColor(32);
+        h_Gluino2000->GetXaxis()->SetRangeUser(0,max_mass);
+        h_Gluino2000->GetYaxis()->SetRangeUser(min_entries,max_entries);
+        h_Gluino2000->GetYaxis()->SetTitle("Tracks / bin");
+        h_Gluino2000->Draw("same HIST");
+    
     if(signal){
         hSignal->SetMarkerStyle(21);
         hSignal->SetMarkerColor(8);
@@ -348,14 +440,14 @@ if(quan==""){
         h_Gluino1000->SetLineStyle(2);
         h_Gluino1000->GetXaxis()->SetRangeUser(0,max_mass);
         h_Gluino1000->GetYaxis()->SetRangeUser(min_entries,max_entries);
-        h_Gluino1000->Draw("same HIST");
+        //h_Gluino1000->Draw("same HIST");
 
         h_Gluino1400->SetFillStyle(0);
         h_Gluino1400->SetLineStyle(1);
         h_Gluino1400->SetLineWidth(2);
         h_Gluino1400->SetFillColor(30);
         h_Gluino1400->SetLineColor(30);
-        h_Gluino1400->Draw("same HIST");
+        //h_Gluino1400->Draw("same HIST");
 
         h_Gluino1600->SetFillStyle(0);
         h_Gluino1600->SetLineStyle(3);
@@ -369,21 +461,23 @@ if(quan==""){
         h_Gluino2000->SetLineWidth(2);
         h_Gluino2000->SetFillColor(32);
         h_Gluino2000->SetLineColor(32);
-        h_Gluino2000->Draw("same HIST");
+        h_Gluino2000->GetXaxis()->SetRangeUser(0,max_mass);
+        h_Gluino2000->GetYaxis()->SetRangeUser(min_entries,max_entries);
+        //h_Gluino2000->Draw("same HIST");
 
         h_Gluino2600->SetFillStyle(0);
         h_Gluino2600->SetLineStyle(9);
         h_Gluino2600->SetLineWidth(2);
         h_Gluino2600->SetFillColor(34);
         h_Gluino2600->SetLineColor(34);
-        h_Gluino2600->Draw("same HIST");
+        //h_Gluino2600->Draw("same HIST");
 
         h_Gluino1600on->SetFillStyle(0);
         h_Gluino1600on->SetLineStyle(4);
         h_Gluino1600on->SetLineWidth(2);
         h_Gluino1600on->SetFillColor(46);
         h_Gluino1600on->SetLineColor(46);
-        h_Gluino1600on->Draw("same HIST");
+        //h_Gluino1600on->Draw("same HIST");
 
 
 
@@ -408,7 +502,7 @@ if(quan==""){
 
 
 
-    }
+    }        
 
     h3Err->SetMarkerStyle(22);
     h3Err->SetMarkerColor(5);
@@ -462,34 +556,41 @@ if(quan==""){
 
 
     //leg = new TLegend(0.82,0.85,0.47,0.69);
-    leg = new TLegend(0.82,0.9,0.4,0.6);
+    //leg = new TLegend(0.82,0.9,0.4,0.4);
     //leg = new TLegend(0.82,0.85,0.3,0.5);
 
+    //leg = new TLegend(0.82,0.9,0.4,0.4);
+    leg = new TLegend(0.25,0.45,0.55,0.95);
+    
+    
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetTextFont(43);
-    leg->SetTextSize(20);
+    leg->SetTextSize(12);
 
     TH1F* h3leg = (TH1F*)h3->Clone();
     h3leg->SetFillColor(h3Err->GetFillColor());
     h3leg->SetFillStyle(h3Err->GetFillStyle());
 
-    if(!blind)leg->AddEntry(h1,"Observed","PE1");
+
+    if(!blind)leg->AddEntry(h1,("#splitline{Observed,}{N(m>400 GeV) = "+to_string(nobs).substr(0,to_string(nobs).find(".")+3)+"}").c_str(),"PE1");
     //leg->AddEntry(h1_2,"Observed, new Ias calculation","PE1");
     //leg->AddEntry(h1b,"Observed, 0.05<Ias","PE1");
     //leg->AddEntry(h2,"Prediction templates from D","PE1");
     //leg->AddEntry(h3,"Prediction templates from B & C","PE1");
-    leg->AddEntry(h3leg,"Data-based SM prediction","PF");
+    leg->AddEntry(h3leg,("#splitline{Data-based SM prediction,}{N(m>400 GeV) = "+to_string(npred).substr(0,to_string(npred).find(".")+3)+"}").c_str(),"PF");
     //leg->AddEntry(hSignal,"Gluino (M = 2000 GeV)","F");
+        if(gluino)leg->AddEntry(h_Gluino1600,("#splitline{Gluino (M = 1600 GeV),}{N(m>400 GeV) = "+to_string(ngl1600).substr(0,to_string(ngl1600).find(".")+3)+"}   #splitline{#frac{S}{#sqrt{B}} = "+to_string(fomgl1600).substr(0,to_string(fomgl1600).find(".")+3)+",}{Punzi sign. = "+to_string(punzigl1600)+"}").c_str(),"L");
+        if(gluino)leg->AddEntry(h_Gluino2000,("#splitline{Gluino (M = 2000 GeV),}{N(m>400 GeV) = "+to_string(ngl2000).substr(0,to_string(ngl2000).find(".")+3)+"}   #splitline{#frac{S}{#sqrt{B}} = "+to_string(fomgl2000).substr(0,to_string(fomgl2000).find(".")+3)+",}{Punzi sign. = "+to_string(punzigl2000)+"}").c_str(),"L");
     if(signal){
-        if(gluino)leg->AddEntry(h_Gluino1000,"Gluino (M = 1000 GeV)","L");
-        if(gluino)leg->AddEntry(h_Gluino1400,"Gluino (M = 1400 GeV)","L");
-        if(gluino)leg->AddEntry(h_Gluino1600,"Gluino (M = 1600 GeV)","L");
+        //if(gluino)leg->AddEntry(h_Gluino1000,"Gluino (M = 1000 GeV)","L");
+        //if(gluino)leg->AddEntry(h_Gluino1400,"Gluino (M = 1400 GeV)","L");
+        //if(gluino)leg->AddEntry(h_Gluino1600,"Gluino (M = 1600 GeV)","L");
         if(gluino)leg->AddEntry(h_Gluino2000,"Gluino (M = 2000 GeV)","L");
-        if(gluino)leg->AddEntry(h_Gluino2600,"Gluino (M = 2600 GeV)","L");
-        if(gluino)leg->AddEntry(h_Gluino1600on,"Gluino CS (M = 1600 GeV)","L");
-        if(stau)leg->AddEntry(h_ppStau871,"ppStau (M = 871 GeV)","L");
-        if(stau)leg->AddEntry(h_ppStau1029,"ppStau (M = 1029 GeV)","L");
+        //if(gluino)leg->AddEntry(h_Gluino2600,"Gluino (M = 2600 GeV)","L");
+        //if(gluino)leg->AddEntry(h_Gluino1600on,"Gluino CS (M = 1600 GeV)","L");
+        //if(stau)leg->AddEntry(h_ppStau871,"ppStau (M = 871 GeV)","L");
+        //if(stau)leg->AddEntry(h_ppStau1029,"ppStau (M = 1029 GeV)","L");
         
         //leg->AddEntry(hSignal,"Stau (M = 1599 GeV)","F");
     }
@@ -504,15 +605,16 @@ if(quan==""){
     c1->cd();
     t2->cd();
 
+    t2->SetLogy();
    TH1D* frameR = new TH1D("frameR", "frameR", 1,0, max_mass);
    frameR->GetXaxis()->SetNdivisions(505);
    frameR->SetTitle("");
    frameR->SetStats(kFALSE);
    frameR->GetXaxis()->SetTitle("");
    //frameR->GetXaxis()->SetTitle("Mass (GeV)");
-   frameR->GetYaxis()->SetTitle("Ratio - R");
-   frameR->SetMaximum(2.5);
-   frameR->SetMinimum(0.0);
+   //frameR->GetYaxis()->SetTitle("Ratio - R");
+   frameR->SetMaximum(2e1);
+   frameR->SetMinimum(5e-2);
    frameR->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
    frameR->GetYaxis()->SetLabelSize(12); //font size
    frameR->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
@@ -588,13 +690,14 @@ if(quan==""){
    frameR2->SetStats(kFALSE);
    frameR2->GetXaxis()->SetTitle("");
    frameR2->GetXaxis()->SetTitle("Mass (GeV)");
-   //frameR2->GetYaxis()->SetTitle("Ratio - R");
+   frameR2->GetYaxis()->SetTitle("Ratio - R");
    frameR2->SetMaximum(1.5);
    frameR2->SetMinimum(0.5);
    frameR2->GetYaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
    frameR2->GetYaxis()->SetLabelSize(12); //font size
    frameR2->GetYaxis()->SetTitleFont(43); //give the font size in pixel (instead of fraction)
-   frameR2->GetYaxis()->SetTitleSize(20); //font size
+   frameR2->GetYaxis()->SetTitleSize(12); //font size
+   frameR2->GetYaxis()->SetTitleOffset(1.5);
    frameR2->GetYaxis()->SetNdivisions(503);
    frameR2->GetXaxis()->SetNdivisions(510);
    frameR2->GetXaxis()->SetLabelFont(43); //give the font size in pixel (instead of fraction)
@@ -612,20 +715,31 @@ if(quan==""){
 
    c1->cd();
 
-   std::string directory = "plotsMassMay24/";
+   std::string directory = "plotsSept15/";
+   //std::string directory = "plotsSept15/Quantile90_";
 
     //c1->SaveAs(("plotsMassPdf/MassPlot_"+inputfilename+"_quantile"+quan+".pdf").c_str());
     if(quan==""){
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+".pdf").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+".png").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+".C").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+".root").c_str());
+        c1->SaveAs((directory+"pdf/MassPlot_"+inputfilename+".pdf").c_str());
+        c1->SaveAs((directory+"png/MassPlot_"+inputfilename+".png").c_str());
+        c1->SaveAs((directory+"Cfile/MassPlot_"+inputfilename+".C").c_str());
+        c1->SaveAs((directory+"rootfile/MassPlot_"+inputfilename+".root").c_str());
     }
     else {
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+"_quantile_"+quan+".pdf").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+"_quantile_"+quan+".png").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+"_quantile_"+quan+".C").c_str());
-        c1->SaveAs((directory+"MassPlot_"+inputfilename+"_quantile_"+quan+".root").c_str());
+        c1->SaveAs((directory+"pdf/MassPlot_"+inputfilename+"_quantile_"+quan+".pdf").c_str());
+        c1->SaveAs((directory+"png/MassPlot_"+inputfilename+"_quantile_"+quan+".png").c_str());
+        c1->SaveAs((directory+"Cfile/MassPlot_"+inputfilename+"_quantile_"+quan+".C").c_str());
+        c1->SaveAs((directory+"rootfile/MassPlot_"+inputfilename+"_quantile_"+quan+".root").c_str());
     }
+
+    TGraph* gr = new TGraph(17,x,y);
+    gr->Draw("A*");
+    gr->SetTitle(";Mass cut (GeV);Punzi significance");
+    gr->GetYaxis()->SetTitleOffset(1.2);
+    c1->SetLogy(0);
+    c1->SaveAs((directory+"pdf/Punzi_"+inputfilename+".pdf").c_str());
+    c1->SaveAs((directory+"rootfile/Punzi_"+inputfilename+".root").c_str());
+    gr->SaveAs((directory+"rootfile/Gr_Punzi_"+inputfilename+".root").c_str());
+
    
 }

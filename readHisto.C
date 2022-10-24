@@ -54,6 +54,8 @@ void massNormalisation(TH1F* h, const float& normalisation){
 }
 
 void saveHistoRatio(TH1F* h1,TH1F* h2,std::string st1,std::string st2,std::string st3,bool rebin=false){
+    h1->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    h2->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     h1->SetName(st1.c_str());
     h2->SetName(st2.c_str());
     if(rebin){
@@ -68,7 +70,7 @@ void saveHistoRatio(TH1F* h1,TH1F* h2,std::string st1,std::string st2,std::strin
     R->Write();
 }
 
-TH1F meanHistoPE(std::vector<TH1F> vPE){
+TH1F meanHistoPE(std::vector<TH1F> vPE, float systErr=0.2){
     TH1F h(vPE[0]);
     //h = (TH1F)vPE[0].Clone(); 
     h.Reset();
@@ -86,12 +88,18 @@ TH1F meanHistoPE(std::vector<TH1F> vPE){
         h.SetBinContent(i,mean);
         h.SetBinError(i,err);
     }
+    for(int i=0;i<h.GetNbinsX()+1;i++){
+        float err = sqrt( pow(h.GetBinError(i),2) + pow(h.GetBinContent(i)*systErr,2) );
+        h.SetBinError(i,err);
+    }
+    
     return h;
 }
 
 void poissonHisto(TH2F &h){
     for(int i=0;i<h.GetNbinsX()+1;i++){
         for(int j=0;j<h.GetNbinsY()+1;j++){
+            std::cout << "content: " << h.GetBinContent(i,j) << std::endl;
             h.SetBinContent(i,j,RNG->Poisson(h.GetBinContent(i,j)));
         }
     }
@@ -99,10 +107,12 @@ void poissonHisto(TH2F &h){
 
 std::ofstream ofile("normalisation_vs_regionD.txt");
 
-void doAll(region& b, region& c, region& bc, region& a, region& d, std::string st, int nPE=100){
+void doAll(region& b, region& c, region& bc, region& a, region& d, std::string st, int nPE=100, float systErr=0.2){
     std::vector<TH1F> vPE;
     std::cout << st << std::endl;
+    d.mass->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     for(int pe=0;pe<nPE;pe++){
+        std::cout << "pe: " << pe << std::endl;
         TH2F a_ih_eta(*a.ih_eta);
         TH2F b_ih_eta(*b.ih_eta);
         TH2F c_ih_eta(*c.ih_eta);
@@ -128,17 +138,19 @@ void doAll(region& b, region& c, region& bc, region& a, region& d, std::string s
         massNormalisation(bc.massFrom1DTemplatesEtaBinning,normalisationABC);
         vPE.push_back(*bc.massFrom1DTemplatesEtaBinning);
     }
-    TH1F h_temp = meanHistoPE(vPE);
+    TH1F h_temp = meanHistoPE(vPE, systErr);
     if(nPE>1) bc.massFrom1DTemplatesEtaBinning = &h_temp;
-    
-    saveHistoRatio(d.mass,bc.massFrom1DTemplatesEtaBinning,("mass_obs_"+st).c_str(),("mass_predBC_"+st).c_str(),("mass_predBCR_"+st).c_str());
-    saveHistoRatio(d.mass,bc.massFrom1DTemplatesEtaBinning,("mass_obs_"+st).c_str(),("mass_predBC_"+st).c_str(),("mass_predBCR_"+st).c_str(),true);
+   
+    bool rebin=false;
+
+    saveHistoRatio(d.mass,bc.massFrom1DTemplatesEtaBinning,("mass_obs_"+st).c_str(),("mass_predBC_"+st).c_str(),("mass_predBCR_"+st).c_str(),rebin=false);
+    saveHistoRatio(d.mass,bc.massFrom1DTemplatesEtaBinning,("mass_obs_"+st).c_str(),("mass_predBC_"+st).c_str(),("mass_predBCR_"+st).c_str(),rebin=true);
     
     overflowLastBin(d.mass);
     overflowLastBin(bc.massFrom1DTemplatesEtaBinning);
     
-    plotting(d.mass,bc.massFrom1DTemplatesEtaBinning,false,("mass1D_regionBC_"+st).c_str(),"Observed","Prediction")->Write();
-    plotting(d.mass,bc.massFrom1DTemplatesEtaBinning,false,("mass1D_regionBC_"+st).c_str(),"Observed","Prediction",true)->Write();
+    plotting(d.mass,bc.massFrom1DTemplatesEtaBinning,false,("mass1D_regionBC_"+st).c_str(),"Observed","Prediction",rebin=false)->Write();
+    plotting(d.mass,bc.massFrom1DTemplatesEtaBinning,false,("mass1D_regionBC_"+st).c_str(),"Observed","Prediction",rebin=true)->Write();
 }
 
 
@@ -247,7 +259,96 @@ void readHisto()
 //    region rb_med_pt;
     
     bool bool_rebin=rebin;
+
+    region rA_sc1;
+    region rA_sc2;
+    region rA_sc3;
+    region rA_sc4;
+    region rA_sc5;
+    region rA_sc6;
+    region rA_sc7;
+    region rA_sc8;
+
+    region rB_sc1;
+    region rB_sc2;
+    region rB_sc3;
+    region rB_sc4;
+    region rB_sc5;
+    region rB_sc6;
+    region rB_sc7;
+    region rB_sc8;
+
+    region rC_sc1;
+    region rC_sc2;
+    region rC_sc3;
+    region rC_sc4;
+    region rC_sc5;
+    region rC_sc6;
+    region rC_sc7;
+    region rC_sc8;
+ 
+    region rD_sc1;
+    region rD_sc2;
+    region rD_sc3;
+    region rD_sc4;  
+    region rD_sc5;  
+    region rD_sc6;
+    region rD_sc7;
+    region rD_sc8;
+
+    region rBC_sc1;
+    region rBC_sc2;
+    region rBC_sc3;
+    region rBC_sc4;
+    region rBC_sc5;
+    region rBC_sc6;
+    region rBC_sc7;
+    region rBC_sc8;
     
+    loadHistograms(rA_sc1,ifile,"regA_sc1",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc2,ifile,"regA_sc2",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc3,ifile,"regA_sc3",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc4,ifile,"regA_sc4",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc5,ifile,"regA_sc5",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc6,ifile,"regA_sc6",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc7,ifile,"regA_sc7",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rA_sc8,ifile,"regA_sc8",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+
+    loadHistograms(rB_sc1,ifile,"regB_sc1",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_sc2,ifile,"regB_sc2",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_sc3,ifile,"regB_sc3",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rB_sc4,ifile,"regB_sc4",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rB_sc5,ifile,"regB_sc5",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rB_sc6,ifile,"regB_sc6",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rB_sc7,ifile,"regB_sc7",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rB_sc8,ifile,"regB_sc8",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+
+    loadHistograms(rC_sc1,ifile,"regC_sc1",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_sc2,ifile,"regC_sc2",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_sc3,ifile,"regC_sc3",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rC_sc4,ifile,"regC_sc4",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rC_sc5,ifile,"regC_sc5",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rC_sc6,ifile,"regC_sc6",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rC_sc7,ifile,"regC_sc7",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rC_sc8,ifile,"regC_sc8",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+
+    loadHistograms(rD_sc1,ifile,"regD_sc1",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_sc2,ifile,"regD_sc2",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_sc3,ifile,"regD_sc3",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rD_sc4,ifile,"regD_sc4",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rD_sc5,ifile,"regD_sc5",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rD_sc6,ifile,"regD_sc6",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rD_sc7,ifile,"regD_sc7",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rD_sc8,ifile,"regD_sc8",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+
+    loadHistograms(rBC_sc1,ifile,"regD_sc1",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rBC_sc2,ifile,"regD_sc2",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rBC_sc3,ifile,"regD_sc3",bool_rebin,rebineta,rebinp,rebinih,rebinmass); 
+    loadHistograms(rBC_sc4,ifile,"regD_sc4",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_sc5,ifile,"regD_sc5",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_sc6,ifile,"regD_sc6",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_sc7,ifile,"regD_sc7",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
+    loadHistograms(rBC_sc8,ifile,"regD_sc8",bool_rebin,rebineta,rebinp,rebinih,rebinmass);
     
     loadHistograms(rall,ifile,"all",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
     loadHistograms(ra,ifile,"regionA",bool_rebin,rebineta,rebinp,rebinih,rebinmass); //rebin eta,p,ih,mass
@@ -539,7 +640,19 @@ void readHisto()
 
     std::cout << "saving... " << std::endl;
 
-    doAll(rb,rc,rbc,ra,rd,"pt60_ias025");
+    float systematicErr = 0.2;
+    int pseudoExperiments = 100;
+
+    doAll(rB_sc1,rC_sc1,rBC_sc1,rA_sc1,rD_sc1,"sc1",pseudoExperiments,systematicErr);
+    //doAll(rB_sc2,rC_sc2,rBC_sc2,rA_sc2,rD_sc2,"sc2",100,systematicErr);
+    doAll(rB_sc3,rC_sc3,rBC_sc3,rA_sc3,rD_sc3,"sc3",pseudoExperiments,systematicErr);
+    //doAll(rB_sc4,rC_sc4,rBC_sc4,rA_sc4,rD_sc4,"sc4",100,systematicErr);
+    doAll(rB_sc5,rC_sc5,rBC_sc5,rA_sc5,rD_sc5,"sc5",pseudoExperiments,systematicErr);
+    doAll(rB_sc6,rC_sc6,rBC_sc6,rA_sc6,rD_sc6,"sc6",pseudoExperiments,systematicErr);
+    doAll(rB_sc7,rC_sc7,rBC_sc7,rA_sc7,rD_sc7,"sc7",pseudoExperiments,systematicErr);
+    doAll(rB_sc8,rC_sc8,rBC_sc8,rA_sc8,rD_sc8,"sc8",pseudoExperiments,systematicErr);
+
+    /*doAll(rb,rc,rbc,ra,rd,"pt60_ias025");
 
     doAll(rb_50_90,rc_med,rbc_50_90,ra_med,rd_50_90,"50_90");
     doAll(rb_50_100,rc_med,rbc_50_100,ra_med,rd_50_100,"50_100");
@@ -562,7 +675,7 @@ void readHisto()
     doAll(rB_50ias90_17eta21, rC_ias50_17eta21, rBC_50ias90_17eta21, rA_ias50_17eta21, rD_50ias90_17eta21, "50ias90_17eta21"); 
 
     doAll(rB_005ias01, rC_005ias01, rBC_005ias01, rA_005ias01, rD_005ias01, "005ias01");
-    doAll(rB_005ias015, rC_005ias015, rBC_005ias015, rA_005ias015, rD_005ias015, "005ias015");
+    doAll(rB_005ias015, rC_005ias015, rBC_005ias015, rA_005ias015, rD_005ias015, "005ias015");*/
     
     /*doAll(rb_40,rc_40,rbc_40,ra_40,rd_40,"40ias_40");
     doAll(rb_50,rc_40,rbc_50,ra_40,rd_50,"50ias_40");
