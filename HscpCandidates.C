@@ -154,7 +154,8 @@ void HscpCandidates::Loop()
    std::cout << "entries: " << nentries << std::endl;
    nof_event = nentries;
 
-   //nentries = 2e5;
+   //nentries /= 100;
+   //std::cout << "entries: " << nentries << std::endl;
 
    int ntot=0, nA=0, nB=0, nC=0, nD=0, nB_boundedIas=0, nD_boundedIas=0, nC_boundedPt=0, nD_boundedPt=0;
 
@@ -163,15 +164,21 @@ void HscpCandidates::Loop()
    TH2::SetDefaultSumw2(kTRUE);
 
    region rAll("_all",etabins_,ihbins_,pbins_,massbins_);
-   region rA("_regionA",etabins_,ihbins_,pbins_,massbins_);
-   region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
-   region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
-   region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
+   //region rA("_regionA",etabins_,ihbins_,pbins_,massbins_);
+   //region rB("_regionB",etabins_,ihbins_,pbins_,massbins_);
+   //region rC("_regionC",etabins_,ihbins_,pbins_,massbins_);
+   //region rD("_regionD",etabins_,ihbins_,pbins_,massbins_);
 
-   region rA_med("_regionA_med",etabins_,ihbins_,pbins_,massbins_);
+   region rA_med("_regionA_50",etabins_,ihbins_,pbins_,massbins_);
 //   region rA_med_pt("_regionA_med_pt",etabins_,ihbins_,pbins_,massbins_);
 //   region rB_med_pt("_regionB_med_pt",etabins_,ihbins_,pbins_,massbins_);
-   region rC_med("_regionC_med",etabins_,ihbins_,pbins_,massbins_);
+   region rC_med("_regionC_50",etabins_,ihbins_,pbins_,massbins_);
+
+   region rA_80("_regionA_80",etabins_,ihbins_,pbins_,massbins_);
+   region rA_90("_regionA_90",etabins_,ihbins_,pbins_,massbins_);
+   
+   region rC_80("_regionC_80",etabins_,ihbins_,pbins_,massbins_);   
+   region rC_90("_regionC_90",etabins_,ihbins_,pbins_,massbins_);   
 
 
 /*   region rA_40("_regionA_40",etabins_,ihbins_,pbins_,massbins_);
@@ -186,7 +193,11 @@ void HscpCandidates::Loop()
    region rB_70("_regionB_70",etabins_,ihbins_,pbins_,massbins_);
    region rB_80("_regionB_80",etabins_,ihbins_,pbins_,massbins_);
    region rB_90("_regionB_90",etabins_,ihbins_,pbins_,massbins_);
+   region rB_99("_regionB_99",etabins_,ihbins_,pbins_,massbins_);
+   region rB_999("_regionB_999",etabins_,ihbins_,pbins_,massbins_);
    region rB_50_90("_regionB_50_90",etabins_,ihbins_,pbins_,massbins_);
+   region rB_50_99("_regionB_50_99",etabins_,ihbins_,pbins_,massbins_);
+   region rB_50_999("_regionB_50_999",etabins_,ihbins_,pbins_,massbins_);
    region rB_50_100("_regionB_50_100",etabins_,ihbins_,pbins_,massbins_);
 
 //   region rD_40("_regionD_40",etabins_,ihbins_,pbins_,massbins_);
@@ -195,7 +206,11 @@ void HscpCandidates::Loop()
    region rD_70("_regionD_70",etabins_,ihbins_,pbins_,massbins_);
    region rD_80("_regionD_80",etabins_,ihbins_,pbins_,massbins_);
    region rD_90("_regionD_90",etabins_,ihbins_,pbins_,massbins_);
+   region rD_99("_regionD_99",etabins_,ihbins_,pbins_,massbins_);
+   region rD_999("_regionD_999",etabins_,ihbins_,pbins_,massbins_);
    region rD_50_90("_regionD_50_90",etabins_,ihbins_,pbins_,massbins_);
+   region rD_50_99("_regionD_50_99",etabins_,ihbins_,pbins_,massbins_);
+   region rD_50_999("_regionD_50_999",etabins_,ihbins_,pbins_,massbins_);
    region rD_50_100("_regionD_50_100",etabins_,ihbins_,pbins_,massbins_);
 
 /*   region rC_40pt("_regionC_40pt",etabins_,ihbins_,pbins_,massbins_);
@@ -212,9 +227,9 @@ void HscpCandidates::Loop()
    region rD_80pt("_regionD_80pt",etabins_,ihbins_,pbins_,massbins_);
    region rD_90pt("_regionD_90pt",etabins_,ihbins_,pbins_,massbins_);*/
 
-   region r_mass800("_reg_mass800",etabins_,ihbins_,pbins_,massbins_);
+   //region r_mass800("_reg_mass800",etabins_,ihbins_,pbins_,massbins_);
 
-   region rA_005ias01("_regA_005ias01",etabins_,ihbins_,pbins_,massbins_);
+ /*  region rA_005ias01("_regA_005ias01",etabins_,ihbins_,pbins_,massbins_);
    region rB_005ias01("_regB_005ias01",etabins_,ihbins_,pbins_,massbins_);
    region rC_005ias01("_regC_005ias01",etabins_,ihbins_,pbins_,massbins_);
    region rD_005ias01("_regD_005ias01",etabins_,ihbins_,pbins_,massbins_);
@@ -247,9 +262,9 @@ void HscpCandidates::Loop()
    region rD_50ias90_17eta21("_regD_50ias90_17eta21",etabins_,ihbins_,pbins_,massbins_);
    TH1F* h_massObs_50ias90_17eta21 = new TH1F("massObs_50ias90_17eta21","1.7<|#eta|<2.1;Mass (GeV)",80,0,4000);
    h_massObs_50ias90_17eta21->Sumw2();
-   h_massObs_50ias90_17eta21->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_50ias90_17eta21->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);*/
 
-   region rA_sc1("_regA_sc1",etabins_,ihbins_,pbins_,massbins_);
+   /*region rA_sc1("_regA_sc1",etabins_,ihbins_,pbins_,massbins_);
    region rB_sc1("_regB_sc1",etabins_,ihbins_,pbins_,massbins_);
    region rC_sc1("_regC_sc1",etabins_,ihbins_,pbins_,massbins_);
    region rD_sc1("_regD_sc1",etabins_,ihbins_,pbins_,massbins_);
@@ -288,7 +303,22 @@ void HscpCandidates::Loop()
    region rB_sc8("_regB_sc8",etabins_,ihbins_,pbins_,massbins_);
    region rC_sc8("_regC_sc8",etabins_,ihbins_,pbins_,massbins_);
    region rD_sc8("_regD_sc8",etabins_,ihbins_,pbins_,massbins_);
+*/
 
+   //region rA_1o4("_regA_1o4",etabins_,ihbins_,pbins_,massbins_);
+   //region rA_2o4("_regA_2o4",etabins_,ihbins_,pbins_,massbins_);
+   //region rA_3o4("_regA_3o4",etabins_,ihbins_,pbins_,massbins_);
+   //region rA_4o4("_regA_4o4",etabins_,ihbins_,pbins_,massbins_);
+   //region rB_1o2("_regB_1o2",etabins_,ihbins_,pbins_,massbins_);
+   //region rB_2o2("_regB_2o2",etabins_,ihbins_,pbins_,massbins_);
+   //region rC_1o2("_regC_1o2",etabins_,ihbins_,pbins_,massbins_);
+   //region rC_2o2("_regC_2o2",etabins_,ihbins_,pbins_,massbins_);
+   //region rD_1o1("_regD_1o1",etabins_,ihbins_,pbins_,massbins_);
+
+   //region rB_true("_regB_true",etabins_,ihbins_,pbins_,massbins_);
+   //region rC_true("_regC_true",etabins_,ihbins_,pbins_,massbins_);
+   
+   //region ("",etabins_,ihbins_,pbins_,massbins_);
 
 
 
@@ -316,9 +346,9 @@ void HscpCandidates::Loop()
    //double q[6]={ 0.033863945, 0.039237098, 0.045422508, 0.053164483, 0.063867635, 0.082214175 }; //data or signal
    //double q[6]={ 0.032398762, 0.037014346, 0.041986481, 0.047712094, 0.054792688, 0.065430914 }; //data or signal -- IAS STRIP ONLY
    
-   double q[6]={ 0.032558433, 0.037216634, 0.042322464, 0.048092840, 0.055574009, 0.066387113 }; //data or signal -- IAS STRIP ONLY NO FSTRIP CUT
+   //double q[6]={ 0.032558433, 0.037216634, 0.042322464, 0.048092840, 0.055574009, 0.066387113 }; //data or signal -- IAS STRIP ONLY NO FSTRIP CUT
    //double q[6] = { 0.030369465, 0.035503496, 0.041515836, 0.048954613, 0.059305365, 0.077425112 }; //MC TTTo2L2Nu
-
+   double q[8]={ 0.014565036, 0.017987774, 0.022399569, 0.028518069, 0.038047370, 0.056746799, 0.13331622, 0.22018057 }; //data or signal -- IAS STRIP ONLY NO FSTRIP CUT
    //double q[5] = { 0.038786767, 0.045297877, 0.054489588, 0.069096781, 0.097055567 }; //MC QCD
    double q_pt[6]={ 57.013944, 59.648194, 63.123116, 67.930817, 75.501106, 90.672101 }; //data or signal
    
@@ -328,6 +358,8 @@ void HscpCandidates::Loop()
    float quan70 = q[3];
    float quan80 = q[4];
    float quan90 = q[5];
+   float quan99 = q[6];
+   float quan999 = q[7];
 
 
    float quan40_pt = q_pt[0];
@@ -347,7 +379,11 @@ void HscpCandidates::Loop()
    TH1F* h_massObs_q70 = new TH1F("massObs_q70",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q80 = new TH1F("massObs_q80",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q90 = new TH1F("massObs_q90",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q99 = new TH1F("massObs_q99",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q999 = new TH1F("massObs_q999",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q50_90 = new TH1F("massObs_q50_90",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q50_99 = new TH1F("massObs_q50_99",";Mass (GeV)",80,0,4000);
+   TH1F* h_massObs_q50_999 = new TH1F("massObs_q50_999",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_q50_100 = new TH1F("massObs_q50_100",";Mass (GeV)",80,0,4000);
 
 
@@ -361,7 +397,7 @@ void HscpCandidates::Loop()
    TH1F* h_massObs_005ias01 = new TH1F("massObs_005ias01",";Mass (GeV)",80,0,4000);
    TH1F* h_massObs_005ias015 = new TH1F("massObs_005ias015",";Mass (GeV)",80,0,4000);
 
-
+   if(dataset_ == "data") {
    h_massObs_q40->Sumw2();
    h_massObs_q50->Sumw2();
    h_massObs_q60->Sumw2();
@@ -377,6 +413,7 @@ void HscpCandidates::Loop()
    h_massObs_q70_pt->Sumw2();
    h_massObs_q80_pt->Sumw2();
    h_massObs_q90_pt->Sumw2();
+   }
 
    h_massObs_005ias01->Sumw2();
    h_massObs_005ias015->Sumw2();
@@ -497,6 +534,26 @@ void HscpCandidates::Loop()
 
    TH1F* h_Fstrip_regionB = new TH1F("h_Fstrip_regionB",";F^{strip}=#frac{Nof strip measurements}{Nof valid strip hits};",50,0,1);
 
+   TH1F* h_Is = new TH1F("h_Is",";I_{S};",100,0,1);
+   TH2F* h_Is_Ias = new TH2F("h_Is_Ias",";I_{as};I_{S}",100,0,1,100,0,1);
+
+    TH1F* nCandidates = new TH1F("nCandidates",";Number of candidates;",10,0,10);
+    TH1F* nCandidates_BefPreS = new TH1F("nCandidates_BefPreS","Before PreS;Number of candidates;",10,0,10);
+    TH1F* nCandidates_AfterPreS = new TH1F("nCandidates_AfterPreS","After PreS;Number of candidates;",10,0,10);
+    TH1F* nCandidates_AfterPreS_nMinus1 = new TH1F("nCandidates_AfterPreS_nMinus1","After PreS n-1;Number of candidates;",10,0,10);
+
+    TH1F* h_EP = new TH1F("h_EP","",100,0,2);
+
+    TH1F* h_DeltaEtaTwoCandidates = new TH1F("DeltaEtaTwoCandidates",";#Delta#eta(candidate1, candidate2);",500,-2.5,2.5);
+    TH1F* h_DeltaPhiTwoCandidates = new TH1F("DeltaPhiTwoCandidates",";#Delta#Phi(candidate1, candidate2);",500,-5,5);
+    TH1F* h_AbsDeltaPhiTwoCandidates = new TH1F("AbsDeltaPhiTwoCandidates",";|#Delta#Phi(candidate1, candidate2)|;",500,0,5);
+    TH1F* h_DeltaRTwoCandidates = new TH1F("DeltaRTwoCandidates",";#DeltaR(candidate1, candidate2);",500,0,5);
+    TH1F* h_InvMassTwoCandidates = new TH1F("InvMassTwoCandidates",";Invariant mass (candidate1, candidate2);",500,0,500);
+    TH1F* h_PtTwoCandidates = new TH1F("PtTwoCandidates",";p_{T} (candidate1, candidate2);",500,0,500);
+    TH1F* h_isMuonCandidate1 = new TH1F("isMuonCandidate1",";is muon;",2,0,2);
+    TH1F* h_isMuonCandidate2 = new TH1F("isMuonCandidate2",";is muon;",2,0,2);
+    TH1F* h_MET_TwoCandidates = new TH1F("MET_TwoCandidates",";MET;",300,0,300);
+    TH1F* h_MET_TwoCandidates_cutInvM110 = new TH1F("MET_TwoCandidates_cutInvM110",";MET;",300,0,300);
 
    h_FstripBef->Sumw2();
    h_Fstrip->Sumw2();
@@ -561,7 +618,11 @@ void HscpCandidates::Loop()
    h_massObs_q70->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q80->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q90->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_q99->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_q999->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q50_90->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_q50_99->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+   h_massObs_q50_999->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_q50_100->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    
    h_massObs_q40_pt->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
@@ -574,51 +635,54 @@ void HscpCandidates::Loop()
    h_massObs_005ias01->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
    h_massObs_005ias015->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
 
-   mini_region MR_Bef("_BefPreS");
-   mini_region MR_PostPreS_noFstrip("_PostPreS_noFstrip");
-   mini_region MR_PostPreS_Eta2p1("_PostPreS_noFstrip_eta2p1");
-   mini_region MR_all("_PostPreS");
-   mini_region MR_ih_l_5("_Ih_l_5");
-   mini_region MR_ih_ge_5("_Ih_ge_5");
-   mini_region MR_HCAL_pic6("_HCAL_pic6");
-   mini_region MR_pterr0p25("_pterr0p25");
-   mini_region MR_cutQ99("_cutQ99");
-   mini_region MR_isotk50("_isotk50");
-   mini_region MR_isotk15("_isotk15");
-   mini_region MR_mini_iso_03("_mini_iso_03");
-   mini_region MR_ias_l_0p6("_Ias_l_0p6");
-   mini_region MR_ias_ge_0p6("_Ias_ge_0p6");MR_ias_ge_0p6.setOutputFileName(dataset_);
+   //mini_region MR_Bef("_BefPreS");
+   //mini_region MR_PostPreS_noFstrip("_PostPreS_noFstrip");
+   //mini_region MR_PostPreS_Eta2p1("_PostPreS_noFstrip_eta2p1");
+   //mini_region MR_all("_PostPreS");
+   //mini_region MR_ih_l_5("_Ih_l_5");
+   //mini_region MR_ih_ge_5("_Ih_ge_5");
+   //mini_region MR_HCAL_pic6("_HCAL_pic6");
+   //mini_region MR_pterr0p25("_pterr0p25");
+   //mini_region MR_cutQ99("_cutQ99");
+   //mini_region MR_isotk50("_isotk50");
+   //mini_region MR_isotk15("_isotk15");
+   //mini_region MR_mini_iso_03("_mini_iso_03");
+   //mini_region MR_ias_l_0p6("_Ias_l_0p6");
+   //mini_region MR_ias_ge_0p6("_Ias_ge_0p6");MR_ias_ge_0p6.setOutputFileName(dataset_);
 
-   preS_analysis preS_BefPreS("_BefPreS");
-   preS_BefPreS.loadCuts(.25,15.,0.3,3.47,1.,0.5,0.3);
-  
-   preS_analysis preS_default_noMiniIso("_default_noMiniIso");
-   preS_default_noMiniIso.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
-
-   preS_analysis preS_default_noTKIso("_default_noTKIso");
-   preS_default_noTKIso.loadCuts(.25,999,0.3,3.47,1.,0.5,0.3);
-
-   preS_analysis preS_default_cutQ99("_default_cutQ99");
-   preS_default_cutQ99.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
-
-   preS_analysis preS_default_cutQ999("_default_cutQ999");
-   preS_default_cutQ999.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
+   //preS_analysis preS_BefPreS("_BefPreS");
+   //preS_BefPreS.loadCuts(.25,15.,0.3,3.47,1.,0.5,0.3);
+  //
+   //preS_analysis preS_default_noMiniIso("_default_noMiniIso");
+   //preS_default_noMiniIso.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
+//
+   //preS_analysis preS_default_noTKIso("_default_noTKIso");
+   //preS_default_noTKIso.loadCuts(.25,999,0.3,3.47,1.,0.5,0.3);
+//
+   //preS_analysis preS_default_cutQ99("_default_cutQ99");
+   //preS_default_cutQ99.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
+//
+   //preS_analysis preS_default_cutQ999("_default_cutQ999");
+   //preS_default_cutQ999.loadCuts(.25,15.,999,3.47,1.,0.5,0.3);
 
    //float lumi=7.04; //fb-1
-   float lumi=7.64; //fb-1
+   float lumi=51.2; //fb-1  //2018
 
 
-   int year_xsec = 2015;
+   std::string year_xsec = "th";
 
    float weightGluino2600 = (5.0e-2*lumi)/nof_event; 
+   float weightGluino2400 = (1.8e-2*lumi)/nof_event; 
+   float weightGluino2200 = (4.9e-1*lumi)/nof_event; 
    float weightGluino2000 = (9.7e-1*lumi)/nof_event; 
+   float weightGluino1800 = (7.5e-3*1e3*lumi)/nof_event; //Gluino xsec from 2015 paper --> not in 2017 AN
    float weightGluino1600 = (7.5e-3*1e3*lumi)/nof_event; //Gluino xsec from 2015 paper --> not in 2017 AN
    float weightGluino1400 = (2.5e1*lumi)/nof_event;
    float weightGluino1000 = (3.2e2*lumi)/nof_event;
    float weightGluino1600on = (8.8e-3*1e3*lumi)/nof_event;//Gluino xsec from 2015 paper --> not in 2017 AN
 
    //Analysis Note 2017 
-   if(year_xsec==2017){
+   if(year_xsec=="2017"){
    weightGluino2600 = (5.0e-2*lumi)/nof_event; 
    weightGluino2000 = (9.7e-1*lumi)/nof_event; 
    weightGluino1600 = (7.5e-3*1e3*lumi)/nof_event; 
@@ -627,7 +691,7 @@ void HscpCandidates::Loop()
    }
 
    //2015 paper obs xsec
-   if(year_xsec==2015){
+   if(year_xsec=="2015"){
    weightGluino2000 = (1.1e-2*1e3*lumi)/nof_event; 
    weightGluino1600 = (7.5e-3*1e3*lumi)/nof_event; 
    weightGluino1400 = (6.55e-3*1e3*lumi)/nof_event;
@@ -635,15 +699,20 @@ void HscpCandidates::Loop()
    }
 
    //2016 PAS obs xsec
-   if(year_xsec==2016){
+   if(year_xsec=="2016"){
    weightGluino2000 = (2.3e-3*1e3*lumi)/nof_event; 
    weightGluino1600 = (1.6e-3*1e3*lumi)/nof_event; 
    weightGluino1400 = (1.4e-3*1e3*lumi)/nof_event;
    weightGluino1000 = (1.15e-3*1e3*lumi)/nof_event;
    }
 
+
    float weightStau1599 = (1.4e-4*lumi)/nof_event;
    
+   float weightgmStau200 = (2.8e-1*lumi)/nof_event;
+   float weightgmStau432 = (3.9e-1*lumi)/nof_event;
+   float weightgmStau651 = (6.9e-2*lumi)/nof_event;
+   float weightgmStau745 = (6.9e-2*lumi)/nof_event;
    float weightgmStau871 = (6.9e-2*lumi)/nof_event;
    float weightgmStau1029 = (2.2e-2*lumi)/nof_event;
 
@@ -652,31 +721,31 @@ void HscpCandidates::Loop()
    float weightppStau1029 = (3.5e-3*lumi)/nof_event;
    
    //Analysis Note 2017
-   if(year_xsec==2017){
+   if(year_xsec=="2017"){
    weightppStau871 = (9.9e-3*lumi)/nof_event;
    weightppStau1029 = (3.5e-3*lumi)/nof_event;
    }
 
    //2015 paper obs xsec
-   if(year_xsec==2015){
+   if(year_xsec=="2015"){
    weightppStau1029 = (2.0e-3*1e3*lumi)/nof_event;
    }
 
    //2016 PAS obs xsec
-   if(year_xsec==2016){
+   if(year_xsec=="2016"){
    weightppStau1029 = (4.9e-4*1e3*lumi)/nof_event;
    }
    
 
 
-   float weightWJets = (52940*1e3*lumi)/(6.988236e7);
-   //float weightTTTo2L2Nu = (88.29*1e3*lumi)/(7.5653e7);
-   float weightTTToSemiLeptonic = (365.35*1e3*lumi)/(1.29985e8);
-   float weightTTToHadronic = (377.96*1e3*lumi)/(1.0117e8);
-   float weightQCD = (239000.0*1e3*lumi)/8994317.0;
-   float weightDYJetsToLL = (15343.0*1e3*lumi)/(4.89014e7);
+   float weightWJets = (52940*1e3*lumi)/nof_event;
+   float weightTTToSemiLeptonic = (365.35*1e3*lumi)/nof_event;
+   float weightTTToHadronic = (377.96*1e3*lumi)/nof_event;
+   float weightTTTo2L2Nu = (88.29*1e3*lumi)/(nof_event);
+   float weightQCD = (239000.0*1e3*lumi)/nof_event;
+   float weightDYJetsToLL = (15343.0*1e3*lumi)/nof_event;
 
-   float weightQCD_pt15_7000 = (1375000000.0*1e3*lumi)/20121999.;
+   float weightQCD_pt15_7000 = (1375000000.0*1e3*lumi)/nof_event;
 
    //float weightQCD_Pt50to80 = (377800.0*1e3*lumi)/40377957.;
    float weightQCD_Pt30to50 = (1361000.0*1e3*lumi)/nof_event;
@@ -691,7 +760,36 @@ void HscpCandidates::Loop()
    //float weightQCD_Pt1000 = (1.068*1e3*lumi)/nof_event; //??? xsec != 1 
    float weightQCD_Pt1000 = (1.613*1e3*lumi)/nof_event; //??? xsec != 1 
 
-   float weightTTTo2L2Nu = (88.29*1e3*lumi)/(nof_event);
+   /*
+   //if(year_xsec=="th"){
+   weightGluino1600 = (8.87e-3*1e3*lumi)/nof_event; 
+   weightGluino1800 = (2.93e-3*1e3*lumi)/nof_event; 
+   weightGluino2000 = (9.7e-4*1e3*lumi)/nof_event; 
+   weightGluino2200 = (3.6e-4*1e3*lumi)/nof_event; 
+   weightGluino2400 = (1.3e-4*1e3*lumi)/nof_event; 
+   weightGluino2600 = (1.3e-4*1e3*lumi)/nof_event; 
+   weightgmStau651 = (4.1e-4*1e3*lumi)/nof_event; 
+   weightgmStau745 = (1.9e-4*1e3*lumi)/nof_event; 
+   weightgmStau871 = (6.9e-5*1e3*lumi)/nof_event; 
+   weightgmStau1029 = (2.2e-5*1e3*lumi)/nof_event; 
+   //weight = (*1e3*lumi)/nof_event; 
+   //}
+   */
+
+   weightGluino1600 = (8.87e-3*1e3*lumi)/nof_event; 
+   weightGluino1800 = (2.93e-3*1e3*lumi)/nof_event; 
+   weightGluino2000 = (1.01e-3*1e3*lumi)/nof_event; 
+   weightGluino2200 = (3.56e-4*1e3*lumi)/nof_event; 
+   weightGluino2400 = (1.28e-4*1e3*lumi)/nof_event; 
+   weightGluino2600 = (4.62e-5*1e3*lumi)/nof_event; 
+   
+   weightgmStau200 = (2.8e-1*1e3*lumi)/nof_event;
+   weightgmStau432 = (3.9e-3*1e3*lumi)/nof_event;
+   weightgmStau651 = (4.1e-4*1e3*lumi)/nof_event; 
+   weightgmStau745 = (1.9e-4*1e3*lumi)/nof_event; 
+   weightgmStau871 = (6.9e-5*1e3*lumi)/nof_event; 
+   weightgmStau1029 = (2.2e-5*1e3*lumi)/nof_event; 
+
    
    float weightMass = 1;
   
@@ -699,13 +797,25 @@ void HscpCandidates::Loop()
    if(dataset_ == "gluino1000") weightMass = weightGluino1000;
    if(dataset_ == "gluino1400") weightMass = weightGluino1400;
    if(dataset_ == "gluino1600") weightMass = weightGluino1600;
+   if(dataset_ == "gluino1800") weightMass = weightGluino1800;
    if(dataset_ == "gluino2000") weightMass = weightGluino2000;
+   if(dataset_ == "gluino2200") weightMass = weightGluino2200;
+   if(dataset_ == "gluino2400") weightMass = weightGluino2400;
    if(dataset_ == "gluino2600") weightMass = weightGluino2600;
    if(dataset_ == "gluino1600on") weightMass = weightGluino1600on;
+   if(dataset_ == "gmStau200") weightMass = weightgmStau200;
+   if(dataset_ == "gmStau432") weightMass = weightgmStau432;
+   if(dataset_ == "gmStau651") weightMass = weightgmStau651;
+   if(dataset_ == "gmStau745") weightMass = weightgmStau745;
+   if(dataset_ == "gmStau871") weightMass = weightgmStau871;
+   if(dataset_ == "gmStau1029") weightMass = weightgmStau1029;
+   //if(dataset_ == "") weightMass = weight;
+
    if(dataset_ == "WJets") weightMass = weightWJets;
    if(dataset_ == "TTTo2L2Nu") weightMass = weightTTTo2L2Nu;
    if(dataset_ == "TTToSemiLept") weightMass = weightTTToSemiLeptonic;
    if(dataset_ == "TTToHadr") weightMass = weightTTToHadronic;
+   if(dataset_ == "TTToFullLept") weightMass = weightTTTo2L2Nu+weightTTToSemiLeptonic;
    if(dataset_ == "QCD") weightMass = weightQCD;
    if(dataset_ == "QCD_pt_15_7000") weightMass = weightQCD_pt15_7000;
    if(dataset_ == "DY") weightMass = weightDYJetsToLL;
@@ -740,6 +850,9 @@ void HscpCandidates::Loop()
    int n_passPre=0;
    int n_bef=0, n_aft=0;
 
+   //fChain->SetBranchStatus("*",1);
+   //fChain->SetBranchStatus("*HLT*",0);
+
    Long64_t nbytes = 0, nb = 0;
    for (Long64_t jentry=0; jentry<nentries;jentry++) {
        Long64_t ientry = LoadTree(jentry);
@@ -763,7 +876,6 @@ void HscpCandidates::Loop()
 
        //if(jentry%1000000==0) std::cout << "entry: " << jentry << " --> " << percentEntry << std::endl;
 
-       //if(Hscp<1) continue;
        //if(Pt->size()<1) continue;
 
        //if(invMET_ && RecoPFMET>100) continue;
@@ -773,9 +885,11 @@ void HscpCandidates::Loop()
        //if(!HLT_Mu50 && !HLT_PFMET120_PFMHT120_IDTight && !HLT_PFHT500_PFMET100_PFMHT100_IDTight && !HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 && !HLT_MET105_IsoTrk50) continue;
        //if(!HLT_PFMET120_PFMHT120_IDTight && !HLT_PFHT500_PFMET100_PFMHT100_IDTight && !HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60 && !HLT_MET105_IsoTrk50) continue;
 
-       if(dataset_ == "QCD_pt_15_7000") weightMass *= GeneratorWeight;
+       //if(dataset_ == "QCD_pt_15_7000") weightMass *= GeneratorWeight;
 
-       h_njets->Fill(njets);
+       //h_njets->Fill(njets);
+       //fChain->SetBranchStatus("*Hscp*",1);
+       //fChain->SetBranchStatus("*njets*",1);
        int ntracks = Hscp;
        int nofjets = njets; 
 
@@ -785,38 +899,169 @@ void HscpCandidates::Loop()
        int ev = Event;
        int lumi = Lumi;
        int pu = PileUp;
+       float NPV = nofVtx; 
 
-       int i=0;
-       for(int i=0; i<Mass->size(); i++)
-       {
-           n_bef++;
-           //if(invIso_ && !passPreselection_noIsolation_noIh->at(i)) continue;
-           //if(!invIso_ && !passPreselection->at(i)) continue;
+       int indiceToKeep=-1;
+       float maxIh=-1;
+        
+        //fChain->SetBranchStatus("*Mass*",1);
 
-           //if(!passPreselection->at(i)) continue;
+       /*if(Mass->size()<2) continue;
 
+       nCandidates->Fill(Mass->size());
+
+       for(int cand=0; cand<Mass->size(); cand++){
+        float ih = Ih_noL1->at(cand);
+        if(ih>maxIh){
+            maxIh=ih;
+            indiceToKeep=cand;
+        }
+       }*/
+       nCandidates->Fill(Mass->size());
+       int nHSCPpassingPreS=0;
+       std::vector<candidat> vCand;
+        for(int i=0; i<Mass->size(); i++){ 
            float pt = Pt->at(i);
            float sigmapt = PtErr->at(i);
-
-           //float ih = Ih_StripOnly->at(i);
            float ih = Ih_noL1->at(i);
-           //float ih_allNoBPIXL1 = Ih_noL1->at(i);
-           //float ih_stripOnly = Ih_StripOnly->at(i);
-           //float ih_pixOnly_noBPIXL1 = ; --> y a pas 
+           float ismirnov = -1;
            float ias = Ias_StripOnly->at(i);
            float ias_all = Ias->at(i);
            float ias_stripOnly = Ias_StripOnly->at(i);
            float ias_outer = Ias_noTIBnoTIDno3TEC->at(i);
            float ias_pixelOnly = Ias_PixelOnly->at(i);
            float ias_pixelOnly_noL1 = Ias_PixelOnly_noL1->at(i);
+           float probQ = ProbQ_noL1->at(i);
            float Eta = eta->at(i); 
            float Phi = phi->at(i);
            float iso = iso_TK->at(i);
            float iso_r = iso/pt;
            float nhits = NOM->at(i);
            float p = pt*cosh(Eta);
-           //          float massT = Mass->at(i);
            float massT = GetMass(p,ih,K,C);
+           p = 10000./p;
+           float isotk = iso_TK->at(i);
+           float isocalo = iso_ECAL->at(i)+iso_HCAL->at(i);
+           float tof = TOF->at(i);
+           float dz = dZ->at(i);
+           float dxy = dXY->at(i);
+           float probChi2 = TMath::Prob(Chi2->at(i),Ndof->at(i));
+           float miniIso = iso_MiniIso->at(i);
+           float miniIsoWithMuon = iso_MiniIso_wMuon->at(i);
+           miniIso = miniIsoWithMuon;
+           float IsoRel = PFIsolationMuon(i);
+           float IsoRelTk = PFIsolationTrack(i);
+           float EP = EoverP->at(i);
+           int nom = NOM->at(i);
+           int noh = NOH->at(i);
+           int nstrp = 0; 
+           float sat254 = 0;
+           float sat255 = 0;
+           float clusterCleaning = 0;
+           int NOSH = NOH->at(i)-NOPH->at(i); 
+           int nPix = 0;
+           int nPixNoL1_mask = 0;
+           int nPixNoL1 = 0;
+           int nStrip = 0;
+           nom+=nPixNoL1_mask;
+           float FStrip = 0;
+           if(NOSH>0) FStrip=(nom-nPixNoL1_mask)/(float)NOSH;
+           float sigmaptsurpt = (float)sigmapt/(float)pt; 
+   
+           if(pt<55) continue;
+           if(NOPH->at(i)<2) continue;
+           if(FOVH->at(i)<0.8) continue;
+           if(nom<=9) continue;
+           if(Chi2->at(i)/Ndof->at(i)>5) continue;
+           if(!isHighPurity->at(i)) continue;
+           if(abs(dz)>0.1) continue;
+           if(abs(dxy)>0.02) continue;
+           if(probQ>0.7) continue;
+           if(EP>0.3) continue;
+           if(abs(Eta)>1.0) continue;
+           //if(ih<C) continue;
+
+           bool bool_isotk = isotk<15 ? true : false;
+           bool bool_miniiso = miniIso<0.02 ? true : false;
+           bool bool_pterr1 = sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,99) ? true : false;
+           bool bool_pterr2 = sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,999) ? true : false;
+           bool bool_pterr3 = sigmapt/(pt*pt) < 0.0008 ? true : false; 
+           
+            if(!bool_isotk) continue;
+            if(!bool_miniiso) continue;
+            if(!bool_pterr3) continue;
+
+            if(ih>maxIh){
+                maxIh=ih;
+                indiceToKeep=i;
+            }
+
+            candidat cand(pt,Eta,Phi,isMuon->at(i));
+            vCand.push_back(cand);
+            
+            count_hscp_passPre++;
+            nHSCPpassingPreS++;
+
+        }
+        //if(nHSCPpassingPreS>1)cout<<vCand.size()<<" "<<nHSCPpassingPreS<<endl;
+        nCandidates_AfterPreS->Fill(nHSCPpassingPreS);
+        bool afterZ=false;
+        if(vCand.size()==2){
+            float phi1=std::fmod(abs(vCand[0].getPhi()),TMath::TwoPi()), phi2=std::fmod(abs(vCand[1].getPhi()),TMath::TwoPi());
+            float deltaEta=vCand[0].getEta()-vCand[1].getEta();
+            double deltaPhi=phi1-phi2;
+            float deltaR1=deltaR(vCand[0].getEta(),vCand[0].getPhi(),vCand[1].getEta(),vCand[1].getPhi());
+            TLorentzVector v1;
+            TLorentzVector v2;
+            TLorentzVector v3;
+            float mass_hyp=0.105;
+            v1.SetPtEtaPhiM(vCand[0].getPt(),vCand[0].getEta(),vCand[0].getPhi(),mass_hyp);
+            v2.SetPtEtaPhiM(vCand[1].getPt(),vCand[1].getEta(),vCand[1].getPhi(),mass_hyp);
+            v3=v1+v2;
+            float invMass=v3.M();
+            h_DeltaEtaTwoCandidates->Fill(deltaEta);
+            h_DeltaPhiTwoCandidates->Fill(v1.DeltaPhi(v2));
+            h_AbsDeltaPhiTwoCandidates->Fill(abs(v1.DeltaPhi(v2)));
+            h_DeltaRTwoCandidates->Fill(v1.DeltaR(v2));
+            h_isMuonCandidate1->Fill(vCand[0].getIsMuon());
+            h_isMuonCandidate2->Fill(vCand[1].getIsMuon());
+            h_MET_TwoCandidates->Fill(RecoPFMET);
+            h_InvMassTwoCandidates->Fill(invMass);
+            h_PtTwoCandidates->Fill(v3.Pt());
+            if(invMass>110) afterZ=true;
+            if(afterZ) h_MET_TwoCandidates_cutInvM110->Fill(RecoPFMET);
+            //cout<<deltaR1<<" "<<v1.DeltaR(v2)<<" "<<invMass<<endl;
+        } 
+        
+        //if(vCand.size()!=1) continue;
+        //if(vCand.size()<2) continue;
+        //if(!afterZ) continue;
+
+
+       for(int i=0; i<Mass->size(); i++){    
+            if(i!=indiceToKeep) continue;
+           n_bef++;
+
+           float pt = Pt->at(i);
+           float sigmapt = PtErr->at(i);
+           float ih = Ih_noL1->at(i);
+           float ismirnov = -1;
+           //float ismirnov = Is->at(i);
+           float ias = Ias_StripOnly->at(i);
+           float ias_all = Ias->at(i);
+           float ias_stripOnly = Ias_StripOnly->at(i);
+           float ias_outer = Ias_noTIBnoTIDno3TEC->at(i);
+           float ias_pixelOnly = Ias_PixelOnly->at(i);
+           float ias_pixelOnly_noL1 = Ias_PixelOnly_noL1->at(i);
+           float probQ = ProbQ_noL1->at(i);
+           float Eta = eta->at(i); 
+           float Phi = phi->at(i);
+           float iso = iso_TK->at(i);
+           float iso_r = iso/pt;
+           float nhits = NOM->at(i);
+           float p = pt*cosh(Eta);
+           float massT = GetMass(p,ih,K,C);
+           p = 10000./p;
            float isotk = iso_TK->at(i);
            float isocalo = iso_ECAL->at(i)+iso_HCAL->at(i);
            float tof = TOF->at(i);
@@ -848,7 +1093,7 @@ void HscpCandidates::Loop()
            int nPixNoL1_mask = 0;
            int nPixNoL1 = 0;
            int nStrip = 0;
-           for(int j=0; j<clust_charge->at(i).size(); j++){
+           /*for(int j=0; j<clust_charge->at(i).size(); j++){
                float ch = clust_charge->at(i)[j];
                bool cleaned = true;
                //bool cleaned = clust_ClusterCleaning->at(i)[j];
@@ -864,7 +1109,7 @@ void HscpCandidates::Loop()
 
                //if(pixel)std::cout << "ch: " << ch << " cleaned: " << cleaned << " detid: " << detid << " strip: " << strip << " pixel: " << pixel << std::endl;
 
-           }
+           }*/
            //std::cout << "nPix: " << nPix << " NOPH: " << NOPH->at(i) << " pixel hits no L1: " << nPixNoL1 << " pixel hits no L1 via mask: " << nPixNoL1_mask << std::endl;
 
            //std::cout << "nom: " << nom << " noh: " << noh << " nstrip: " << nStrip << " NOSH: " << NOSH << " npixel: " << nPix << " npixelnoL1: " << nPixNoL1_mask << std::endl;
@@ -920,7 +1165,7 @@ void HscpCandidates::Loop()
            h_dRjetMinBef->Fill(drMin,weightMass);
            h_dRjetHighestPtBef->Fill(drHighestPt,weightMass);
            
-           MR_Bef.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all, ias_pixelOnly_noL1,ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //MR_Bef.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all, ias_pixelOnly_noL1,ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
            //preselection base
            //if(!passPreselection) continue;
            /*if(pt<50) continue;
@@ -938,7 +1183,7 @@ void HscpCandidates::Loop()
 
            float sigmaptsurpt = (float)sigmapt/(float)pt; 
    
-           preS_BefPreS.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
+           //preS_BefPreS.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
 
            //if(!isPFMuon) continue;
            if(pt<55) continue;
@@ -951,24 +1196,26 @@ void HscpCandidates::Loop()
            if(!isHighPurity->at(i)) continue;
            if(abs(dz)>0.1) continue;
            if(abs(dxy)>0.02) continue;
+           //if(probQ>0.15) continue;
+           if(probQ>0.7) continue;
+           if(EP>0.3) continue;
+           
 
-           preS_default_noMiniIso.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
-           
-           preS_default_noTKIso.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
-           
-           preS_default_cutQ99.changePtErrCut(pt,Eta,99);
-           preS_default_cutQ99.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
-           
-           preS_default_cutQ999.changePtErrCut(pt,Eta,999);
-           preS_default_cutQ999.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
+           //preS_default_noMiniIso.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
+           //preS_default_noTKIso.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
+           //preS_default_cutQ99.changePtErrCut(pt,Eta,99);
+           //preS_default_cutQ99.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
+           //preS_default_cutQ999.changePtErrCut(pt,Eta,999);
+           //preS_default_cutQ999.fill(weightMass,pt,sigmaptsurpt,iso,miniIso,ih,abs(Eta),FStrip,EP);
 
-           //if(abs(Eta)>1.0) continue;
-           if(abs(Eta)<=1.0 || abs(Eta)>2.1) continue;
+           if(abs(Eta)>1.0) continue;
+          // if(abs(Eta)<=1.0 || abs(Eta)>2.1) continue;
            
            //if(!isMuon->at(i)) continue;
 
            //if(isocalo/p>0.3) continue;
 
+           //if(ih<C) continue;
            //if(ih<ihcut_) continue;
            //if(ih>3.17) continue;
            //if(p>pcut_ && pcut_>0) continue;
@@ -981,9 +1228,67 @@ void HscpCandidates::Loop()
            bool bool_miniiso = miniIso<0.02 ? true : false;
            bool bool_pterr1 = sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,99) ? true : false;
            bool bool_pterr2 = sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,999) ? true : false;
-           bool bool_pterr3 = sigmapt/(pt*pt) < 0.001 ? true : false; 
+           bool bool_pterr3 = sigmapt/(pt*pt) < 0.0008 ? true : false; 
            
-           if(pt<=pt_cut){
+            if(!bool_isotk) continue;
+            if(!bool_miniiso) continue;
+            if(!bool_pterr3) continue;
+
+
+            if(i!=indiceToKeep) continue;
+
+            //nCandidates_AfterPreS->Fill(Mass->size());
+
+            h_EP->Fill(EP);
+
+
+           h_Is->Fill(ismirnov,weightMass);
+           h_Is_Ias->Fill(ias,ismirnov,weightMass);
+
+           /*if(pt<65){
+               if(pt<60){
+                   if(ias<0.064){
+                       if(ias<0.053){
+                           rA_1o4.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                       }
+                       else{
+                           rA_3o4.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                       }
+                   }
+                   else{
+                        rB_1o2.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                   }
+               }
+               else{ 
+                   if(ias<0.064){
+                       if(ias<0.053){
+                           rA_2o4.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                       }
+                       else{
+                           rA_4o4.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                       }
+                   }
+                   else{
+                        rB_2o2.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                   }
+               }
+           }
+           else{
+               if(ias<0.064){
+                   if(ias<0.053){
+                       rC_1o2.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                   }
+                   else{
+                       rC_2o2.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                   }
+               }
+               else{
+                   rD_1o1.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+               }
+           }*/
+
+
+           /*if(pt<=pt_cut){
                 if(ias<quan50) {
                     if(bool_isotk && bool_pterr1) rA_sc1.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
                     if(bool_isotk && bool_pterr2) rA_sc2.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
@@ -1004,7 +1309,7 @@ void HscpCandidates::Loop()
                     if(bool_miniiso && bool_pterr1) rB_sc6.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
                     if(bool_isotk) rB_sc7.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
                     if(bool_miniiso) rB_sc8.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                }    
+                }   
            }
            else{
 
@@ -1029,14 +1334,14 @@ void HscpCandidates::Loop()
                     if(bool_isotk) rD_sc7.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
                     if(bool_miniiso) rD_sc8.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
                 }
-            }
+            }*/
 
            
-           MR_PostPreS_Eta2p1.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //MR_PostPreS_Eta2p1.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
            
            //if(abs(Eta)>1) continue;
            
-           MR_PostPreS_noFstrip.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //MR_PostPreS_noFstrip.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, NOSH,nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
            
            //if(FStrip<0.7) continue;
            
@@ -1047,7 +1352,7 @@ void HscpCandidates::Loop()
 
            h_PtErrOverPt_Fstrip->Fill(FStrip,sigmapt/pt,weightMass);
 
-           if(GenMass!= NULL){
+           /*if(GenMass!= NULL){
                float drminGen = 0.1;
                float drgen=9999.;
                int indexgenmindr=-1;
@@ -1067,7 +1372,7 @@ void HscpCandidates::Loop()
                if(indexgenmindr!=-1){
                     h_DiffGenPt_Fstrip->Fill(FStrip,(GenPt->at(indexgenmindr)-pt)/GenPt->at(indexgenmindr),weightMass);
                }
-           }
+           }*/
 
            bool pTerrCut1 = false;
            bool pTerrCut2 = false;
@@ -1200,18 +1505,18 @@ void HscpCandidates::Loop()
 
            //std::cout << sat255 << std::endl;
 
-           if(ih<5) MR_ih_l_5.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer, ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(ih>=5) MR_ih_ge_5.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(HCAL_energy->at(i)>=5.5 && HCAL_energy->at(i)<=7) MR_HCAL_pic6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(sigmapt/pt < 0.25) MR_pterr0p25.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt), FStrip, drMin, drHighestPt;
-           if(sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,99)) MR_cutQ99.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1,ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(isotk < 50) MR_isotk50.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(isotk < 15) MR_isotk15.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(miniIso<0.3) MR_mini_iso_03.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(ias < 0.6) MR_ias_l_0p6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
-           if(ias >= 0.6) {MR_ias_ge_0p6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt); MR_ias_ge_0p6.saveEvent(run,ev,lumi,pu);}
+           //if(ih<5) MR_ih_l_5.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer, ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(ih>=5) MR_ih_ge_5.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(HCAL_energy->at(i)>=5.5 && HCAL_energy->at(i)<=7) MR_HCAL_pic6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(sigmapt/pt < 0.25) MR_pterr0p25.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt), FStrip, drMin, drHighestPt;
+           //if(sigmapt/pt < pTerr_over_pT_etaBin(pt,Eta,99)) MR_cutQ99.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1,ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(isotk < 50) MR_isotk50.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(isotk < 15) MR_isotk15.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(miniIso<0.3) MR_mini_iso_03.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(ias < 0.6) MR_ias_l_0p6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //if(ias >= 0.6) {MR_ias_ge_0p6.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt); MR_ias_ge_0p6.saveEvent(run,ev,lumi,pu);}
            
-           MR_all.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
+           //MR_all.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias_all,ias_pixelOnly_noL1, ias_stripOnly,ias_outer,ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh,NOSH, nstrp, sat254, sat255, clusterCleaning, FStrip, drMin, drHighestPt);
            //if() {MR_.fill(weightMass, Eta, phi->at(i), p, ih, pt, sigmapt, ias, ProbQ_noL1->at(i), isotk, miniIso, mT->at(i), massT, ntracks, nofjets, ECAL_energy->at(i), HCAL_energy->at(i), iso_ECAL->at(i), iso_HCAL->at(i), nom, noh, nstrp, sat254, sat255, clusterCleaning);}
 
 
@@ -1246,24 +1551,24 @@ void HscpCandidates::Loop()
 
            count_hscp_passPre++;
 
-           if(massT>800) r_mass800.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+           //if(massT>800) r_mass800.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
 
            //std::cout << "mT: " << mT->at(i) << std::endl;
 
-           rAll.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+           rAll.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
            ntot++;
 
            
            if(pt<=pt_cut)
            {
-                if(ias<=ias_cut) //regionA
+                /*if(ias<=ias_cut) //regionA
                 {
-                    rA.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    rA.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                     nA++;
                 }
                 else //regionB
                 {
-                    rB.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    rB.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                     nB++;
                     h_Fstrip_regionB->Fill(FStrip,weightMass);
 
@@ -1272,41 +1577,47 @@ void HscpCandidates::Loop()
                         //rB_boundedIas.fill(Eta,nhits,p,pt,ih,ias,massT,tof);
                         nB_boundedIas++;
                     }
-                }
+                }*/
                 //if(ias<quan40) rA_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass); 
-                if(ias<quan50) rA_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                if(ias<quan50) rA_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
+                if(ias<quan80) rA_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
+                if(ias<quan90) rA_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                 //if(ias>=quan40 && ias<quan50) rB_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan50 && ias<quan60) rB_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan60 && ias<quan70) rB_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan70 && ias<quan80) rB_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan80 && ias<quan90) rB_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan90)              rB_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan50 && ias<quan90)rB_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>=quan50)rB_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias>=quan50 && ias<quan60) rB_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan60 && ias<quan70) rB_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan70 && ias<quan80) rB_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan80 && ias<quan90) rB_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan90)              rB_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan99)              rB_99.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan999)              rB_999.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan50 && ias<quan90)rB_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan50 && ias<quan99)rB_50_99.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan50 && ias<quan999)rB_50_999.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>=quan50)rB_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
                 
-                if(ias<=0.05) rA_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>0.05 && ias<=0.1) rB_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                /*if(ias<=0.05) rA_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>0.05 && ias<=0.1) rB_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
                 
-                if(ias<=0.05) rA_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>0.05 && ias<=0.15) rB_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                if(ias<=0.05) rA_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>0.05 && ias<=0.15) rB_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
                 
                 if(ias<quan50){
-                    if(abs(Eta)<0.8) rA_ias50_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rA_ias50_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rA_ias50_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                    if(abs(Eta)<0.8) rA_ias50_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rA_ias50_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rA_ias50_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
                 }
                 if(ias>=quan50 && ias<quan90) {
-                    if(abs(Eta)<0.8) rB_50ias90_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rB_50ias90_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rB_50ias90_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                }
+                    if(abs(Eta)<0.8) rB_50ias90_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rB_50ias90_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rB_50ias90_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                }*/
 
            }
            else
            {
-                if(ias<=ias_cut) //regionC
+                /*if(ias<=ias_cut) //regionC
                 {
-                    rC.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    rC.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                     nC++;
 
                     if(pt<70)
@@ -1317,7 +1628,7 @@ void HscpCandidates::Loop()
                 }
                 else //regionD
                 {
-                    rD.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                    rD.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                     nD++;
                     h_mT_regD->Fill(mT->at(i),weightMass);
                     h_massObs->Fill(massT,weightMass);
@@ -1334,34 +1645,40 @@ void HscpCandidates::Loop()
                         nD_boundedPt++;
                     }
 
-                }
+                }*/
                 //if(ias<quan40) rC_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass); 
-                if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); 
+                if(ias<quan50) rC_med.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
+                if(ias<quan80) rC_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
+                if(ias<quan90) rC_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); 
                 //if(ias>=quan40 && ias<quan50) {rD_40.fill(Eta,nhits,p,pt,ih,ias,massT,tof,weightMass);h_massObs_q40->Fill(massT,weightMass);}
-                if(ias>=quan50 && ias<quan60) {rD_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50->Fill(massT,weightMass);}
-                if(ias>=quan60 && ias<quan70) {rD_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q60->Fill(massT,weightMass);}
-                if(ias>=quan70 && ias<quan80) {rD_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q70->Fill(massT,weightMass);}
-                if(ias>=quan80 && ias<quan90) {rD_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q80->Fill(massT,weightMass);}
-                if(ias>=quan90)              {rD_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q90->Fill(massT,weightMass);}
-                if(ias>=quan50 && ias<quan90){rD_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50_90->Fill(massT,weightMass);}
-                if(ias>=quan50){rD_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);h_massObs_q50_100->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan60) {rD_50.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q50->Fill(massT,weightMass);}
+                if(ias>=quan60 && ias<quan70) {rD_60.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q60->Fill(massT,weightMass);}
+                if(ias>=quan70 && ias<quan80) {rD_70.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q70->Fill(massT,weightMass);}
+                if(ias>=quan80 && ias<quan90) {rD_80.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q80->Fill(massT,weightMass);}
+                if(ias>=quan90)              {rD_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q90->Fill(massT,weightMass);}
+                if(ias>=quan99)              {rD_99.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q99->Fill(massT,weightMass);}
+                if(ias>=quan999)              {rD_999.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q999->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan90){rD_50_90.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q50_90->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan99){rD_50_99.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q50_99->Fill(massT,weightMass);}
+                if(ias>=quan50 && ias<quan999){rD_50_999.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q50_999->Fill(massT,weightMass);}
+                if(ias>=quan50){rD_50_100.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);h_massObs_q50_100->Fill(massT,weightMass);}
                 
-                if(ias<=0.05) rC_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>0.05 && ias<=0.1) {rD_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); h_massObs_005ias01->Fill(massT,weightMass);}
+                /*if(ias<=0.05) rC_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>0.05 && ias<=0.1) {rD_005ias01.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); h_massObs_005ias01->Fill(massT,weightMass);}
                 
-                if(ias<=0.05) rC_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                if(ias>0.05 && ias<=0.15) {rD_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); h_massObs_005ias015->Fill(massT,weightMass);}
+                if(ias<=0.05) rC_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                if(ias>0.05 && ias<=0.15) {rD_005ias015.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); h_massObs_005ias015->Fill(massT,weightMass);}
 
                 if(ias<quan50){
-                    if(abs(Eta)<0.8) rC_ias50_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rC_ias50_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
-                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rC_ias50_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass);
+                    if(abs(Eta)<0.8) rC_ias50_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) rC_ias50_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
+                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) rC_ias50_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass);
                 }
                 if(ias>=quan50 && ias<quan90) {
-                    if(abs(Eta)<0.8) {rD_50ias90_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); h_massObs_50ias90_eta08->Fill(massT,weightMass);}
-                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) {rD_50ias90_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); h_massObs_50ias90_08eta17->Fill(massT,weightMass);}
-                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) {rD_50ias90_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,massT,tof,weightMass); h_massObs_50ias90_17eta21->Fill(massT,weightMass);}
-                }
+                    if(abs(Eta)<0.8) {rD_50ias90_eta08.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); h_massObs_50ias90_eta08->Fill(massT,weightMass);}
+                    if(abs(Eta)>=0.8 && abs(Eta)<1.7) {rD_50ias90_08eta17.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); h_massObs_50ias90_08eta17->Fill(massT,weightMass);}
+                    if(abs(Eta)>=1.7 && abs(Eta)<2.1) {rD_50ias90_17eta21.fill(Eta,nhits,p,pt,sigmapt,ih,ias,ismirnov,massT,tof,NPV,weightMass); h_massObs_50ias90_17eta21->Fill(massT,weightMass);}
+                }*/
             }
            n_aft++;
            passpre_ev = true;
@@ -1399,7 +1716,7 @@ void HscpCandidates::Loop()
 
    }// end loop HscpCandidateTree entry
 
-   preS_BefPreS.write();
+   /*preS_BefPreS.write();
    preS_BefPreS.computeEfficiencies();
    preS_default_noMiniIso.write();
    preS_default_noMiniIso.computeEfficiencies();
@@ -1408,7 +1725,7 @@ void HscpCandidates::Loop()
    preS_default_cutQ99.write();
    preS_default_cutQ99.computeEfficiencies();
    preS_default_cutQ999.write();
-   preS_default_cutQ999.computeEfficiencies();
+   preS_default_cutQ999.computeEfficiencies();  */
 
    ntot*=weightMass;
    nA*=weightMass;
@@ -1451,6 +1768,39 @@ void HscpCandidates::Loop()
 
     std::cout << "saving..." << std::endl;
 
+
+    h_EP->Write();
+
+    nCandidates->Write();
+    nCandidates_AfterPreS->Write();
+    nCandidates_AfterPreS_nMinus1->Write();
+
+    h_DeltaEtaTwoCandidates->Write();
+    h_AbsDeltaPhiTwoCandidates->Write();
+    h_DeltaPhiTwoCandidates->Write();
+    h_DeltaRTwoCandidates->Write();
+    h_InvMassTwoCandidates->Write();
+    h_PtTwoCandidates->Write();
+    h_isMuonCandidate1->Write();
+    h_isMuonCandidate2->Write();
+    h_MET_TwoCandidates->Write();
+    h_MET_TwoCandidates_cutInvM110->Write();
+
+    h_Is->Write();
+    h_Is_Ias->Write();
+
+    //rA_1o4.write();
+    //rA_2o4.write();
+    //rA_3o4.write();
+    //rA_4o4.write();
+    //rB_1o2.write();
+    //rB_2o2.write();
+    //rC_1o2.write();
+    //rC_2o2.write();
+    //rD_1o1.write();
+    //rB_true.write();
+    //rC_true.write();
+
     h_vetoJetBef->Write();
     h_vetoJet->Write();
     h_FstripBef->Write();
@@ -1463,7 +1813,7 @@ void HscpCandidates::Loop()
     h_DiffGenPt_Fstrip->Write();
     h_Fstrip_regionB->Write();
    
-    rA_sc1.write();
+/*    rA_sc1.write();
     rA_sc2.write();
     rA_sc3.write();
     rA_sc4.write();
@@ -1500,19 +1850,19 @@ void HscpCandidates::Loop()
     rD_sc6.write();
     rD_sc7.write();
     rD_sc8.write();
+*/
 
-
-    r_mass800.write();
+    //r_mass800.write();
 
       rAll.write();
 //    std::cout << " region all saved " << std::endl;
-      rA.write();
+      //rA.write();
 //    std::cout << " region A saved " << std::endl;
-      rB.write();
+      //rB.write();
 //    std::cout << " region B saved " << std::endl;
-      rC.write();
+      //rC.write();
 //    std::cout << " region C saved " << std::endl;
-      rD.write();
+      //rD.write();
 //    std::cout << " region D saved " << std::endl;
 /*      rB_boundedIas.write();
     std::cout << " region B_boundedIas saved " << std::endl;
@@ -1524,7 +1874,7 @@ void HscpCandidates::Loop()
     std::cout << " region D_boundedPt saved " << std::endl;
 */
 
-      rA_ias50_eta08.write();
+/*      rA_ias50_eta08.write();
       rC_ias50_eta08.write();
       rB_50ias90_eta08.write();
       rD_50ias90_eta08.write();
@@ -1552,7 +1902,7 @@ void HscpCandidates::Loop()
       rB_005ias015.write();
       rC_005ias015.write();
       rD_005ias015.write();
-      h_massObs_005ias015->Write();
+      h_massObs_005ias015->Write();*/
 
 //    rB_40.write();
     rB_50.write();
@@ -1560,7 +1910,11 @@ void HscpCandidates::Loop()
     rB_70.write();
     rB_80.write();
     rB_90.write();
+    rB_99.write();
+    rB_999.write();
     rB_50_90.write();
+    rB_50_99.write();
+    rB_50_999.write();
     rB_50_100.write();
 
 //    rD_40.write();
@@ -1569,7 +1923,11 @@ void HscpCandidates::Loop()
     rD_70.write();
     rD_80.write();
     rD_90.write();
+    rD_99.write();
+    rD_999.write();
     rD_50_90.write();
+    rD_50_99.write();
+    rD_50_999.write();
     rD_50_100.write();
 
 /*    rC_40pt.write();
@@ -1591,10 +1949,16 @@ void HscpCandidates::Loop()
 //    rB_med_pt.write();
     rC_med.write();
 
+    rA_80.write();
+    rA_90.write();
+    rC_80.write();
+    rC_90.write();
+
 /*    rA_40.write();
     rA_40pt.write();
     rB_40pt.write();
     rC_40.write();*/
+
 
     h_mT->Write();
     h_mT_regD->Write();
@@ -1616,7 +1980,11 @@ void HscpCandidates::Loop()
     h_massObs_q70->Write();
     h_massObs_q80->Write();
     h_massObs_q90->Write();
+    h_massObs_q99->Write();
+    h_massObs_q999->Write();
     h_massObs_q50_90->Write();
+    h_massObs_q50_99->Write();
+    h_massObs_q50_999->Write();
     h_massObs_q50_100->Write();
     
     h_massObs_q40_pt->Write();
@@ -1701,25 +2069,25 @@ void HscpCandidates::Loop()
    h_pT_TkBased_relative->Write();
    h_pT_preSIso->Write();
 
-   MR_Bef.write();
-   MR_PostPreS_noFstrip.write();
-   MR_PostPreS_Eta2p1.write();
-   MR_all.write();
-   MR_ih_l_5.write();
-   MR_ih_ge_5.write();
-   MR_ias_l_0p6.write();
-   MR_ias_ge_0p6.write();
-   MR_HCAL_pic6.write();
-   MR_pterr0p25.write();
-   MR_cutQ99.write();
-   MR_isotk50.write();
-   MR_isotk15.write();
-   MR_mini_iso_03.write();
+   //MR_Bef.write();
+   //MR_PostPreS_noFstrip.write();
+   //MR_PostPreS_Eta2p1.write();
+   //MR_all.write();
+   //MR_ih_l_5.write();
+   //MR_ih_ge_5.write();
+   //MR_ias_l_0p6.write();
+   //MR_ias_ge_0p6.write();
+   //MR_HCAL_pic6.write();
+   //MR_pterr0p25.write();
+   //MR_cutQ99.write();
+   //MR_isotk50.write();
+   //MR_isotk15.write();
+   //MR_mini_iso_03.write();
 
       outfile->Write();
       outfile->Close();
 
-      std::cout << "nevent: " << nentries << " n_passPre/nevent: " << (float)n_passPre/(float)nentries << std::endl;
+      /*std::cout << "nevent: " << nentries << " n_passPre/nevent: " << (float)n_passPre/(float)nentries << std::endl;
       std::cout << "n_aft: " << n_aft << " n_bef: " << n_bef << " n_aft/n_bef: " << (float)n_aft/(float)n_bef << std::endl;
 
       ofile << "nevent: " << nentries << " n_passPre/nevent: " << (float)n_passPre/(float)nentries << std::endl;
@@ -1729,7 +2097,7 @@ void HscpCandidates::Loop()
       ofile << "nA: " << nA << " " << 100*(float)nA/(float)ntot << " %" << std::endl;
       ofile << "nB: " << nB << " " << 100*(float)nB/(float)ntot << " %" << std::endl;
       ofile << "nC: " << nC << " " << 100*(float)nC/(float)ntot << " %" << std::endl;
-      ofile << "nD: " << nD << " " << 100*(float)nD/(float)ntot << " %" << std::endl;
+      ofile << "nD: " << nD << " " << 100*(float)nD/(float)ntot << " %" << std::endl;*/
 
       /*ofile << "nB_boundedIas: " << nB_boundedIas << " " << 100*(float)nB_boundedIas/(float)ntot << " % (/total)" << " " << 100*(float)nB_boundedIas/(float)nB << " % (/regionB)" << std::endl;
       ofile << "nD_boundedIas: " << nD_boundedIas << " " << 100*(float)nD_boundedIas/(float)ntot << " % (/total)" << " " << 100*(float)nD_boundedIas/(float)nD << " % (/regionD)" << std::endl;

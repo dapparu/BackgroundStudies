@@ -29,6 +29,7 @@
 
 // Values determined by Caroline Ih_noDrop_noPixL1
 float K(2.30), C(3.17); //Data
+float K_data2018(2.27), C_data2018(3.16); //Data 2018
 //float K(2.26), C(3.22); //MC
 
 // Values determined by Caroline Ih_noDrop_StripOnly
@@ -441,6 +442,42 @@ void mapOfDifferences(TH2F* res, TH2F* h1, TH2F* h2)
             if(diff>=0) res->SetBinContent(i,j,diff);
         }
     }
+}
+
+class candidat{
+    public:
+        candidat(float pt, float eta, float phi, bool ismuon);
+        ~candidat();
+        float getPt();
+        float getEta();
+        float getPhi();
+        bool getIsMuon();
+    private:
+        float pt_;
+        float eta_;
+        float phi_;
+        bool ismuon_;
+};
+candidat::candidat(float pt, float eta, float phi, bool ismuon){
+    pt_=pt;
+    eta_=eta;
+    phi_=phi;
+    ismuon_=ismuon;
+}
+candidat::~candidat(){
+
+}
+float candidat::getPt(){
+    return pt_;
+}
+float candidat::getEta(){
+    return eta_;
+}
+float candidat::getPhi(){
+    return phi_;
+}
+bool candidat::getIsMuon(){
+    return ismuon_;
 }
 
 class preS_analysis{
@@ -976,7 +1013,7 @@ class region{
         ~region();
         void initHisto();
         void initHisto(int& etabins,int& ihbins,int& pbins,int& massbins);
-        void fill(float& eta, float& nhits, float&p, float& pt, float& pterr, float& ih, float& ias, float& m, float& tof, float& w);
+        void fill(float& eta, float& nhits, float&p, float& pt, float& pterr, float& ih, float& ias, float& is, float& m, float& tof, float& npv, float& w);
         void fillStdDev();
         void fillQuantile();
         void fillMassFrom1DTemplatesEtaBinning(float weight_);
@@ -999,6 +1036,12 @@ class region{
         TH2F* ias_p;
         TH2F* pt_pterroverpt;
         TH2F* ias_eta;
+        TH2F* mass_eta;
+        TH2F* eta_npv;
+        TH2F* p_npv;
+        TH2F* ih_npv;
+        TH2F* is_ias;
+        TH2F* is_ih;
         /*TH1F* stdDevIh_p;
         TH1F* stdDevIas_pt;
         TH1F* stdDevIas_p;
@@ -1029,8 +1072,8 @@ class region{
         TH1F* massFrom1DTemplatesEtaBinning;
         TH1F* pred_mass;
         TH2F* eta_p_rebinned;
-        TH3F* ih_p_eta;
-        TH3F* ias_p_eta;
+        //TH3F* ih_p_eta;
+        //TH3F* ias_p_eta;
         std::vector<double> VectOfBins_P_;
         TH1F* errMass;
         TH2F* Mass_errMass;
@@ -1061,23 +1104,27 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 {
     np = pbins;
     plow = 0;
-    pup = 10000;
+    pup = 8000;
 
     npt = pbins;
     ptlow = 0;
     ptup = 10000; //instead of 4000
 
+    //1overP
+    //np = 2000;
+    pup = 200;
+
     nih = ihbins;
-    ihlow = 0;
-    ihup = 20;
+    ihlow = 3;
+    ihup = 8;
 
     nias = ihbins;
     iaslow = 0;
     iasup = 1;
 
     neta = etabins;
-    etalow = -3;
-    etaup = 3;
+    etalow = -1;
+    etaup = 1;
 
     nmass = massbins;
     masslow = 0;
@@ -1088,8 +1135,8 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 
     c = new TCanvas(suffix.c_str(),"");
 
-    ih_p_eta = new TH3F(("ih_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{h} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nih,ihlow,ihup); ih_p_eta->Sumw2();
-    ias_p_eta = new TH3F(("ias_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{as} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nias,iaslow,iasup); ias_p_eta->Sumw2();
+    //ih_p_eta = new TH3F(("ih_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{h} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nih,ihlow,ihup); ih_p_eta->Sumw2();
+    //ias_p_eta = new TH3F(("ias_p_eta"+suffix).c_str(),";#eta;p [GeV];I_{as} [MeV/cm]",neta,etalow,etaup,np,plow,pup,nias,iaslow,iasup); ias_p_eta->Sumw2();
 
     ih_pt = new TH2F(("ih_pt"+suffix).c_str(),";pt [GeV];I_{h} [MeV/cm]",npt,ptlow,ptup,nih,ihlow,ihup); ih_pt->Sumw2();
     ias_pt = new TH2F(("ias_pt"+suffix).c_str(),";pt [GeV];I_{as}",npt,ptlow,ptup,nias,iaslow,iasup); ias_pt->Sumw2();
@@ -1105,7 +1152,14 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
     ih_p = new TH2F(("ih_p"+suffix).c_str(),";p [GeV];I_{h} [MeV/cm]",np,plow,pup,nih,ihlow,ihup); ih_p->Sumw2();
     ias_p = new TH2F(("ias_p"+suffix).c_str(),";p [GeV];I_{as}",np,plow,pup,nias,iaslow,iasup); ias_p->Sumw2();
     pt_pterroverpt = new TH2F(("pt_pterroverpt"+suffix).c_str(),";p_{T} [GeV];#frac{#sigma_{pT}}{p_{T}}",npt,ptlow,ptup,100,0,1); pt_pterroverpt->Sumw2();
-    ias_eta =new TH2F(("ias_eta"+suffix).c_str(),";#eta;I_{as}",neta,etalow,etaup,nias,iaslow,iasup); ias_eta->Sumw2();
+    ias_eta = new TH2F(("ias_eta"+suffix).c_str(),";#eta;I_{as}",neta,etalow,etaup,nias,iaslow,iasup); ias_eta->Sumw2();
+    mass_eta = new TH2F(("mass_eta"+suffix).c_str(),";#eta;Mass [GeV]",neta,etalow,etaup,nmass,masslow,massup); mass_eta->Sumw2();
+    eta_npv = new TH2F(("eta_npv"+suffix).c_str(),";npv;#eta",100,0,100,neta,etalow,etaup); eta_npv->Sumw2();
+    p_npv = new TH2F(("p_npv"+suffix).c_str(),";npv;p [GeV]",100,0,100,np,plow,pup); p_npv->Sumw2();
+    ih_npv = new TH2F(("ih_npv"+suffix).c_str(),";npv;I_{h} [MeV/cm]",100,0,100,nih,ihlow,ihup); ih_npv->Sumw2();
+    is_ias = new TH2F(("is_ias"+suffix).c_str(),";I_{S};I_{as}",100,0,1,nias,iaslow,iasup); is_ias->Sumw2();
+    is_ih = new TH2F(("is_ih"+suffix).c_str(),";I_{S};I_{h} [MeV/cm]",100,0,1,nih,ihlow,ihup); ih_ias->Sumw2();
+
 
     /*
     stdDevIh_p = new TH1F(("stdDevIh_p"+suffix).c_str(),";p [GeV];StdDev Ih [MeV/cm]",np,plow,pup);
@@ -1165,10 +1219,10 @@ void region::initHisto(int& etabins,int& ihbins,int& pbins,int& massbins)
 }
 
 // Function which fills histograms
-void region::fill(float& eta, float& nhits, float& p, float& pt, float& pterr, float& ih, float& ias, float& m, float& tof, float& w)
+void region::fill(float& eta, float& nhits, float& p, float& pt, float& pterr, float& ih, float& ias, float& is, float& m, float& tof, float& npv, float& w)
 {
-   ih_p_eta->Fill(eta,p,ih,w);
-   ias_p_eta->Fill(eta,p,ias,w);
+   //ih_p_eta->Fill(eta,p,ih,w);
+   //ias_p_eta->Fill(eta,p,ias,w);
    ih_pt->Fill(pt,ih,w);
    ias_pt->Fill(pt,ias,w);
    ih_ias->Fill(ias,ih,w);
@@ -1185,6 +1239,12 @@ void region::fill(float& eta, float& nhits, float& p, float& pt, float& pterr, f
    hTOF->Fill(tof,w);
    pt_pterroverpt->Fill(pt,pterr/pt,w);
    ias_eta->Fill(eta,ias,w);
+   mass_eta->Fill(eta,m,w);
+   eta_npv->Fill(npv,eta,w);
+   p_npv->Fill(npv,p,w);
+   ih_npv->Fill(npv,ih,w);
+   is_ias->Fill(is,ias,w);
+   is_ih->Fill(is,ih,w);
    //fillStdDev();
    //fillQuantile();
 }
@@ -1356,8 +1416,8 @@ void region::write()
 {
     //plotMass();
     //cross1D();
-    ih_p_eta->Write();
-    ias_p_eta->Write();
+    //ih_p_eta->Write();
+    //ias_p_eta->Write();
     hTOF->Write();
     ih_pt->Write();
     ias_pt->Write();
@@ -1374,6 +1434,12 @@ void region::write()
     ias_p->Write();
     pt_pterroverpt->Write();
     ias_eta->Write();
+    mass_eta->Write();
+    eta_npv->Write();
+    p_npv->Write();
+    ih_npv->Write();
+    is_ias->Write();
+    is_ih->Write();
 /*    stdDevIh_p->Write();
     stdDevIas_pt->Write();
     stdDevIas_p->Write();
@@ -1500,6 +1566,7 @@ public :
    vector<float>   *Charge;
    vector<float>   *Pt;
    vector<float>   *PtErr;
+   vector<float>   *Is;
    vector<float>   *Ias;
    vector<float>   *Ias_noTIBnoTIDno3TEC;
    vector<float>   *Ias_PixelOnly;
@@ -1646,6 +1713,7 @@ public :
    TBranch        *b_Charge;   //!
    TBranch        *b_Pt;   //!
    TBranch        *b_PtErr;   //!
+   TBranch        *b_Is;   //!
    TBranch        *b_Ias;   //!
    TBranch        *b_Ias_noTIBnoTIDno3TEC;   //!
    TBranch        *b_Ias_PixelOnly;   //!
@@ -1767,7 +1835,7 @@ public :
 HscpCandidates::HscpCandidates(TTree *tree) : fChain(0) 
 {
     ifstream ifile;
-    ifile.open("./configTemplate_7.txt");
+    ifile.open("./configFile.txt");
     std::string line;
     std::string filename;
     float iascut,ptcut,ihcut,pcut,etacutinf,etacutsup;
@@ -1800,10 +1868,12 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
     dataset_ = dataset;
     chaining_ = chaining;
 
-    if(dataset_ != "data"){K=2.26; C=3.22;} //MC
+    if(dataset_ != "data"){K=2.26; C=3.22;} //MC 2017
+    if(dataset == "data2018"){K=K_data2018; C=C_data2018;}
 
     //outfilename_ = "tmpOut/outfile_"+label+"_"+to_string((int)(10*etacutinf_))+"eta"+to_string((int)(10*etacutsup_))+"_ias"+to_string((int)(1000*iascut_))+"_pt"+to_string((int)ptcut_)+"_ih"+to_string((int)(10*ihcut_))+"_p"+to_string((int)pcut_)+"_etabins"+to_string(etabins_)+"_ihbins"+to_string(ihbins_)+"_pbins"+to_string(pbins_)+"_massbins"+to_string(massbins_)+"_invIso"+to_string(invIso_)+"_invMET"+to_string(invMET_)+"_"+to_string(jobNum);
 
+    jobNum=1;
     outfilename_ = "tmpOut/outfile_"+label+"_"+to_string(jobNum);
     std::cout << outfilename_ << std::endl;
 
@@ -1818,6 +1888,7 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
       if (!f || !f->IsOpen()) {
          f = new TFile(filename.c_str());
       }
+      //TDirectory * dir = (TDirectory*)f->Get((filename+":/HSCParticleAnalyzer/BaseName").c_str());
       TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/BaseName").c_str());
       //TDirectory * dir = (TDirectory*)f->Get((filename+":/analyzer/Data_2017_UL").c_str());
       dir->GetObject("HscpCandidates",tree);
@@ -1825,11 +1896,18 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
 
       std::cout << "entries before skimming: " << tree->GetEntries() << std::endl;
 
+      /*regD_ih = (TH2F*) f->Get((filename+":/HSCParticleAnalyzer/BaseName/RegionD_I").c_str());
+      regD_p = (TH2F*) f->Get((filename+":/HSCParticleAnalyzer/BaseName/RegionD_P").c_str());
+      regD_mass = (TH2F*) f->Get((filename+":/HSCParticleAnalyzer/BaseName/Mass").c_str());
+
+      TH1F* htempTotalE = (TH1F*) f->Get((filename+":/HSCParticleAnalyzer/BaseName/NumEvents").c_str());*/
+      
       regD_ih = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_I").c_str());
       regD_p = (TH2F*) f->Get((filename+":/analyzer/BaseName/RegionD_P").c_str());
       regD_mass = (TH2F*) f->Get((filename+":/analyzer/BaseName/Mass").c_str());
 
       TH1F* htempTotalE = (TH1F*) f->Get((filename+":/analyzer/BaseName/NumEvents").c_str());
+
 
       nof_event = htempTotalE->GetEntries();
 
@@ -1844,7 +1922,11 @@ HscpCandidates::HscpCandidates(TTree *tree) : fChain(0)
    }
    else if (chaining && tree == 0) {
        std::cout << "filename: " << filename << std::endl;
-        
+       
+       /*
+       TChain* ch1 = new TChain("HSCParticleAnalyzer/BaseName/HscpCandidates");
+       TChain* ch2 = new TChain("HSCParticleAnalyzer/BaseName/GenHscpCandidates");*/
+       
        TChain* ch1 = new TChain("analyzer/BaseName/HscpCandidates");
        TChain* ch2 = new TChain("analyzer/BaseName/GenHscpCandidates");
 
@@ -1983,6 +2065,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    Charge = 0;
    Pt = 0;
    PtErr = 0;
+   Is = 0;
    Ias = 0;
    Ias_noTIBnoTIDno3TEC = 0;
    Ias_PixelOnly = 0;
@@ -2108,12 +2191,13 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("RecoPFMET_eta", &RecoPFMET_eta, &b_RecoPFMET_eta);
    fChain->SetBranchAddress("RecoPFMET_phi", &RecoPFMET_phi, &b_RecoPFMET_phi);
    fChain->SetBranchAddress("RecoPFMET_significance", &RecoPFMET_significance, &b_RecoPFMET_significance);
-   fChain->SetBranchAddress("Muon1_Pt", &Muon1_Pt, &b_Muon1_Pt);
+   /*fChain->SetBranchAddress("Muon1_Pt", &Muon1_Pt, &b_Muon1_Pt);
    fChain->SetBranchAddress("Muon1_eta", &Muon1_eta, &b_Muon1_eta);
    fChain->SetBranchAddress("Muon1_phi", &Muon1_phi, &b_Muon1_phi);
    fChain->SetBranchAddress("Muon2_Pt", &Muon2_Pt, &b_Muon2_Pt);
    fChain->SetBranchAddress("Muon2_eta", &Muon2_eta, &b_Muon2_eta);
    fChain->SetBranchAddress("Muon2_phi", &Muon2_phi, &b_Muon2_phi);
+   */
    fChain->SetBranchAddress("Jet_pt", &jet_pt, &b_jet_pt);
    fChain->SetBranchAddress("Jet_eta", &jet_eta, &b_jet_eta);
    fChain->SetBranchAddress("Jet_phi", &jet_phi, &b_jet_phi);
@@ -2133,6 +2217,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("Charge", &Charge, &b_Charge);
    fChain->SetBranchAddress("Pt", &Pt, &b_Pt);
    fChain->SetBranchAddress("PtErr", &PtErr, &b_PtErr);
+   fChain->SetBranchAddress("Is_StripOnly", &Is, &b_Is);
    fChain->SetBranchAddress("Ias", &Ias, &b_Ias);
    fChain->SetBranchAddress("Ias_noTIBnoTIDno3TEC", &Ias_noTIBnoTIDno3TEC, &b_Ias_noTIBnoTIDno3TEC);
    fChain->SetBranchAddress("Ias_PixelOnly", &Ias_PixelOnly, &b_Ias_PixelOnly);
@@ -2188,7 +2273,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("iso_HCAL", &iso_HCAL, &b_iso_HCAL);
    fChain->SetBranchAddress("PFMiniIso_relative", &iso_MiniIso, &b_iso_MiniIso);
    fChain->SetBranchAddress("PFMiniIso_wMuon_relative", &iso_MiniIso_wMuon, &b_iso_MiniIso_wMuon);
-   fChain->SetBranchAddress("TrackPFIsolationR005_sumChargedHadronPt", &TrackPFIsolationR005_sumChargedHadronPt, &b_TrackPFIsolationR005_sumChargedHadronPt);
+   /*fChain->SetBranchAddress("TrackPFIsolationR005_sumChargedHadronPt", &TrackPFIsolationR005_sumChargedHadronPt, &b_TrackPFIsolationR005_sumChargedHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumNeutralHadronPt", &TrackPFIsolationR005_sumNeutralHadronPt, &b_TrackPFIsolationR005_sumNeutralHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumPhotonPt", &TrackPFIsolationR005_sumPhotonPt, &b_TrackPFIsolationR005_sumPhotonPt);
    fChain->SetBranchAddress("TrackPFIsolationR005_sumPUPt", &TrackPFIsolationR005_sumPUPt, &b_TrackPFIsolationR005_sumPUPt);
@@ -2196,24 +2281,28 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("TrackPFIsolationR01_sumNeutralHadronPt", &TrackPFIsolationR01_sumNeutralHadronPt, &b_TrackPFIsolationR01_sumNeutralHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR01_sumPhotonPt", &TrackPFIsolationR01_sumPhotonPt, &b_TrackPFIsolationR01_sumPhotonPt);
    fChain->SetBranchAddress("TrackPFIsolationR01_sumPUPt", &TrackPFIsolationR01_sumPUPt, &b_TrackPFIsolationR01_sumPUPt);
+   */
    fChain->SetBranchAddress("TrackPFIsolationR03_sumChargedHadronPt", &TrackPFIsolationR03_sumChargedHadronPt, &b_TrackPFIsolationR03_sumChargedHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR03_sumNeutralHadronPt", &TrackPFIsolationR03_sumNeutralHadronPt, &b_TrackPFIsolationR03_sumNeutralHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR03_sumPhotonPt", &TrackPFIsolationR03_sumPhotonPt, &b_TrackPFIsolationR03_sumPhotonPt);
    fChain->SetBranchAddress("TrackPFIsolationR03_sumPUPt", &TrackPFIsolationR03_sumPUPt, &b_TrackPFIsolationR03_sumPUPt);
+   /*
    fChain->SetBranchAddress("TrackPFIsolationR05_sumChargedHadronPt", &TrackPFIsolationR05_sumChargedHadronPt, &b_TrackPFIsolationR05_sumChargedHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR05_sumNeutralHadronPt", &TrackPFIsolationR05_sumNeutralHadronPt, &b_TrackPFIsolationR05_sumNeutralHadronPt);
    fChain->SetBranchAddress("TrackPFIsolationR05_sumPhotonPt", &TrackPFIsolationR05_sumPhotonPt, &b_TrackPFIsolationR05_sumPhotonPt);
    fChain->SetBranchAddress("TrackPFIsolationR05_sumPUPt", &TrackPFIsolationR05_sumPUPt, &b_TrackPFIsolationR05_sumPUPt);
+   */
    fChain->SetBranchAddress("MuonPFIsolationR03_sumChargedHadronPt", &MuonPFIsolationR03_sumChargedHadronPt, &b_MuonPFIsolationR03_sumChargedHadronPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumNeutralHadronPt", &MuonPFIsolationR03_sumNeutralHadronPt, &b_MuonPFIsolationR03_sumNeutralHadronPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumPhotonPt", &MuonPFIsolationR03_sumPhotonPt, &b_MuonPFIsolationR03_sumPhotonPt);
    fChain->SetBranchAddress("MuonPFIsolationR03_sumPUPt", &MuonPFIsolationR03_sumPUPt, &b_MuonPFIsolationR03_sumPUPt);
+   
    fChain->SetBranchAddress("Ih_noL1", &Ih_noL1, &b_Ih_noL1);
    fChain->SetBranchAddress("Ih_15drop", &Ih_15drop, &b_Ih_15drop);
    fChain->SetBranchAddress("Ih_StripOnly", &Ih_StripOnly, &b_Ih_StripOnly);
    fChain->SetBranchAddress("Ih_StripOnly_15drop", &Ih_StripOnly_15drop, &b_Ih_StripOnly_15drop);
    fChain->SetBranchAddress("Ih_SaturationCorrectionFromFits", &Ih_SaturationCorrectionFromFits, &b_Ih_SaturationCorrectionFromFits);
-   fChain->SetBranchAddress("clust_charge", &clust_charge, &b_clust_charge);
+   /*fChain->SetBranchAddress("clust_charge", &clust_charge, &b_clust_charge);
    fChain->SetBranchAddress("clust_pathlength", &clust_pathlength, &b_clust_pathlength);
    fChain->SetBranchAddress("clust_ClusterCleaning", &clust_ClusterCleaning, &b_clust_ClusterCleaning);
    fChain->SetBranchAddress("clust_nstrip", &clust_nstrip, &b_clust_nstrip);
@@ -2222,7 +2311,7 @@ void HscpCandidates::Init(TTree *tree,TTree *treeGen)
    fChain->SetBranchAddress("clust_detid", &clust_detid, &b_clust_detid);
    fChain->SetBranchAddress("clust_isStrip", &clust_isStrip, &b_clust_isStrip);
    fChain->SetBranchAddress("clust_isPixel", &clust_isPixel, &b_clust_isPixel);
-   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);
+   fChain->SetBranchAddress("GenCharge", &GenCharge, &b_GenCharge);*/
    /*if (!treeGen && !fChainGen) return;
    fChainGen = treeGen;
    fCurrent = -1;
